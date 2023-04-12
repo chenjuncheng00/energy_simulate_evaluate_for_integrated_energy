@@ -1,8 +1,21 @@
 """
 FMU模型输入数值的默认值：
-1、所有设备都关闭时的默认值；
+1、用户侧水泵默认开启，其它设备都默认关闭；
 2、数据顺序与model_fmu_input_type中一致
 """
+
+def main_input_data_default():
+    """
+    整个模型的输入，数值
+
+    Returns:
+
+    """
+    model_input = environment_input_data_default() + chiller_input_data_default() + \
+                  air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
+                  tower_chilled_input_data_default() + user_load_input_data_default()
+    return model_input
+
 
 def chiller_input_data_default():
     """
@@ -95,7 +108,7 @@ def user_load_input_data_default():
 
     """
     # 冷冻水泵
-    chilled_pump = [0, 0]
+    chilled_pump = [1480, 1480]
     # 返回结果
     return chilled_pump
 

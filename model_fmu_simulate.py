@@ -24,7 +24,7 @@ def simulate_sample(fmu_path, csv_path, start_time, stop_time, input_data_list, 
 
     """
     # 模型输入
-    fmu_input = np.array(input_data_list, dtype=input_type_list)
+    fmu_input = np.array(tuple(input_data_list), dtype=input_type_list)
     # 仿真
     result = simulate_fmu(filename=fmu_path, start_time=start_time, stop_time=stop_time, input=fmu_input,
                           output=output_name_list, output_interval=output_interval)
@@ -85,7 +85,7 @@ def simulate_pause(fmu_path, start_time_list, pause_time_list, stop_time, input_
                 return False
             return True
         # 模型输入
-        fmu_input = np.array(input_data_list[i], dtype=input_type_list)
+        fmu_input = np.array(tuple(input_data_list[i]), dtype=input_type_list)
         # 模型仿真
         if i == 0:
             # 第一次仿真，需要初始化，不需要终止
@@ -120,3 +120,22 @@ def simulate_pause(fmu_path, start_time_list, pause_time_list, stop_time, input_
             plt.plot(output_data, color='skyblue', label=output_name_list[i])
             plt.legend()
         plt.show()
+
+
+# if __name__ == "__main__":
+#     from model_fmu_input_data_default import main_input_data_default
+#     from model_fmu_input_type import main_model_input_type
+#     from model_fmu_output_name import main_model_output_name
+#     fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230411.fmu"
+#     csv_path = "./model_data/result.csv"
+#     start_time = (31 + 28 + 31 + 30 + 31) * 24 * 3600
+#     stop_time = start_time + 2 * 3600
+#     output_interval = 60
+#     time_data = [start_time]
+#     input_data_list = time_data + main_input_data_default()
+#     input_type_list = main_model_input_type()
+#     output_name_list = main_model_output_name()
+#     plot_set = False
+#     write_csv_set = True
+#     simulate_sample(fmu_path, csv_path, start_time, stop_time, input_data_list, input_type_list, output_name_list,
+#                     output_interval, plot_set, write_csv_set)

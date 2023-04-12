@@ -45,7 +45,6 @@ def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_in
     chiller_data = [False, False, False, False, False, False, 8]
     chiller_cooling_tower_data = [0, 0, 0, 0, 0, 0]
     air_source_heat_pump_data = [False, False, False, False, 8]
-    user_chilled_pump_data = [1480, 1480]
     # 模型输入名称和类型
     model_input_type = main_model_input_type()
     # 模型输出名称
@@ -104,7 +103,7 @@ def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_in
                                        chiller_cooling_value_data + chiller_tower_value_data + \
                                        chiller_tower_chilled_value_data + chiller_user_value_data + \
                                        air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
-                                       tower_chilled_input_data_default() + user_chilled_pump_data
+                                       tower_chilled_input_data_default() + user_load_input_data_default()
                     # FMU仿真
                     try:
                         result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data, model_input_type,
@@ -204,7 +203,7 @@ def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_in
                                            chiller_tower_chilled_value_data + chiller_user_value_data + \
                                            air_source_heat_pump_input_data_default() + \
                                            cold_storage_input_data_default() + tower_chilled_input_data_default() + \
-                                           user_chilled_pump_data
+                                           user_load_input_data_default()
                         # FMU仿真
                         try:
                             result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data,
@@ -271,7 +270,7 @@ def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_in
             model_input_data = time_data + environment_input_data_default() + chiller_input_data_default() + \
                                air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
                                cold_storage_input_data_default() + tower_chilled_input_data_default() + \
-                               user_chilled_pump_data
+                               user_load_input_data_default()
             # FMU仿真
             try:
                 result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data, model_input_type,
@@ -347,7 +346,7 @@ def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_in
                                    chiller_tower_chilled_value_data + chiller_user_value_data + \
                                    air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
                                    storage_user_value_data + storage_chiller_value_data + \
-                                   tower_chilled_input_data_default() + user_chilled_pump_data
+                                   tower_chilled_input_data_default() + user_load_input_data_default()
                 # FMU仿真
                 try:
                     result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data, model_input_type,
@@ -395,7 +394,7 @@ def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_in
         model_input_data = time_data + environment_input_data_default() + chiller_input_data_default() + \
                            air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
                            storage_user_value_data + storage_chiller_value_data + \
-                           tower_chilled_input_data_default() + user_chilled_pump_data
+                           tower_chilled_input_data_default() + user_load_input_data_default()
         # FMU仿真
         try:
             result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data, model_input_type,
@@ -459,7 +458,7 @@ def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_in
                                chiller_cooling_value_data + chiller_tower_value_data + \
                                chiller_tower_chilled_value_data + chiller_user_value_data + \
                                air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
-                               tower_chilled_pump_data + user_chilled_pump_data
+                               tower_chilled_pump_data + user_load_input_data_default()
             # FMU仿真
             try:
                 result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data, model_input_type,
