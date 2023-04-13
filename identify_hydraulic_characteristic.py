@@ -1,22 +1,27 @@
-import time
+import time, numpy as np
 from read_write_data import read_cfg_data, write_txt_data
 from model_fmu_simulate import simulate_sample
-from model_fmu_input_type import *
-from model_fmu_input_data_default import *
-from model_fmu_output_name import *
+from model_fmu_input_type import main_model_input_type
+from model_fmu_input_data_default import environment_input_data_default, chiller_input_data_default, \
+                                         air_source_heat_pump_input_data_default, cold_storage_input_data_default, \
+                                         tower_chilled_input_data_default, user_load_input_data_default
+from model_fmu_output_name import main_model_output_name
 
-def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_interval, cfg_path_equipment,
-                                      chiller_chilled_result_txt_path, chiller_cooling_result_txt_path,
-                                      ashp_chilled_result_txt_path, storage_from_chiller_result_txt_path,
-                                      storage_to_user_result_txt_path, tower_chilled_result_txt_path):
+def main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
+                                           time_out, cfg_path_equipment, chiller_chilled_result_txt_path,
+                                           chiller_cooling_result_txt_path, ashp_chilled_result_txt_path,
+                                           storage_from_chiller_result_txt_path, storage_to_user_result_txt_path,
+                                           tower_chilled_result_txt_path):
     """
     模型水力特性辨识
     
     Args:
-        fmu_path: [string]，FMU文件路径
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
         output_interval: [float]，FMU模型输出采样时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
         cfg_path_equipment: [string]，设备信息参数cfg文件路径
         chiller_chilled_result_txt_path: [string]，冷水机冷冻侧水力特性辨识结果，txt文件路径
         chiller_cooling_result_txt_path: [string]，冷水机冷却侧水力特性辨识结果，txt文件路径
@@ -40,6 +45,20 @@ def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_in
     n_ashp_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "n_chilled_pump", 1)
     n_storage_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "n_chilled_pump", 1)
     n_tower_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷却塔直接供冷", "n_chilled_pump", 1)
+    # 设备额定水流量
+    chiller1_Few0 = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Few0", 0)
+    chiller2_Few0 = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Few0", 0)
+    chiller1_Fcw0 = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Fcw0", 0)
+    chiller2_Fcw0 = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Fcw0", 0)
+    chiller1_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_Few0", 0)
+    chiller2_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_Few0", 0)
+    chiller1_cooling_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "cooling_pump1_Fcw0", 0)
+    chiller2_cooling_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "cooling_pump2_Fcw0", 0)
+    chiller_cooling_tower_Fcw0 = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机", "cooling_tower_Fcw0", 0)
+    air_source_heat_pump_Few0 = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_Few0", 0)
+    ashp_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_Few0", 0)
+    storage_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_Few0", 0)
+    tower_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷却塔直接供冷", "chilled_pump_Few0", 0)
 
     # 与水力特性辨识无关的模型输入，给定值
     time_data = [start_time]
@@ -52,35 +71,45 @@ def identify_hydraulic_characteristic(fmu_path, start_time, stop_time, output_in
     model_output_name = main_model_output_name()
 
     # 冷水机模型，冷却水，水力特性测试
-    identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chiller_chilled_pump2, time_data,
-                                  chiller_data, chiller_cooling_tower_data, fmu_path, start_time, stop_time,
-                                  model_input_type, model_output_name, output_interval, chiller_chilled_result_txt_path)
+    identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chiller_chilled_pump2,
+                                  chiller1_Few0, chiller2_Few0, chiller1_chilled_pump_Fw0, chiller2_chilled_pump_Fw0,
+                                  time_data, chiller_data, chiller_cooling_tower_data, fmu_unzipdir, fmu_description,
+                                  start_time, stop_time, time_out, model_input_type, model_output_name, output_interval,
+                                  chiller_chilled_result_txt_path)
     # 冷水机模型，冷却水，水力特性测试
     identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump1, n_chiller_cooling_pump2,
-                                  n_chiller_cooling_tower, time_data, chiller_data, chiller_cooling_tower_data,
-                                  fmu_path, start_time, stop_time, model_input_type, model_output_name,
-                                  output_interval, chiller_cooling_result_txt_path)
+                                  n_chiller_cooling_tower, chiller1_Fcw0, chiller2_Fcw0, chiller_cooling_tower_Fcw0,
+                                  chiller1_cooling_pump_Fw0,  chiller2_cooling_pump_Fw0, time_data, chiller_data,
+                                  chiller_cooling_tower_data, fmu_unzipdir, fmu_description, start_time, stop_time,
+                                  time_out, model_input_type, model_output_name, output_interval,
+                                  chiller_cooling_result_txt_path)
     # 空气源热泵模型，冷冻水，水力特性测试
-    identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_chilled_pump, time_data,
-                                               air_source_heat_pump_data, fmu_path, start_time, stop_time,
+    identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_chilled_pump, air_source_heat_pump_Few0,
+                                               ashp_chilled_pump_Fw0, time_data, air_source_heat_pump_data,
+                                               fmu_unzipdir, fmu_description, start_time, stop_time, time_out,
                                                model_input_type, model_output_name, output_interval,
                                                ashp_chilled_result_txt_path)
     # 蓄冷水罐模型，蓄冷工况，水力特性测试
-    identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled_pump, time_data, chiller_data,
-                                       chiller_cooling_tower_data, fmu_path, start_time, stop_time, model_input_type,
+    identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled_pump, chiller1_Few0, chiller2_Few0,
+                                       storage_chilled_pump_Fw0, time_data, chiller_data, chiller_cooling_tower_data,
+                                       fmu_unzipdir, fmu_description, start_time, stop_time, time_out, model_input_type,
                                        model_output_name, output_interval, storage_from_chiller_result_txt_path)
     # 蓄冷水罐模型，放冷工况，水力特性测试
-    identify_cold_storage_to_user(n_storage_chilled_pump, time_data, fmu_path, start_time, stop_time, model_input_type,
-                                  model_output_name, output_interval, storage_to_user_result_txt_path)
+    identify_cold_storage_to_user(n_storage_chilled_pump, time_data, fmu_unzipdir, fmu_description, start_time,
+                                  stop_time, time_out, model_input_type, model_output_name, output_interval,
+                                  storage_to_user_result_txt_path)
     # 冷却塔直接供冷模型，水力特性测试
-    identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, time_data, chiller_data,
-                           chiller_cooling_tower_data, fmu_path, start_time, stop_time, model_input_type,
+    identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chiller_cooling_tower_Fcw0,
+                           tower_chilled_pump_Fw0, time_data, chiller_data, chiller_cooling_tower_data,
+                           fmu_unzipdir, fmu_description, start_time, stop_time, time_out, model_input_type,
                            model_output_name, output_interval, tower_chilled_result_txt_path)
 
 
-def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chiller_chilled_pump2, time_data,
-                                  chiller_data, chiller_cooling_tower_data, fmu_path, start_time, stop_time,
-                                  model_input_type, model_output_name, output_interval, chiller_chilled_result_txt_path):
+def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chiller_chilled_pump2,
+                                  chiller1_Few0, chiller2_Few0, chiller1_chilled_pump_Fw0, chiller2_chilled_pump_Fw0,
+                                  time_data, chiller_data, chiller_cooling_tower_data, fmu_unzipdir, fmu_description,
+                                  start_time, stop_time, time_out, model_input_type, model_output_name, output_interval,
+                                  chiller_chilled_result_txt_path):
     """
     冷水机模型，冷冻水，水力特性测试
     Args:
@@ -88,12 +117,18 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
         n_chiller2: [int]，小冷水机装机台数
         n_chiller_chilled_pump1: [int]，大冷冻水泵装机台数
         n_chiller_chilled_pump2: [int]，小冷冻水泵装机台数
+        chiller1_Few0: [float]，
+        chiller2_Few0: [float]，
+        chiller1_chilled_pump_Fw0: [float]，
+        chiller2_chilled_pump_Fw0: [float]，
         time_data: [list]，模型输入数据，时间
         chiller_data: [list]，模型输入数据，冷水机开关及出水温度温度设定
         chiller_cooling_tower_data: [list]，模型输入数据，冷却塔风机转速比
-        fmu_path: [string]，FMU文件路径
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -119,12 +154,18 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
         for j in range(n_chiller2 + 1):
             for k in range(n_chiller_chilled_pump1 + 1):
                 for l in range(n_chiller_chilled_pump2 + 1):
-                    chiller_chilled_value_data = []
-                    chiller_chilled_pump_data = []
                     if i + j == 0:
                         continue
                     if k + l == 0:
                         continue
+                    chiller_Few_total = i * chiller1_Few0 + j * chiller2_Few0
+                    pump_Fw_total = k * chiller1_chilled_pump_Fw0 + l * chiller2_chilled_pump_Fw0
+                    if pump_Fw_total >= 2 * chiller_Few_total:
+                        continue
+                    if pump_Fw_total <= 0.2 * chiller_Few_total:
+                        continue
+                    chiller_chilled_value_data = []
+                    chiller_chilled_pump_data = []
                     print("正在进行 冷水机模型 冷冻侧 水力特性辨识：" + "大冷冻阀门开启数量：" + str(i) +
                           "，小冷冻阀门开启数量" + str(j) + "，大冷冻水泵开启数量" + str(k) +
                           "，小冷冻水泵开启数量" + str(l) + "\n")
@@ -160,8 +201,9 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                     # FMU仿真
                     try:
                         time1 = time.time()
-                        result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data,
-                                                 model_input_type, model_output_name, output_interval, False, False)
+                        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                                 model_input_data, model_input_type, model_output_name,
+                                                 output_interval, time_out, False, False)
                         # 获取仿真结果
                         chiller_Few_big_total = result['chiller_Few_big'][-1]
                         chiller_Few_small_total = result['chiller_Few_small'][-1]
@@ -199,9 +241,11 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
 
 
 def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump1, n_chiller_cooling_pump2,
-                                  n_chiller_cooling_tower, time_data, chiller_data, chiller_cooling_tower_data,
-                                  fmu_path, start_time, stop_time, model_input_type, model_output_name,
-                                  output_interval, chiller_cooling_result_txt_path):
+                                  n_chiller_cooling_tower, chiller1_Fcw0, chiller2_Fcw0, chiller_cooling_tower_Fcw0,
+                                  chiller1_cooling_pump_Fw0,  chiller2_cooling_pump_Fw0, time_data, chiller_data,
+                                  chiller_cooling_tower_data, fmu_unzipdir, fmu_description, start_time, stop_time,
+                                  time_out, model_input_type, model_output_name, output_interval,
+                                  chiller_cooling_result_txt_path):
     """
     冷水机模型，冷却水，水力特性测试
     Args:
@@ -210,12 +254,19 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
         n_chiller_cooling_pump1: [int]，大冷却水泵装机台数
         n_chiller_cooling_pump2: [int]，小冷却水泵装机台数
         n_chiller_cooling_tower: [int]，冷却塔装机台数
+        chiller1_Fcw0: [float]，
+        chiller2_Fcw0: [float]，
+        chiller_cooling_tower_Fcw0: [float]，
+        chiller1_cooling_pump_Fw0: [float]，
+        chiller2_cooling_pump_Fw0: [float]，
         time_data: [list]，模型输入数据，时间
         chiller_data: [list]，模型输入数据，冷水机开关及出水温度温度设定
         chiller_cooling_tower_data: [list]，模型输入数据，冷却塔风机转速比
-        fmu_path: [string]，FMU文件路径
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -241,15 +292,24 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
             for k in range(n_chiller_cooling_tower + 1):
                 for l in range(n_chiller_cooling_pump1 + 1):
                     for m in range(n_chiller_cooling_pump2 + 1):
-                        chiller_cooling_value_data = []
-                        chiller_tower_value_data = []
-                        chiller_cooling_pump_data = []
                         if i + j == 0:
                             continue
                         if k == 0:
                             continue
                         if l + m == 0:
                             continue
+                        chiller_Fcw_total = i * chiller1_Fcw0 + j * chiller2_Fcw0
+                        tower_Fcw_total = k * chiller_cooling_tower_Fcw0
+                        pump_Fw_total = l * chiller1_cooling_pump_Fw0 + m * chiller2_cooling_pump_Fw0
+                        if pump_Fw_total >= 2 * chiller_Fcw_total:
+                            continue
+                        if pump_Fw_total <= 0.2 * chiller_Fcw_total:
+                            continue
+                        if pump_Fw_total >= 2 * tower_Fcw_total:
+                            continue
+                        chiller_cooling_value_data = []
+                        chiller_tower_value_data = []
+                        chiller_cooling_pump_data = []
                         print("正在进行 冷水机模型 冷却侧 水力特性辨识：" + "大冷却阀门开启数量：" + str(i) +
                               "，小冷却阀门开启数量" + str(j) + "，冷却塔阀门开启数量" + str(k) +
                               "，大冷却水泵开启数量" + str(l) + "，小冷却水泵开启数量" + str(m) + "\n")
@@ -291,9 +351,9 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                         # FMU仿真
                         try:
                             time1 = time.time()
-                            result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data,
-                                                     model_input_type, model_output_name, output_interval,
-                                                     False, False)
+                            result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                                     model_input_data, model_input_type, model_output_name,
+                                                     output_interval, time_out, False, False)
                             # 获取仿真结果
                             chiller_Fcw_big_total = result['chiller_Fcw_big'][-1]
                             chiller_Fcw_small_total = result['chiller_Fcw_small'][-1]
@@ -331,8 +391,9 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
     write_txt_data(chiller_cooling_result_txt_path, chiller_cooling_result_list)
 
 
-def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_chilled_pump, time_data,
-                                               air_source_heat_pump_data, fmu_path, start_time, stop_time,
+def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_chilled_pump, air_source_heat_pump_Few0,
+                                               ashp_chilled_pump_Fw0, time_data, air_source_heat_pump_data,
+                                               fmu_unzipdir, fmu_description, start_time, stop_time, time_out,
                                                model_input_type, model_output_name, output_interval,
                                                ashp_chilled_result_txt_path):
     """
@@ -340,11 +401,15 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
     Args:
         n_air_source_heat_pump: [int]，空气源热泵装机台数
         n_ashp_chilled_pump: [int]，冷冻水泵装机台数
+        air_source_heat_pump_Few0: [float]，
+        ashp_chilled_pump_Fw0: [float]，
         time_data: [list]，模型输入数据，时间
         air_source_heat_pump_data: [list]，模型输入数据，空气源热泵开关及出水温度温度设定
-        fmu_path: [string]，FMU文件路径
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -360,10 +425,16 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
                                     "冷冻水泵单台电功率" + "\t" + "冷冻水泵扬程")
     for i in range(n_air_source_heat_pump + 1):
         for j in range(n_ashp_chilled_pump + 1):
-            ashp_chilled_value_data = []
-            ashp_chilled_pump_data = []
             if i == 0 or j == 0:
                 continue
+            ashp_Few_total = i * air_source_heat_pump_Few0
+            pump_Fw_total = j * ashp_chilled_pump_Fw0
+            if pump_Fw_total >= 2 * ashp_Few_total:
+                continue
+            if pump_Fw_total <= 0.2 * ashp_Few_total:
+                continue
+            ashp_chilled_value_data = []
+            ashp_chilled_pump_data = []
             print("正在进行 空气源热泵模型 冷冻侧 水力特性辨识：" + "冷冻阀门开启数量：" + str(i) +
                   "，冷冻水泵开启数量" + str(j) + "\n")
             # 阀门和水泵输入数值
@@ -385,8 +456,8 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
             # FMU仿真
             try:
                 time1 = time.time()
-                result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data, model_input_type,
-                                         model_output_name, output_interval, False, False)
+                result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time, model_input_data,
+                                         model_input_type, model_output_name, output_interval, time_out, False, False)
                 # 获取仿真结果
                 ashp_Few_total = result['ashp_Few_total'][-1]
                 ashp_H_chilled_pump = result['ashp_H_chilled_pump'][-1]
@@ -412,8 +483,9 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
     write_txt_data(ashp_chilled_result_txt_path, ashp_chilled_result_list)
 
 
-def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled_pump, time_data, chiller_data,
-                                       chiller_cooling_tower_data, fmu_path, start_time, stop_time, model_input_type,
+def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled_pump, chiller1_Few0, chiller2_Few0,
+                                       storage_chilled_pump_Fw0, time_data, chiller_data, chiller_cooling_tower_data,
+                                       fmu_unzipdir, fmu_description, start_time, stop_time, time_out, model_input_type,
                                        model_output_name, output_interval, storage_from_chiller_result_txt_path):
     """
     蓄冷水罐模型，蓄冷工况，水力特性测试
@@ -421,12 +493,17 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
         n_chiller1: [int]，大冷水机装机台数
         n_chiller2: [int]，小冷水机装机台数
         n_storage_chilled_pump: [int]，冷冻水泵装机台数
+        chiller1_Few0: [float]，
+        chiller2_Few0: [float]，
+        storage_chilled_pump_Fw0: [float]，
         time_data: [list]，模型输入数据，时间
         chiller_data: [list]，模型输入数据，冷水机开关及出水温度温度设定
         chiller_cooling_tower_data: [list]，模型输入数据，冷却塔风机转速比
-        fmu_path: [string]，FMU文件路径
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -453,12 +530,18 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
     for i in range(n_chiller1 + 1):
         for j in range(n_chiller2 + 1):
             for k in range(n_storage_chilled_pump + 1):
-                chiller_chilled_value_data = []
-                storage_chilled_pump_data = []
                 if i + j == 0:
                     continue
                 if k == 0:
                     continue
+                chiller_Few_total = i * chiller1_Few0 + j * chiller2_Few0
+                pump_Fw_total = k * storage_chilled_pump_Fw0
+                if pump_Fw_total >= 2 * chiller_Few_total:
+                    continue
+                if pump_Fw_total <= 0.2 * chiller_Few_total:
+                    continue
+                chiller_chilled_value_data = []
+                storage_chilled_pump_data = []
                 print("正在进行 蓄冷水罐模型 蓄冷工况 水力特性辨识：" + "冷水机大冷冻阀门开启数量：" + str(i) +
                       "，冷水机小冷冻阀门开启数量" + str(j) + "，蓄冷水罐冷冻水泵开启数量" + str(k) + "\n")
                 # 阀门和水泵输入数值
@@ -489,8 +572,9 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                 # FMU仿真
                 try:
                     time1 = time.time()
-                    result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data, model_input_type,
-                                             model_output_name, output_interval, False, False)
+                    result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                             model_input_data, model_input_type, model_output_name,
+                                             output_interval, time_out, False, False)
                     # 获取仿真结果
                     storage_Few_total_from_chiller = result['storage_Few_total_from_chiller'][-1]
                     storage_H_chilled_pump = result['storage_H_chilled_pump'][-1]
@@ -517,16 +601,19 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
     write_txt_data(storage_from_chiller_result_txt_path, storage_from_chiller_result_list)
 
 
-def identify_cold_storage_to_user(n_storage_chilled_pump, time_data, fmu_path, start_time, stop_time, model_input_type,
-                                  model_output_name, output_interval, storage_to_user_result_txt_path):
+def identify_cold_storage_to_user(n_storage_chilled_pump, time_data, fmu_unzipdir, fmu_description, start_time,
+                                  stop_time, time_out, model_input_type, model_output_name, output_interval,
+                                  storage_to_user_result_txt_path):
     """
     蓄冷水罐模型，放冷工况，水力特性测试
     Args:
         n_storage_chilled_pump: [int]，冷冻水泵装机台数
         time_data: [list]，模型输入数据，时间
-        fmu_path: [string]，FMU文件路径
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -560,8 +647,8 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, time_data, fmu_path, s
         # FMU仿真
         try:
             time1 = time.time()
-            result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data, model_input_type,
-                                     model_output_name, output_interval, False, False)
+            result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time, model_input_data,
+                                     model_input_type, model_output_name, output_interval, time_out, False, False)
             # 获取仿真结果
             storage_Few_total_to_user = result['storage_Few_total_to_user'][-1]
             storage_H_chilled_pump = result['storage_H_chilled_pump'][-1]
@@ -587,20 +674,25 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, time_data, fmu_path, s
     write_txt_data(storage_to_user_result_txt_path, storage_to_user_result_list)
 
 
-def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, time_data, chiller_data,
-                           chiller_cooling_tower_data, fmu_path, start_time, stop_time, model_input_type,
+def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chiller_cooling_tower_Fcw0,
+                           tower_chilled_pump_Fw0, time_data, chiller_data, chiller_cooling_tower_data,
+                           fmu_unzipdir, fmu_description, start_time, stop_time, time_out, model_input_type,
                            model_output_name, output_interval, tower_chilled_result_txt_path):
     """
     冷却塔直接供冷模型，水力特性测试
     Args:
         n_chiller_cooling_tower: [int]，冷却塔装机台数
         n_tower_chilled_pump: [int]，冷冻水泵安装台数
+        chiller_cooling_tower_Fcw0: [float]，
+        tower_chilled_pump_Fw0: [float]，
         time_data: [list]，模型输入数据，时间
         chiller_data: [list]，模型输入数据，冷水机开关及出水温度温度设定
         chiller_cooling_tower_data: [list]，模型输入数据，冷却塔风机转速比
-        fmu_path: [string]，FMU文件路径
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -624,10 +716,14 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, time_d
     chiller_user_value_data = [0, 0]
     for i in range(n_chiller_cooling_tower + 1):
         for j in range(n_tower_chilled_pump + 1):
-            chiller_tower_value_data = []
-            tower_chilled_pump_data = []
             if i == 0 or j == 0:
                 continue
+            tower_Fcw_total = i * chiller_cooling_tower_Fcw0
+            pump_Fw_total = j * tower_chilled_pump_Fw0
+            if pump_Fw_total >= 2 * tower_Fcw_total:
+                continue
+            chiller_tower_value_data = []
+            tower_chilled_pump_data = []
             print("正在进行 冷却塔直接供冷模型 水力特性辨识：" + "，冷水机冷却塔阀门开启数量" + str(i) +
                   "，冷却塔直接供冷水泵开启数量" + str(j) + "\n")
             for ii in range(n_chiller_cooling_tower)[1:]:
@@ -651,8 +747,8 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, time_d
             # FMU仿真
             try:
                 time1 = time.time()
-                result = simulate_sample(fmu_path, None, start_time, stop_time, model_input_data, model_input_type,
-                                         model_output_name, output_interval, False, False)
+                result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time, model_input_data,
+                                         model_input_type, model_output_name, output_interval, time_out, False, False)
                 # 获取仿真结果
                 tower_chilled_Few_total = result['tower_chilled_Few_total'][-1]
                 tower_chilled_H_chilled_pump = result['tower_chilled_H_chilled_pump'][-1]

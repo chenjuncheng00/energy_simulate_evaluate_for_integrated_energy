@@ -1,15 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from fmpy import *
+from fmpy import simulate_fmu, instantiate_fmu
 from fmpy.util import write_csv
 
-def simulate_sample(fmu_path, csv_path, start_time, stop_time, input_data_list, input_type_list, output_name_list,
-                    output_interval, plot_set, write_csv_set):
+def simulate_sample(fmu_unzipdir, fmu_description, csv_path, start_time, stop_time, input_data_list, input_type_list,
+                    output_name_list, output_interval, time_out, plot_set, write_csv_set):
     """
     FMU模型仿真，从开始直接仿真到结束，中间不进行额外处理
 
     Args:
-        fmu_path: [string]，FMU文件路径
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
         csv_path: [string]，CSV文件路径
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
@@ -17,6 +18,7 @@ def simulate_sample(fmu_path, csv_path, start_time, stop_time, input_data_list, 
         input_type_list: [string，list]，FMU模型输入变量名和数据类型，列表
         output_name_list: [string，list]，FMU模型输出变量名，列表
         output_interval: [float]，FMU模型输出采样时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
         plot_set: [boolean]，是否绘图
         write_csv_set: [boolean]，是否将仿真结果写入CSV文件
 
@@ -25,9 +27,12 @@ def simulate_sample(fmu_path, csv_path, start_time, stop_time, input_data_list, 
     """
     # 模型输入
     fmu_input = np.array(tuple(input_data_list), dtype=input_type_list)
+    # 实例化FMU模型
+    fmu_instance = instantiate_fmu(unzipdir=fmu_unzipdir, model_description=fmu_description)
     # 仿真
-    result = simulate_fmu(filename=fmu_path, start_time=start_time, stop_time=stop_time, input=fmu_input,
-                          output=output_name_list, output_interval=output_interval)
+    result = simulate_fmu(filename=fmu_unzipdir, model_description=fmu_description, fmu_instance=fmu_instance,
+                          start_time=start_time, stop_time=stop_time, input=fmu_input, output=output_name_list,
+                          output_interval=output_interval, timeout=time_out)
     # 写入CSV文件
     if write_csv_set == True:
         write_csv(csv_path, result)
@@ -46,13 +51,14 @@ def simulate_sample(fmu_path, csv_path, start_time, stop_time, input_data_list, 
     return result
 
 
-def simulate_pause(fmu_path, start_time_list, pause_time_list, stop_time, input_data_list, input_type_list,
-                   output_name_list, output_interval, plot_set):
+def simulate_pause(fmu_unzipdir, fmu_description, start_time_list, pause_time_list, stop_time, input_data_list,
+                   input_type_list, output_name_list, output_interval, time_out, plot_set):
     """
     FMU模型仿真，可以自定义进行模型仿真的启动、暂停和终止
 
     Args:
-        fmu_path: [string]，FMU文件路径
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
         start_time_list: [float，list]，仿真开始时间，列表，单位：秒
         pause_time_list: [float，list]，仿真暂停时间，列表，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
@@ -60,15 +66,14 @@ def simulate_pause(fmu_path, start_time_list, pause_time_list, stop_time, input_
         input_type_list: [string，list]，FMU模型输入变量名和数据类型，列表
         output_name_list: [string，list]，FMU模型输出变量名，列表
         output_interval: [float]，FMU模型输出采样时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
         plot_set: [boolean]，是否绘图
 
     Returns:
 
     """
-    # 模型初始化
-    unzipdir = extract(fmu_path)
-    model_description = read_model_description(unzipdir)
-    fmu_instance = instantiate_fmu(unzipdir=unzipdir, model_description=model_description)
+    # 实例化FMU模型
+    fmu_instance = instantiate_fmu(unzipdir=fmu_unzipdir, model_description=fmu_description)
     # 列表，储存仿真结果
     result_list = []
     for i in range(len(output_name_list)):
@@ -89,21 +94,21 @@ def simulate_pause(fmu_path, start_time_list, pause_time_list, stop_time, input_
         # 模型仿真
         if i == 0:
             # 第一次仿真，需要初始化，不需要终止
-            tmp_sim = simulate_fmu(filename=unzipdir, model_description=model_description, fmu_instance=fmu_instance,
+            tmp_sim = simulate_fmu(filename=fmu_unzipdir, model_description=fmu_description, fmu_instance=fmu_instance,
                                    start_time=start_time_list[i], stop_time=stop_time, input=fmu_input,
-                                   output_interval=output_interval, output=output_name_list,
+                                   output_interval=output_interval, output=output_name_list, timeout=time_out,
                                    step_finished=pause_simulation, initialize=True, terminate=False)
         elif 0 < i < n_simulate - 1:
             # 需要中间暂停，不需要初始化，不需要终止
-            tmp_sim = simulate_fmu(filename=unzipdir, model_description=model_description, fmu_instance=fmu_instance,
+            tmp_sim = simulate_fmu(filename=fmu_unzipdir, model_description=fmu_description, fmu_instance=fmu_instance,
                                    start_time=start_time_list[i], stop_time=stop_time, input=fmu_input,
-                                   output_interval=output_interval, output=output_name_list,
+                                   output_interval=output_interval, output=output_name_list, timeout=time_out,
                                    step_finished=pause_simulation, initialize=False, terminate=False)
         else:
             # 结束仿真，不需要初始化，需要终止
-            tmp_sim = simulate_fmu(filename=unzipdir, model_description=model_description, fmu_instance=fmu_instance,
+            tmp_sim = simulate_fmu(filename=fmu_unzipdir, model_description=fmu_description, fmu_instance=fmu_instance,
                                    start_time=start_time_list[i], stop_time=stop_time, input=fmu_input,
-                                   output_interval=output_interval, output=output_name_list,
+                                   output_interval=output_interval, output=output_name_list, timeout=time_out,
                                    step_finished=pause_simulation, initialize=False, terminate=True)
         # 记录每次仿真的结果
         for j in range(len(output_name_list)):
@@ -120,22 +125,3 @@ def simulate_pause(fmu_path, start_time_list, pause_time_list, stop_time, input_
             plt.plot(output_data, color='skyblue', label=output_name_list[i])
             plt.legend()
         plt.show()
-
-
-# if __name__ == "__main__":
-#     from model_fmu_input_data_default import main_input_data_default
-#     from model_fmu_input_type import main_model_input_type
-#     from model_fmu_output_name import main_model_output_name
-#     fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230411.fmu"
-#     csv_path = "./model_data/result.csv"
-#     start_time = (31 + 28 + 31 + 30 + 31) * 24 * 3600
-#     stop_time = start_time + 2 * 3600
-#     output_interval = 60
-#     time_data = [start_time]
-#     input_data_list = time_data + main_input_data_default()
-#     input_type_list = main_model_input_type()
-#     output_name_list = main_model_output_name()
-#     plot_set = False
-#     write_csv_set = True
-#     simulate_sample(fmu_path, csv_path, start_time, stop_time, input_data_list, input_type_list, output_name_list,
-#                     output_interval, plot_set, write_csv_set)
