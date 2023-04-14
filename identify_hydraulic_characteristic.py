@@ -1,4 +1,4 @@
-import time, numpy as np
+import time, traceback, numpy as np
 from read_write_data import read_cfg_data, write_txt_data
 from model_fmu_simulate import simulate_sample
 from model_fmu_input_type import main_model_input_type
@@ -206,15 +206,15 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                         continue
                     if pump_Fw_total <= 0.2 * chiller_Few_total:
                         continue
-                    chiller_chilled_value_data = []
-                    chiller_chilled_pump_data = []
                     for m in range(len(chiller1_chilled_pump_f_list)):
+                        chiller_chilled_value_data = []
+                        chiller_chilled_pump_data = []
                         pump1_f = chiller1_chilled_pump_f_list[m]
                         pump2_f = chiller2_chilled_pump_f_list[m]
                         print("正在进行 冷水机模型 冷冻侧 水力特性辨识：" + "大冷冻阀门开启数量：" + str(i) +
                               "，小冷冻阀门开启数量" + str(j) + "，大冷冻水泵开启数量" + str(k) +
                               "，小冷冻水泵开启数量" + str(l) + "，大冷冻水泵转速" + str(pump1_f) +
-                              "，小冷冻水泵转速" + str(pump2_f) + "\n")
+                              "，小冷冻水泵转速" + str(pump2_f))
                         # 阀门和水泵输入数值
                         for ii in range(n_chiller1 + 1)[1:]:
                             if ii <= i:
@@ -282,7 +282,8 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                             print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
                         except:
                             print("FMU仿真失败：" + "大冷冻阀门开启数量：" + str(i) + "，小冷冻阀门开启数量" + str(j) +
-                                  "，大冷冻水泵开启数量" + str(k) + "，小冷冻水泵开启数量" + str(l) + "\n")
+                                  "，大冷冻水泵开启数量" + str(k) + "，小冷冻水泵开启数量" + str(l))
+                            print(traceback.format_exc() + "\n")
                             pass
     # 结果写入txt
     write_txt_data(chiller_chilled_result_txt_path, chiller_chilled_result_list)
@@ -358,16 +359,16 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                             continue
                         if pump_Fw_total >= 2 * tower_Fcw_total:
                             continue
-                        chiller_cooling_value_data = []
-                        chiller_tower_value_data = []
-                        chiller_cooling_pump_data = []
                         for n in range(len(chiller1_cooling_pump_f_list)):
+                            chiller_cooling_value_data = []
+                            chiller_tower_value_data = []
+                            chiller_cooling_pump_data = []
                             pump1_f = chiller1_cooling_pump_f_list[n]
                             pump2_f = chiller2_cooling_pump_f_list[n]
                             print("正在进行 冷水机模型 冷却侧 水力特性辨识：" + "大冷却阀门开启数量：" + str(i) +
                                   "，小冷却阀门开启数量" + str(j) + "，冷却塔阀门开启数量" + str(k) +
                                   "，大冷却水泵开启数量" + str(l) + "，小冷却水泵开启数量" + str(m) +
-                                  "，大冷却水泵转速" + str(pump1_f) + "，小冷却水泵转速" + str(pump2_f) + "\n")
+                                  "，大冷却水泵转速" + str(pump1_f) + "，小冷却水泵转速" + str(pump2_f))
                             # 阀门和水泵输入数值
                             for ii in range(n_chiller1 + 1)[1:]:
                                 if ii <= i:
@@ -441,7 +442,8 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                             except:
                                 print("FMU仿真失败：" + "大冷却阀门开启数量：" + str(i) + "，小冷却阀门开启数量" + str(j) +
                                       "，冷却塔阀门开启数量" + str(k) + "，大冷却水泵开启数量" + str(l) +
-                                      "，小冷却水泵开启数量" + str(m) + "\n")
+                                      "，小冷却水泵开启数量" + str(m))
+                                print(traceback.format_exc() + "\n")
                                 pass
     # 结果写入txt
     write_txt_data(chiller_cooling_result_txt_path, chiller_cooling_result_list)
@@ -490,12 +492,12 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
                 continue
             if pump_Fw_total <= 0.2 * ashp_Few_total:
                 continue
-            ashp_chilled_value_data = []
-            ashp_chilled_pump_data = []
             for k in range(len(ashp_chilled_pump_f_list)):
+                ashp_chilled_value_data = []
+                ashp_chilled_pump_data = []
                 pump_f = ashp_chilled_pump_f_list[k]
                 print("正在进行 空气源热泵模型 冷冻侧 水力特性辨识：" + "冷冻阀门开启数量：" + str(i) +
-                      "，冷冻水泵开启数量" + str(j) + "，冷冻水泵转速" + str(pump_f) + "\n")
+                      "，冷冻水泵开启数量" + str(j) + "，冷冻水泵转速" + str(pump_f))
                 # 阀门和水泵输入数值
                 for ii in range(n_air_source_heat_pump + 1)[1:]:
                     if ii <= i:
@@ -537,7 +539,8 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
                     time_cost = np.round(time2 - time1, 2)
                     print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
                 except:
-                    print("FMU仿真失败：" + "冷冻阀门开启数量：" + str(i) + "，冷冻水泵开启数量" + str(j) + "\n")
+                    print("FMU仿真失败：" + "冷冻阀门开启数量：" + str(i) + "，冷冻水泵开启数量" + str(j))
+                    print(traceback.format_exc() + "\n")
                     pass
     # 结果写入txt
     write_txt_data(ashp_chilled_result_txt_path, ashp_chilled_result_list)
@@ -603,13 +606,13 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                     continue
                 if pump_Fw_total <= 0.2 * chiller_Few_total:
                     continue
-                chiller_chilled_value_data = []
-                storage_chilled_pump_data = []
                 for l in range(len(storage_chilled_pump_f_list)):
+                    chiller_chilled_value_data = []
+                    storage_chilled_pump_data = []
                     pump_f = storage_chilled_pump_f_list[l]
                     print("正在进行 蓄冷水罐模型 蓄冷工况 水力特性辨识：" + "冷水机大冷冻阀门开启数量：" + str(i) +
                           "，冷水机小冷冻阀门开启数量" + str(j) + "，蓄冷水罐冷冻水泵开启数量" + str(k)  +
-                          "，蓄冷水罐冷冻水泵转速" + str(pump_f) + "\n")
+                          "，蓄冷水罐冷冻水泵转速" + str(pump_f))
                     # 阀门和水泵输入数值
                     for ii in range(n_chiller1 + 1)[1:]:
                         if ii <= i:
@@ -662,7 +665,8 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                         print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
                     except:
                         print("FMU仿真失败：" + "冷水机大冷冻阀门开启数量：" + str(i) + "，冷水机小冷冻阀门开启数量" + str(j) +
-                              "，蓄冷水罐冷冻水泵开启数量" + str(k) + "\n")
+                              "，蓄冷水罐冷冻水泵开启数量" + str(k))
+                        print(traceback.format_exc() + "\n")
                         pass
     # 结果写入txt
     write_txt_data(storage_from_chiller_result_txt_path, storage_from_chiller_result_list)
@@ -699,13 +703,13 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, storage_chilled_pump_f
     storage_user_value_data = [1, 1, 1]
     storage_chiller_value_data = [0, 0, 0]
     for i in range(n_storage_chilled_pump + 1):
-        storage_chilled_pump_data = []
         if i == 0:
             continue
         for j in range(len(storage_chilled_pump_f_list)):
+            storage_chilled_pump_data = []
             pump_f = storage_chilled_pump_f_list[j]
             print("正在进行 蓄冷水罐模型 放冷工况 水力特性辨识：" + "，蓄冷水罐冷冻水泵开启数量" + str(i) +
-                  "，蓄冷水罐冷冻水泵转速" + str(pump_f) + "\n")
+                  "，蓄冷水罐冷冻水泵转速" + str(pump_f))
             # 阀门和水泵输入数值
             for ii in range(n_storage_chilled_pump + 1)[1:]:
                 if ii <= i:
@@ -741,7 +745,8 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, storage_chilled_pump_f
                 time_cost = np.round(time2 - time1, 2)
                 print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
             except:
-                print("FMU仿真失败：" + "，蓄冷水罐冷冻水泵开启数量" + str(i) + "\n")
+                print("FMU仿真失败：" + "，蓄冷水罐冷冻水泵开启数量" + str(i))
+                print(traceback.format_exc() + "\n")
                 pass
     # 结果写入txt
     write_txt_data(storage_to_user_result_txt_path, storage_to_user_result_list)
@@ -797,14 +802,14 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
             pump_Fw_total = j * tower_chilled_pump_Fw0
             if pump_Fw_total >= 2 * tower_Fcw_total:
                 continue
-            chiller_tower_value_data = []
-            tower_chilled_pump_data = []
             for k in range(len(tower_chilled_pump_f_list)):
+                chiller_tower_value_data = []
+                tower_chilled_pump_data = []
                 pump_f = tower_chilled_pump_f_list[k]
                 print("正在进行 冷却塔直接供冷模型 水力特性辨识：" + "，冷水机冷却塔阀门开启数量" + str(i) +
-                      "，冷却塔直接供冷水泵开启数量" + str(j) + "，冷却塔直接供冷水泵转速" + str(pump_f) + "\n")
+                      "，冷却塔直接供冷水泵开启数量" + str(j) + "，冷却塔直接供冷水泵转速" + str(pump_f))
                 # 阀门和水泵输入数值
-                for ii in range(n_chiller_cooling_tower)[1:]:
+                for ii in range(n_chiller_cooling_tower + 1)[1:]:
                     if ii <= i:
                         chiller_tower_value_data.append(1)
                     else:
@@ -848,6 +853,7 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
                     print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
                 except:
                     print("FMU仿真失败：" + "，冷水机冷却塔阀门开启数量" + str(i) +
-                          "，冷却塔直接供冷水泵开启数量" + str(j) + "\n")
+                          "，冷却塔直接供冷水泵开启数量" + str(j))
+                    print(traceback.format_exc() + "\n")
                     pass
     write_txt_data(tower_chilled_result_txt_path, tower_chilled_result_list)

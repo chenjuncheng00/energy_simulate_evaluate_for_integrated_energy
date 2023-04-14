@@ -2,7 +2,7 @@ from fmpy import extract, read_model_description
 from identify_hydraulic_characteristic import main_identify_hydraulic_characteristic
 
 if __name__ == "__main__":
-    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230411.fmu"
+    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230414.fmu"
     start_time = (31 + 28 + 31 + 30 + 31) * 24 * 3600
     stop_time = start_time + 2 * 3600
     output_interval = 60
