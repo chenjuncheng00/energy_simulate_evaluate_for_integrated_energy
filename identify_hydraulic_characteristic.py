@@ -263,20 +263,21 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                                 chiller_Few_big = 0
                                 chiller_chilled_pump_P_big = 0
                             else:
-                                chiller_Few_big = chiller_Few_big_total / k
-                                chiller_chilled_pump_P_big = chiller_chilled_pump_P_big_total / k
+                                chiller_Few_big = np.round(chiller_Few_big_total / k, 4)
+                                chiller_chilled_pump_P_big = np.round(chiller_chilled_pump_P_big_total / k, 4)
                             if l == 0:
                                 chiller_Few_small = 0
                                 chiller_chilled_pump_P_small = 0
                             else:
-                                chiller_Few_small = chiller_Few_small_total / l
-                                chiller_chilled_pump_P_small = chiller_chilled_pump_P_small_total / l
+                                chiller_Few_small = np.round(chiller_Few_small_total / l, 4)
+                                chiller_chilled_pump_P_small = np.round(chiller_chilled_pump_P_small_total / l, 4)
                             # 仿真结果生成txt
                             tmp_txt = str(i) + "\t" + str(j) + "\t" + str(k) + "\t" + str(l) + "\t" + \
                                       str(pump1_f) + "\t" + str(pump2_f) + "\t" + \
                                       str(chiller_Few_big) + "\t" + str(chiller_Few_small) + "\t" + \
                                       str(chiller_chilled_pump_P_big) + "\t" + \
-                                      str(chiller_chilled_pump_P_small) + "\t" + str(chiller_H_chilled_pump)
+                                      str(chiller_chilled_pump_P_small) + "\t" + \
+                                      str(np.round(chiller_H_chilled_pump, 4))
                             chiller_chilled_result_list.append(tmp_txt)
                             time2 = time.time()
                             time_cost = np.round(time2 - time1, 2)
@@ -423,20 +424,21 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                                     chiller_Fcw_big = 0
                                     chiller_cooling_pump_P_big = 0
                                 else:
-                                    chiller_Fcw_big = chiller_Fcw_big_total / l
-                                    chiller_cooling_pump_P_big = chiller_cooling_pump_P_big_total / l
+                                    chiller_Fcw_big = np.round(chiller_Fcw_big_total / l, 4)
+                                    chiller_cooling_pump_P_big = np.round(chiller_cooling_pump_P_big_total / l, 4)
                                 if m == 0:
                                     chiller_Fcw_small = 0
                                     chiller_cooling_pump_P_small = 0
                                 else:
-                                    chiller_Fcw_small = chiller_Fcw_small_total / m
-                                    chiller_cooling_pump_P_small = chiller_cooling_pump_P_small_total / m
+                                    chiller_Fcw_small = np.round(chiller_Fcw_small_total / m, 4)
+                                    chiller_cooling_pump_P_small = np.round(chiller_cooling_pump_P_small_total / m, 4)
                                 # 仿真结果生成txt
                                 tmp_txt = str(i) + "\t" + str(j) + "\t" + str(k) + "\t" + str(l) + "\t" + \
                                           str(m) + "\t" + str(pump1_f) + "\t" + str(pump2_f) + "\t" + \
                                           str(chiller_Fcw_big) + "\t" + str(chiller_Fcw_small) + "\t" + \
                                           str(chiller_cooling_pump_P_big) + "\t" + \
-                                          str(chiller_cooling_pump_P_small) + "\t" + str(chiller_H_cooling_pump)
+                                          str(chiller_cooling_pump_P_small) + "\t" + \
+                                          str(np.round(chiller_H_cooling_pump, 4))
                                 chiller_cooling_result_list.append(tmp_txt)
                                 time2 = time.time()
                                 time_cost = np.round(time2 - time1, 2)
@@ -531,11 +533,11 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
                         ashp_Few = 0
                         ashp_chilled_pump_P = 0
                     else:
-                        ashp_Few = ashp_Few_total / j
-                        ashp_chilled_pump_P = ashp_chilled_pump_P_total / j
+                        ashp_Few = np.round(ashp_Few_total / j, 4)
+                        ashp_chilled_pump_P = np.round(ashp_chilled_pump_P_total / j, 4)
                     # 仿真结果生成txt
                     tmp_txt = str(i) + "\t" + str(j) + "\t" + str(pump_f) + "\t" + str(ashp_Few) + "\t" + \
-                              str(ashp_chilled_pump_P) + "\t" + str(ashp_H_chilled_pump)
+                              str(ashp_chilled_pump_P) + "\t" + str(np.round(ashp_H_chilled_pump, 4))
                     ashp_chilled_result_list.append(tmp_txt)
                     time2 = time.time()
                     time_cost = np.round(time2 - time1, 2)
@@ -655,12 +657,12 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                             storage_Few_from_chiller = 0
                             storage_chilled_pump_P = 0
                         else:
-                            storage_Few_from_chiller = storage_Few_total_from_chiller / k
-                            storage_chilled_pump_P = storage_P_total_chilled_pump / k
+                            storage_Few_from_chiller = np.round(storage_Few_total_from_chiller / k, 4)
+                            storage_chilled_pump_P = np.round(storage_P_total_chilled_pump / k, 4)
                         # 仿真结果生成txt
                         tmp_txt = str(i) + "\t" + str(j) + "\t" + str(k) + "\t" + str(pump_f) + "\t" + \
                                   str(storage_Few_from_chiller) + "\t" + str(storage_chilled_pump_P) + "\t" + \
-                                  str(storage_H_chilled_pump)
+                                  str(np.round(storage_H_chilled_pump, 4))
                         storage_from_chiller_result_list.append(tmp_txt)
                         time2 = time.time()
                         time_cost = np.round(time2 - time1, 2)
@@ -737,11 +739,11 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, storage_chilled_pump_f
                     storage_Few_to_user = 0
                     storage_chilled_pump_P = 0
                 else:
-                    storage_Few_to_user = storage_Few_total_to_user / i
-                    storage_chilled_pump_P = storage_P_total_chilled_pump / i
+                    storage_Few_to_user = np.round(storage_Few_total_to_user / i, 4)
+                    storage_chilled_pump_P = np.round(storage_P_total_chilled_pump / i, 4)
                 # 仿真结果生成txt
                 tmp_txt = str(i) + "\t" + str(pump_f) + "\t" + str(storage_Few_to_user) + "\t" + \
-                          str(storage_chilled_pump_P) + "\t" + str(storage_H_chilled_pump)
+                          str(storage_chilled_pump_P) + "\t" + str(np.round(storage_H_chilled_pump, 4))
                 storage_to_user_result_list.append(tmp_txt)
                 time2 = time.time()
                 time_cost = np.round(time2 - time1, 2)
@@ -844,11 +846,11 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
                         tower_chilled_Few = 0
                         tower_chilled_pump_P = 0
                     else:
-                        tower_chilled_Few = tower_chilled_Few_total / j
-                        tower_chilled_pump_P = tower_chilled_P_total_chilled_pump / j
+                        tower_chilled_Few = np.round(tower_chilled_Few_total / j, 4)
+                        tower_chilled_pump_P = np.round(tower_chilled_P_total_chilled_pump / j, 4)
                     # 仿真结果生成txt
                     tmp_txt = str(i) + "\t" + str(j) + "\t" + str(pump_f) + "\t" + str(tower_chilled_Few) + "\t" + \
-                              str(tower_chilled_pump_P) + "\t" + str(tower_chilled_H_chilled_pump)
+                              str(tower_chilled_pump_P) + "\t" + str(np.round(tower_chilled_H_chilled_pump, 4))
                     tower_chilled_result_list.append(tmp_txt)
                     time2 = time.time()
                     time_cost = np.round(time2 - time1, 2)
