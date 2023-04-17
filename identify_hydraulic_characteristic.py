@@ -77,7 +77,7 @@ def main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_
     tower_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷却塔直接供冷", "chilled_pump_fmin", 0)
 
     # 水泵转速测试列表
-    n_cal_f_pump = 3
+    n_cal_f_pump = 5
     chiller1_chilled_pump_f_list = []
     chiller2_chilled_pump_f_list = []
     chiller1_cooling_pump_f_list = []
@@ -200,17 +200,18 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                         continue
                     if k + l == 0:
                         continue
-                    chiller_Few_total = i * chiller1_Few0 + j * chiller2_Few0
-                    pump_Fw_total = k * chiller1_chilled_pump_Fw0 + l * chiller2_chilled_pump_Fw0
-                    if pump_Fw_total >= 3 * chiller_Few_total:
-                        continue
-                    if pump_Fw_total <= 0.2 * chiller_Few_total:
-                        continue
                     for m in range(len(chiller1_chilled_pump_f_list)):
-                        chiller_chilled_value_data = []
-                        chiller_chilled_pump_data = []
                         pump1_f = chiller1_chilled_pump_f_list[m]
                         pump2_f = chiller2_chilled_pump_f_list[m]
+                        chiller_Few_total = i * chiller1_Few0 + j * chiller2_Few0
+                        pump_Fw_total = k * chiller1_chilled_pump_Fw0 * (pump1_f / chiller1_chilled_pump_f_list[-1]) + \
+                                        l * chiller2_chilled_pump_Fw0 * (pump2_f / chiller2_chilled_pump_f_list[-1])
+                        if pump_Fw_total >= 2 * chiller_Few_total:
+                            continue
+                        if pump_Fw_total <= 0.2 * chiller_Few_total:
+                            continue
+                        chiller_chilled_value_data = []
+                        chiller_chilled_pump_data = []
                         print("正在进行 冷水机模型 冷冻侧 水力特性辨识：" + "大冷冻阀门开启数量：" + str(i) +
                               "，小冷冻阀门开启数量" + str(j) + "，大冷冻水泵开启数量" + str(k) +
                               "，小冷冻水泵开启数量" + str(l) + "，大冷冻水泵转速" + str(pump1_f) +
@@ -350,21 +351,22 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                             continue
                         if l + m == 0:
                             continue
-                        chiller_Fcw_total = i * chiller1_Fcw0 + j * chiller2_Fcw0
-                        tower_Fcw_total = k * chiller_cooling_tower_Fcw0
-                        pump_Fw_total = l * chiller1_cooling_pump_Fw0 + m * chiller2_cooling_pump_Fw0
-                        if pump_Fw_total >= 3 * chiller_Fcw_total:
-                            continue
-                        if pump_Fw_total <= 0.2 * chiller_Fcw_total:
-                            continue
-                        if pump_Fw_total >= 2 * tower_Fcw_total:
-                            continue
                         for n in range(len(chiller1_cooling_pump_f_list)):
+                            pump1_f = chiller1_cooling_pump_f_list[n]
+                            pump2_f = chiller2_cooling_pump_f_list[n]
+                            chiller_Fcw_total = i * chiller1_Fcw0 + j * chiller2_Fcw0
+                            tower_Fcw_total = k * chiller_cooling_tower_Fcw0
+                            pump_Fw_total = l * chiller1_cooling_pump_Fw0 * (pump1_f / chiller1_cooling_pump_f_list[-1]) + \
+                                            m * chiller2_cooling_pump_Fw0 * (pump2_f / chiller2_cooling_pump_f_list[-1])
+                            if pump_Fw_total >= 2 * chiller_Fcw_total:
+                                continue
+                            if pump_Fw_total <= 0.2 * chiller_Fcw_total:
+                                continue
+                            if pump_Fw_total >= 2 * tower_Fcw_total:
+                                continue
                             chiller_cooling_value_data = []
                             chiller_tower_value_data = []
                             chiller_cooling_pump_data = []
-                            pump1_f = chiller1_cooling_pump_f_list[n]
-                            pump2_f = chiller2_cooling_pump_f_list[n]
                             print("正在进行 冷水机模型 冷却侧 水力特性辨识：" + "大冷却阀门开启数量：" + str(i) +
                                   "，小冷却阀门开启数量" + str(j) + "，冷却塔阀门开启数量" + str(k) +
                                   "，大冷却水泵开启数量" + str(l) + "，小冷却水泵开启数量" + str(m) +
@@ -380,7 +382,7 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                                     chiller_cooling_value_data.append(1)
                                 else:
                                     chiller_cooling_value_data.append(0)
-                            for kk in range(n_chiller_cooling_tower)[1:]:
+                            for kk in range(n_chiller_cooling_tower + 1)[1:]:
                                 if kk <= k:
                                     chiller_tower_value_data.append(1)
                                 else:
@@ -486,16 +488,16 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
         for j in range(n_ashp_chilled_pump + 1):
             if i == 0 or j == 0:
                 continue
-            ashp_Few_total = i * air_source_heat_pump_Few0
-            pump_Fw_total = j * ashp_chilled_pump_Fw0
-            if pump_Fw_total >= 3 * ashp_Few_total:
-                continue
-            if pump_Fw_total <= 0.2 * ashp_Few_total:
-                continue
             for k in range(len(ashp_chilled_pump_f_list)):
+                pump_f = ashp_chilled_pump_f_list[k]
+                ashp_Few_total = i * air_source_heat_pump_Few0
+                pump_Fw_total = j * ashp_chilled_pump_Fw0 * (pump_f / ashp_chilled_pump_f_list[-1])
+                if pump_Fw_total >= 2 * ashp_Few_total:
+                    continue
+                if pump_Fw_total <= 0.2 * ashp_Few_total:
+                    continue
                 ashp_chilled_value_data = []
                 ashp_chilled_pump_data = []
-                pump_f = ashp_chilled_pump_f_list[k]
                 print("正在进行 空气源热泵模型 冷冻侧 水力特性辨识：" + "冷冻阀门开启数量：" + str(i) +
                       "，冷冻水泵开启数量" + str(j) + "，冷冻水泵转速" + str(pump_f))
                 # 阀门和水泵输入数值
@@ -600,16 +602,16 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                     continue
                 if k == 0:
                     continue
-                chiller_Few_total = i * chiller1_Few0 + j * chiller2_Few0
-                pump_Fw_total = k * storage_chilled_pump_Fw0
-                if pump_Fw_total >= 3 * chiller_Few_total:
-                    continue
-                if pump_Fw_total <= 0.2 * chiller_Few_total:
-                    continue
                 for l in range(len(storage_chilled_pump_f_list)):
+                    pump_f = storage_chilled_pump_f_list[l]
+                    chiller_Few_total = i * chiller1_Few0 + j * chiller2_Few0
+                    pump_Fw_total = k * storage_chilled_pump_Fw0 * (pump_f / storage_chilled_pump_f_list[-1])
+                    if pump_Fw_total >= 2 * chiller_Few_total:
+                        continue
+                    if pump_Fw_total <= 0.2 * chiller_Few_total:
+                        continue
                     chiller_chilled_value_data = []
                     storage_chilled_pump_data = []
-                    pump_f = storage_chilled_pump_f_list[l]
                     print("正在进行 蓄冷水罐模型 蓄冷工况 水力特性辨识：" + "冷水机大冷冻阀门开启数量：" + str(i) +
                           "，冷水机小冷冻阀门开启数量" + str(j) + "，蓄冷水罐冷冻水泵开启数量" + str(k)  +
                           "，蓄冷水罐冷冻水泵转速" + str(pump_f))
@@ -798,14 +800,14 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
         for j in range(n_tower_chilled_pump + 1):
             if i == 0 or j == 0:
                 continue
-            tower_Fcw_total = i * chiller_cooling_tower_Fcw0
-            pump_Fw_total = j * tower_chilled_pump_Fw0
-            if pump_Fw_total >= 2 * tower_Fcw_total:
-                continue
             for k in range(len(tower_chilled_pump_f_list)):
+                pump_f = tower_chilled_pump_f_list[k]
+                tower_Fcw_total = i * chiller_cooling_tower_Fcw0
+                pump_Fw_total = j * tower_chilled_pump_Fw0 * (pump_f / tower_chilled_pump_f_list[-1])
+                if pump_Fw_total >= 2 * tower_Fcw_total:
+                    continue
                 chiller_tower_value_data = []
                 tower_chilled_pump_data = []
-                pump_f = tower_chilled_pump_f_list[k]
                 print("正在进行 冷却塔直接供冷模型 水力特性辨识：" + "，冷水机冷却塔阀门开启数量" + str(i) +
                       "，冷却塔直接供冷水泵开启数量" + str(j) + "，冷却塔直接供冷水泵转速" + str(pump_f))
                 # 阀门和水泵输入数值
