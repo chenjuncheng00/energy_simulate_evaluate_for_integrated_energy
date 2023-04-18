@@ -42,7 +42,7 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
     # 冷冻水出水温度设定值辨识范围，单位转换为：K
     Teo_set_min = 5
     Teo_set_max = 15
-    Teo_set_step = 1
+    Teo_set_step = 2
     n_cal_Teo = int((Teo_set_max - Teo_set_min) / Teo_set_step)
     Teo_set_list = []
     for i in range(n_cal_Teo + 1):
@@ -50,7 +50,7 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
     # 冷却水回水温度辨识范围，单位转换为：K
     Tci_min = 20
     Tci_max = 40
-    Tci_step = 2
+    Tci_step = 4
     n_cal_Tci = int((Tci_max - Tci_min) / Tci_step)
     Tci_list = []
     for i in range(n_cal_Tci + 1):
@@ -58,7 +58,7 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
     # 湿球温度辨识范围，单位转换为：K
     Two_min = 10
     Two_max = 40
-    Two_step = 2
+    Two_step = 3
     n_cal_Two = int((Two_max - Two_min) / Two_step)
     Two_list = []
     for i in range(n_cal_Two + 1):
@@ -68,7 +68,7 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
     # 流量比例上下限和步长
     Fw_min_ratio = 0.2
     Fw_max_ratio = 1.2
-    Fw_step = 0.1
+    Fw_step = 0.2
     n_Fw_cal = int((Fw_max_ratio - Fw_min_ratio) / Fw_step)
     # 流量辨识范围，单位转换为：kg/s
     chiller1_Few_list = []
@@ -89,9 +89,9 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
         cooling_tower_Fcw_list.append(chiller_cooling_tower_Fcw0 * tmp_ratio / 3.6)
 
     # 制冷功率辨识范围，单位：kW
-    Q_min_ratio = 0.1
+    Q_min_ratio = 0.2
     Q_max_ratio = 1
-    Q_step = 0.1
+    Q_step = 0.2
     n_Q_cal = int((Q_max_ratio - Q_min_ratio) / Q_step)
     chiller1_Q_list = []
     chiller2_Q_list = []
@@ -103,9 +103,9 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
         ashp_Q_list.append(air_source_heat_pump_Q0 * tmp_ratio)
 
     # 冷却塔风机转速辨识范围
-    f_tower_min = 0.1
+    f_tower_min = 0.2
     f_tower_max = 1
-    f_tower_step = 0.1
+    f_tower_step = 0.2
     n_cal_f_tower = int((f_tower_max - f_tower_min) / f_tower_step)
     f_cooling_tower_list = []
     for i in range(n_cal_f_tower + 1):
@@ -172,8 +172,10 @@ def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1
     chiller_big_cop_result_list = []
     chiller_big_cop_result_list.append("大冷水机模型，COP特性辨识：")
     chiller_big_cop_result_list.append("冷冻水出水温度设定值" + "\t" + "冷冻水出水温度实际值" + "\t" +
-                                       "冷却水回水温度实际值" + "\t" + "制冷功率目标值" + "\t" + "制冷功率实际值" + "\t" +
-                                       "冷冻水温差实际值" + "\t" + "冷却水温差实际值" + "\t" + "冷水机COP")
+                                       "冷冻水回水温度实际值" + "\t" + "冷却水回水温度实际值" + "\t" +
+                                       "冷冻水流量实际值" + "\t" + "冷却水流量实际值" + "\t" +
+                                       "制冷功率目标值" + "\t" + "制冷功率实际值" + "\t" + "冷冻水温差实际值" + "\t" +
+                                       "冷却水温差实际值" + "\t" + "冷水机耗电功率" + "\t" + "冷水机COP")
     # input_data不变的默认值
     chiller_small_data = [False, 0, 0]
     ashp_data = [False, 20 + 273.15, 0, 0]
@@ -189,6 +191,11 @@ def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1
                         Fcw = chiller1_Fcw_list[l] # kg/s
                         Q_target = chiller1_Q_list[m] # kW
                         Tei = Q_target / 4.16 / Few + Teo_set
+                        tmp_Tco = 1.2 * Q_target / 4.16 / Fcw + Tci # 预估的Tco
+                        if Tei - Teo_set > 15 or Tei - Teo_set < 1:
+                            continue
+                        if tmp_Tco - Tci > 15 or tmp_Tco - Tci < 1:
+                            continue
                         model_input_data = time_data + [Teo_set, Tei, Tci] + [True, Few, Fcw] + \
                                            chiller_small_data + ashp_data + tower_data
                         print("正在进行 大冷水机模型 COP特性辨识：" + "冷冻水出水温度设定值：" + str(Teo_set - 273.15) +
@@ -212,14 +219,22 @@ def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1
                             Tcd = Tco - Tci
                             # 计算COP
                             if P_chiller > 0:
-                                COP = Q_real / P_chiller / 1000
+                                COP = Q_real / (P_chiller / 1000)
                             else:
                                 COP = 0
                             # 仿真结果生成txt
-                            tmp_txt = str(Teo_set - 273.15) + "\t" + str(np.round(Teo_real - 273.15, 2)) + "\t" + \
-                                      str(Tci - 273.15) + "\t" + str(Q_target) + "\t" + str(np.round(Q_real, 2)) + "\t" + \
-                                      str(np.round(Ted, 2)) + "\t" + str(np.round(Tcd, 2)) + "\t" + str(np.round(COP, 2))
-                            chiller_big_cop_result_list.append(tmp_txt)
+                            if COP > 1 and COP < 30 and abs(Teo_real - Teo_set) < 0.5:
+                                tmp_txt = str(Teo_set - 273.15) + "\t" + str(np.round(Teo_real - 273.15, 2)) + "\t" + \
+                                          str(np.round(Tei - 273.15, 2)) + "\t" + str(Tci - 273.15) + "\t" + \
+                                          str(np.round(Few * 3.6, 2)) + "\t" + str(np.round(Fcw * 3.6, 2)) + "\t" + \
+                                          str(np.round(Q_target, 2)) + "\t" + str(np.round(Q_real, 2)) + "\t" + \
+                                          str(np.round(Ted, 2)) + "\t" + str(np.round(Tcd, 2)) + "\t" + \
+                                          str(np.round(P_chiller / 1000, 2)) + "\t" + str(np.round(COP, 2))
+                                chiller_big_cop_result_list.append(tmp_txt)
+                            else:
+                                print("本次仿真的COP结果为：" + str(np.round(COP, 2)) +
+                                      "；冷冻水出水温度目标值和实际值差值为：" + str(np.round(abs(Teo_real - Teo_set), 2)) +
+                                      "；数据异常，不记录本次仿真结果！")
                             time2 = time.time()
                             time_cost = np.round(time2 - time1, 2)
                             print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
@@ -263,8 +278,10 @@ def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chille
     chiller_small_cop_result_list = []
     chiller_small_cop_result_list.append("小冷水机模型，COP特性辨识：")
     chiller_small_cop_result_list.append("冷冻水出水温度设定值" + "\t" + "冷冻水出水温度实际值" + "\t" +
-                                         "冷却水回水温度实际值" + "\t" + "制冷功率目标值" + "\t" + "制冷功率实际值" + "\t" +
-                                         "冷冻水温差实际值" + "\t" + "冷却水温差实际值" + "\t" + "冷水机COP")
+                                         "冷冻水回水温度实际值" + "\t" + "冷却水回水温度实际值" + "\t" +
+                                         "冷冻水流量实际值" + "\t" + "冷却水流量实际值" + "\t" +
+                                         "制冷功率目标值" + "\t" + "制冷功率实际值" + "\t" + "冷冻水温差实际值" + "\t" +
+                                         "冷却水温差实际值" + "\t" + "冷水机耗电功率" + "\t" + "冷水机COP")
     # input_data不变的默认值
     chiller_big_data = [False, 0, 0]
     ashp_data = [False, 20 + 273.15, 0, 0]
@@ -280,6 +297,11 @@ def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chille
                         Fcw = chiller2_Fcw_list[l] # kg/s
                         Q_target = chiller2_Q_list[m] # kW
                         Tei = Q_target / 4.16 / Few + Teo_set
+                        tmp_Tco = 1.2 * Q_target / 4.16 / Fcw + Tci  # 预估的Tco
+                        if Tei - Teo_set > 15 or Tei - Teo_set < 1:
+                            continue
+                        if tmp_Tco - Tci > 15 or tmp_Tco - Tci < 1:
+                            continue
                         model_input_data = time_data + [Teo_set, Tei, Tci] + chiller_big_data + \
                                            [True, Few, Fcw] + ashp_data + tower_data
                         print("正在进行 小冷水机模型 COP特性辨识：" + "冷冻水出水温度设定值：" + str(Teo_set - 273.15) +
@@ -303,14 +325,22 @@ def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chille
                             Tcd = Tco - Tci
                             # 计算COP
                             if P_chiller > 0:
-                                COP = Q_real / P_chiller / 1000
+                                COP = Q_real / (P_chiller / 1000)
                             else:
                                 COP = 0
                             # 仿真结果生成txt
-                            tmp_txt = str(Teo_set - 273.15) + "\t" + str(np.round(Teo_real - 273.15, 2)) + "\t" + \
-                                      str(Tci - 273.15) + "\t" + str(Q_target) + "\t" + str(np.round(Q_real, 2)) + "\t" + \
-                                      str(np.round(Ted, 2)) + "\t" + str(np.round(Tcd, 2)) + "\t" + str(np.round(COP, 2))
-                            chiller_small_cop_result_list.append(tmp_txt)
+                            if COP > 1 and COP < 30 and abs(Teo_real - Teo_set) < 0.5:
+                                tmp_txt = str(Teo_set - 273.15) + "\t" + str(np.round(Teo_real - 273.15, 2)) + "\t" + \
+                                          str(np.round(Tei - 273.15, 2)) + "\t" + str(Tci - 273.15) + "\t" + \
+                                          str(np.round(Few * 3.6, 2)) + "\t" + str(np.round(Fcw * 3.6, 2)) + "\t" + \
+                                          str(np.round(Q_target, 2)) + "\t" + str(np.round(Q_real, 2)) + "\t" + \
+                                          str(np.round(Ted, 2)) + "\t" + str(np.round(Tcd, 2)) + "\t" + \
+                                          str(np.round(P_chiller / 1000, 2)) + "\t" + str(np.round(COP, 2))
+                                chiller_small_cop_result_list.append(tmp_txt)
+                            else:
+                                print("本次仿真的COP结果为：" + str(np.round(COP, 2)) +
+                                      "；冷冻水出水温度目标值和实际值差值为：" + str(np.round(abs(Teo_real - Teo_set), 2)) +
+                                      "；数据异常，不记录本次仿真结果！")
                             time2 = time.time()
                             time_cost = np.round(time2 - time1, 2)
                             print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
@@ -353,9 +383,11 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
     # 空气源热泵模型，COP特性辨识
     ashp_cop_result_list = []
     ashp_cop_result_list.append("空气源热泵模型，COP特性辨识：")
-    ashp_cop_result_list.append("冷冻水出水温度设定值" + "\t" + "冷冻水出水温度实际值" + "\t" + "空气入口温度实际值" + "\t" +
-                                "制冷功率目标值" + "\t" + "制冷功率实际值" + "\t" + "冷冻水温差实际值" + "\t" +
-                                "空气温差实际值" + "\t" + "空气源热泵COP")
+    ashp_cop_result_list.append("冷冻水出水温度设定值" + "\t" + "冷冻水出水温度实际值" + "\t" +
+                                "冷冻水回水温度实际值" + "\t" + "空气入口温度实际值" + "\t" +
+                                "冷冻水流量实际值" + "\t" + "空气流量实际值" + "\t" + "制冷功率目标值" + "\t" +
+                                "制冷功率实际值" + "\t" + "冷冻水温差实际值" + "\t" + "空气温差实际值" + "\t" +
+                                "空气源热泵耗电功率" + "\t" + "空气源热泵COP")
     # input_data不变的默认值
     chiller_big_data = [20 + 273.15, False, 0, 0]
     chiller_small_data = [False, 0, 0]
@@ -371,6 +403,11 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
                         Fca = ashp_Fca_list[l] # kg/s
                         Q_target = ashp_Q_list[m] # kW
                         Tei = Q_target / 4.16 / Few + Teo_set
+                        tmp_Tco = 1.2 * Q_target / 4.16 / Fca + Tci  # 预估的Tco
+                        if Tei - Teo_set > 15 or Tei - Teo_set < 1:
+                            continue
+                        if tmp_Tco - Tci > 15 or tmp_Tco - Tci < 1:
+                            continue
                         model_input_data = time_data + [Teo_set, Tei] + chiller_big_data + chiller_small_data + \
                                            [True, Tci, Few, Fca] + tower_data
                         print("正在进行 空气源热泵模型 COP特性辨识：" + "冷冻水出水温度设定值：" + str(Teo_set - 273.15) +
@@ -394,14 +431,22 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
                             Tcd = Tco - Tci
                             # 计算COP
                             if P_ashp > 0:
-                                COP = Q_real / P_ashp / 1000
+                                COP = Q_real / (P_ashp / 1000)
                             else:
                                 COP = 0
                             # 仿真结果生成txt
-                            tmp_txt = str(Teo_set - 273.15) + "\t" + str(np.round(Teo_real - 273.15, 2)) + "\t" + \
-                                      str(Tci - 273.15) + "\t" + str(Q_target) + "\t" + str(np.round(Q_real, 2)) + "\t" + \
-                                      str(np.round(Ted, 2)) + "\t" + str(np.round(Tcd, 2)) + "\t" + str(np.round(COP, 2))
-                            ashp_cop_result_list.append(tmp_txt)
+                            if COP > 1 and COP < 30 and abs(Teo_real - Teo_set) < 0.5:
+                                tmp_txt = str(Teo_set - 273.15) + "\t" + str(np.round(Teo_real - 273.15, 2)) + "\t" + \
+                                          str(np.round(Tei - 273.15, 2)) + "\t" + str(Tci - 273.15) + "\t" + \
+                                          str(np.round(Few * 3.6, 2)) + "\t" + str(np.round(Fca * 3.6, 2)) + "\t" + \
+                                          str(np.round(Q_target, 2)) + "\t" + str(np.round(Q_real, 2)) + "\t" + \
+                                          str(np.round(Ted, 2)) + "\t" + str(np.round(Tcd, 2)) + "\t" + \
+                                          str(np.round(P_ashp / 1000, 2)) + "\t" + str(np.round(COP, 2))
+                                ashp_cop_result_list.append(tmp_txt)
+                            else:
+                                print("本次仿真的COP结果为：" + str(np.round(COP, 2)) +
+                                      "；冷冻水出水温度目标值和实际值差值为：" + str(np.round(abs(Teo_real - Teo_set), 2)) +
+                                      "；数据异常，不记录本次仿真结果！")
                             time2 = time.time()
                             time_cost = np.round(time2 - time1, 2)
                             print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
@@ -445,8 +490,8 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
     cooling_tower_approach_result_list = []
     cooling_tower_approach_result_list.append("冷却塔模型，出水温度逼近度特性辨识：")
     cooling_tower_approach_result_list.append("室外湿球温度实际值" + "\t" + "冷却水流量实际值" + "\t" +
-                                              "冷却塔风机转速比实际值" + "\t" + "冷却塔出水温度实际值" + "\t" +
-                                              "冷却塔温差实际值" + "\t" + "冷却塔逼近度实际值")
+                                              "冷却塔风机转速比实际值" + "\t" + "冷却塔入口水温度实际值" + "\t" +
+                                              "冷却塔出口水温度实际值" + "\t" + "冷却塔温差实际值" + "\t" + "冷却塔逼近度实际值")
     # input_data不变的默认值
     chiller_T_data = [7 + 273.15, 20 + 273.15, 20 + 273.15]
     chiller_big_data = [False, 0, 0]
@@ -463,10 +508,10 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
                     if Tin - Two <= 1:
                         continue
                     model_input_data = time_data + chiller_T_data + chiller_big_data + chiller_small_data + \
-                                       ashp_data + [Two + f + Tin + Fcw]
+                                       ashp_data + [Two, f, Tin, Fcw]
                     print("正在进行 冷却塔模型 出水温度逼近度特性辨识：" + "室外湿球温度实际值：" + str(Two - 273.15) +
-                          "，冷却水流量实际值" + str(np.round(Fcw * 3.6, 2)) + "，冷却塔风机转速比实际值" + str(f) +
-                          "，冷却塔入口温度实际值" + str(Tin - 273.15))
+                          "，冷却水流量实际值" + str(np.round(Fcw * 3.6, 2)) + "，冷却塔风机转速比实际值" +
+                          str(np.round(f, 2)) + "，冷却塔入口温度实际值" + str(Tin - 273.15))
                     # FMU仿真
                     try:
                         time1 = time.time()
@@ -478,17 +523,23 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
                         Tcd = Tin - tower_Tout
                         approach = tower_Tout - Two
                         # 仿真结果生成txt
-                        tmp_txt = str(Two - 273.15) + "\t" + str(np.round(Fcw * 3.6, 2)) + "\t" + str(f) + "\t" + \
-                                  str(np.round(tower_Tout - 273.15, 2)) + "\t" + str(np.round(Tcd - 273.15, 2)) + "\t" + \
-                                  str(np.round(approach, 2))
-                        cooling_tower_approach_result_list.append(tmp_txt)
+                        if Tcd > 0.1 and approach > 0.1:
+                            tmp_txt = str(Two - 273.15) + "\t" + str(np.round(Fcw * 3.6, 2)) + "\t" + \
+                                      str(np.round(f, 2)) + "\t" + str(np.round(Tin - 273.15, 2)) + "\t" + \
+                                      str(np.round(tower_Tout - 273.15, 2)) + "\t" + \
+                                      str(np.round(Tcd, 2)) + "\t" + str(np.round(approach, 2))
+                            cooling_tower_approach_result_list.append(tmp_txt)
+                        else:
+                            print("本次仿真的逼近度结果为：" + str(np.round(approach, 2)) +
+                                  "；冷却水进出口温差为：" + str(np.round(abs(Tcd), 2)) +
+                                  "；数据异常，不记录本次仿真结果！")
                         time2 = time.time()
                         time_cost = np.round(time2 - time1, 2)
                         print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
                     except:
                         print("FMU仿真失败：" + "室外湿球温度实际值：" + str(Two - 273.15) +
-                              "，冷却水流量实际值" + str(np.round(Fcw * 3.6, 2)) + "，冷却塔风机转速比实际值" + str(f) +
-                              "，冷却塔入口温度实际值" + str(Tin - 273.15))
+                              "，冷却水流量实际值" + str(np.round(Fcw * 3.6, 2)) + "，冷却塔风机转速比实际值" +
+                              str(np.round(f, 2)) + "，冷却塔入口温度实际值" + str(Tin - 273.15))
                         print(traceback.format_exc() + "\n")
                         pass
     # 结果写入txt
