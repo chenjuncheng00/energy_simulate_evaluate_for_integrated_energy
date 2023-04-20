@@ -8,7 +8,7 @@ from model_fmu_input_data_default import environment_input_data_default, chiller
 from model_fmu_output_name import main_model_output_name
 
 def main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                           time_out, cfg_path_equipment, chiller_chilled_result_txt_path,
+                                           time_out, n_cal_f_pump, cfg_path_equipment, chiller_chilled_result_txt_path,
                                            chiller_cooling_result_txt_path, ashp_chilled_result_txt_path,
                                            storage_from_chiller_result_txt_path, storage_to_user_result_txt_path,
                                            tower_chilled_result_txt_path):
@@ -22,6 +22,7 @@ def main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_
         stop_time: [float]，仿真结束时间，单位：秒
         output_interval: [float]，FMU模型输出采样时间，单位：秒
         time_out: [float]，仿真超时时间，单位：秒
+        n_cal_f_pump: [int]，水泵转速计算次数
         cfg_path_equipment: [string]，设备信息参数cfg文件路径
         chiller_chilled_result_txt_path: [string]，冷水机冷冻侧水力特性辨识结果，txt文件路径
         chiller_cooling_result_txt_path: [string]，冷水机冷却侧水力特性辨识结果，txt文件路径
@@ -77,22 +78,30 @@ def main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_
     tower_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷却塔直接供冷", "chilled_pump_fmin", 0)
 
     # 水泵转速测试列表
-    n_cal_f_pump = 5
-    chiller1_chilled_pump_f_list = []
-    chiller2_chilled_pump_f_list = []
-    chiller1_cooling_pump_f_list = []
-    chiller2_cooling_pump_f_list = []
-    ashp_chilled_pump_f_list = []
-    storage_chilled_pump_f_list = []
-    tower_chilled_pump_f_list = []
-    for i in range(n_cal_f_pump):
-        chiller1_chilled_pump_f_list.append(chiller1_chilled_pump_fmin + i * (chiller1_chilled_pump_f0 - chiller1_chilled_pump_fmin) / (n_cal_f_pump - 1))
-        chiller2_chilled_pump_f_list.append(chiller2_chilled_pump_fmin + i * (chiller2_chilled_pump_f0 - chiller2_chilled_pump_fmin) / (n_cal_f_pump - 1))
-        chiller1_cooling_pump_f_list.append(chiller1_cooling_pump_fmin + i * (chiller1_cooling_pump_f0 - chiller1_cooling_pump_fmin) / (n_cal_f_pump - 1))
-        chiller2_cooling_pump_f_list.append(chiller2_cooling_pump_fmin + i * (chiller2_cooling_pump_f0 - chiller2_cooling_pump_fmin) / (n_cal_f_pump - 1))
-        ashp_chilled_pump_f_list.append(ashp_chilled_pump_fmin + i * (ashp_chilled_pump_f0 - ashp_chilled_pump_fmin) / (n_cal_f_pump - 1))
-        storage_chilled_pump_f_list.append(storage_chilled_pump_fmin + i * (storage_chilled_pump_f0 - storage_chilled_pump_fmin) / (n_cal_f_pump - 1))
-        tower_chilled_pump_f_list.append(tower_chilled_pump_fmin + i * (tower_chilled_pump_f0 - tower_chilled_pump_fmin) / (n_cal_f_pump - 1))
+    if n_cal_f_pump > 1:
+        chiller1_chilled_pump_f_list = []
+        chiller2_chilled_pump_f_list = []
+        chiller1_cooling_pump_f_list = []
+        chiller2_cooling_pump_f_list = []
+        ashp_chilled_pump_f_list = []
+        storage_chilled_pump_f_list = []
+        tower_chilled_pump_f_list = []
+        for i in range(n_cal_f_pump):
+            chiller1_chilled_pump_f_list.append(chiller1_chilled_pump_fmin + i * (chiller1_chilled_pump_f0 - chiller1_chilled_pump_fmin) / (n_cal_f_pump - 1))
+            chiller2_chilled_pump_f_list.append(chiller2_chilled_pump_fmin + i * (chiller2_chilled_pump_f0 - chiller2_chilled_pump_fmin) / (n_cal_f_pump - 1))
+            chiller1_cooling_pump_f_list.append(chiller1_cooling_pump_fmin + i * (chiller1_cooling_pump_f0 - chiller1_cooling_pump_fmin) / (n_cal_f_pump - 1))
+            chiller2_cooling_pump_f_list.append(chiller2_cooling_pump_fmin + i * (chiller2_cooling_pump_f0 - chiller2_cooling_pump_fmin) / (n_cal_f_pump - 1))
+            ashp_chilled_pump_f_list.append(ashp_chilled_pump_fmin + i * (ashp_chilled_pump_f0 - ashp_chilled_pump_fmin) / (n_cal_f_pump - 1))
+            storage_chilled_pump_f_list.append(storage_chilled_pump_fmin + i * (storage_chilled_pump_f0 - storage_chilled_pump_fmin) / (n_cal_f_pump - 1))
+            tower_chilled_pump_f_list.append(tower_chilled_pump_fmin + i * (tower_chilled_pump_f0 - tower_chilled_pump_fmin) / (n_cal_f_pump - 1))
+    else:
+        chiller1_chilled_pump_f_list = [chiller1_chilled_pump_f0]
+        chiller2_chilled_pump_f_list = [chiller2_chilled_pump_f0]
+        chiller1_cooling_pump_f_list = [chiller1_cooling_pump_f0]
+        chiller2_cooling_pump_f_list = [chiller2_cooling_pump_f0]
+        ashp_chilled_pump_f_list = [ashp_chilled_pump_f0]
+        storage_chilled_pump_f_list = [storage_chilled_pump_f0]
+        tower_chilled_pump_f_list = [tower_chilled_pump_f0]
 
     # 与水力特性辨识无关的模型输入，给定值
     time_data = [start_time]
