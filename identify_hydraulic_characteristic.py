@@ -4,14 +4,15 @@ from model_fmu_simulate import simulate_sample
 from model_fmu_input_type import main_model_input_type
 from model_fmu_input_data_default import environment_input_data_default, chiller_input_data_default, \
                                          air_source_heat_pump_input_data_default, cold_storage_input_data_default, \
-                                         tower_chilled_input_data_default, user_load_input_data_default
+                                         tower_chilled_input_data_default, user_load_input_data_default, \
+                                         main_input_data_default
 from model_fmu_output_name import main_model_output_name
 
 def main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
                                            time_out, n_cal_f_pump, cfg_path_equipment, chiller_chilled_result_txt_path,
                                            chiller_cooling_result_txt_path, ashp_chilled_result_txt_path,
                                            storage_from_chiller_result_txt_path, storage_to_user_result_txt_path,
-                                           tower_chilled_result_txt_path):
+                                           tower_chilled_result_txt_path, full_open_result_txt_path):
     """
     模型水力特性辨识
     
@@ -30,6 +31,7 @@ def main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_
         storage_from_chiller_result_txt_path: [string]，蓄冷水罐蓄冷水力特性辨识结果，txt文件路径
         storage_to_user_result_txt_path: [string]，蓄冷水罐放冷水力特性辨识结果，txt文件路径
         tower_chilled_result_txt_path: [string]，冷却塔直接供冷水力特性辨识结果，txt文件路径
+        full_open_result_txt_path: [string]，阀门和水泵全开水力特性辨识结果，txt文件路径
 
     Returns:
 
@@ -149,6 +151,17 @@ def main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_
                            chiller_cooling_tower_data, fmu_unzipdir, fmu_description, start_time, stop_time,
                            time_out, model_input_type, model_output_name, output_interval,
                            tower_chilled_result_txt_path)
+
+    # 阀门和水泵全开，水力特性测试
+    identify_full_open(n_chiller_chilled_pump1, n_chiller_chilled_pump2, chiller1_chilled_pump_Fw0,
+                       chiller2_chilled_pump_Fw0, chiller1_chilled_pump_f0, chiller2_chilled_pump_f0,
+                       n_chiller_cooling_pump1, n_chiller_cooling_pump2, chiller1_cooling_pump_Fw0,
+                       chiller2_cooling_pump_Fw0, chiller1_cooling_pump_f0, chiller2_cooling_pump_f0,
+                       n_ashp_chilled_pump, ashp_chilled_pump_Fw0, ashp_chilled_pump_f0, n_storage_chilled_pump,
+                       storage_chilled_pump_Fw0, storage_chilled_pump_f0, n_tower_chilled_pump, tower_chilled_pump_Fw0,
+                       tower_chilled_pump_f0, time_data, chiller_data, chiller_cooling_tower_data,
+                       air_source_heat_pump_data, fmu_unzipdir, fmu_description, start_time, stop_time, time_out,
+                       model_input_type, model_output_name, output_interval, full_open_result_txt_path)
 
 
 def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chiller_chilled_pump2,
@@ -870,3 +883,650 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
                     print(traceback.format_exc() + "\n")
                     pass
     write_txt_data(tower_chilled_result_txt_path, tower_chilled_result_list)
+
+
+def identify_full_open(n_chiller_chilled_pump1, n_chiller_chilled_pump2, chiller1_chilled_pump_Fw0,
+                       chiller2_chilled_pump_Fw0, chiller1_chilled_pump_f0, chiller2_chilled_pump_f0,
+                       n_chiller_cooling_pump1, n_chiller_cooling_pump2, chiller1_cooling_pump_Fw0,
+                       chiller2_cooling_pump_Fw0, chiller1_cooling_pump_f0, chiller2_cooling_pump_f0,
+                       n_ashp_chilled_pump, ashp_chilled_pump_Fw0, ashp_chilled_pump_f0, n_storage_chilled_pump,
+                       storage_chilled_pump_Fw0, storage_chilled_pump_f0, n_tower_chilled_pump, tower_chilled_pump_Fw0,
+                       tower_chilled_pump_f0, time_data, chiller_data, chiller_cooling_tower_data,
+                       air_source_heat_pump_data, fmu_unzipdir, fmu_description, start_time,  stop_time, time_out,
+                       model_input_type, model_output_name, output_interval, full_open_result_txt_path):
+    """
+    阀门和水泵全部开启情况下，额定点水力特性测试
+    Args:
+        n_chiller_chilled_pump1: [int]，大冷冻水泵装机台数
+        n_chiller_chilled_pump2: [int]，小冷冻水泵装机台数
+        chiller1_chilled_pump_Fw0: [float]，大冷冻水泵额定冷冻水流量
+        chiller2_chilled_pump_Fw0: [float]，小冷冻水泵额定冷冻水流量
+        chiller1_chilled_pump_f0: [float]，水泵额定转速
+        chiller2_chilled_pump_f0: [float]，水泵额定转速
+        n_chiller_cooling_pump1: [int]，大冷却水泵装机台数
+        n_chiller_cooling_pump2: [int]，小冷却水泵装机台数
+        chiller1_cooling_pump_Fw0: [float]，大冷却水泵额定冷却水流量
+        chiller2_cooling_pump_Fw0: [float]，小冷却水泵额定冷却水流量
+        chiller1_cooling_pump_f0: [float]，水泵额定转速
+        chiller2_cooling_pump_f0: [float]，水泵额定转速
+        n_ashp_chilled_pump: [int]，冷冻水泵装机台数
+        ashp_chilled_pump_Fw0: [float]，冷冻水泵额定冷冻水流量
+        ashp_chilled_pump_f0: [float]，水泵额定转速
+        n_storage_chilled_pump: [int]，冷冻水泵装机台数
+        storage_chilled_pump_Fw0: [float]，冷冻水泵额定冷冻水流量
+        storage_chilled_pump_f0: [float]，水泵额定转速
+        n_tower_chilled_pump: [int]，冷冻水泵装机台数
+        tower_chilled_pump_Fw0: [float]，冷冻水泵额定冷冻水流量
+        tower_chilled_pump_f0: [float]，水泵额定转速
+        time_data: [list]，模型输入数据，时间
+        chiller_data: [list]，模型输入数据，冷水机开关及出水温度温度设定
+        chiller_cooling_tower_data: [list]，模型输入数据，冷却塔风机转速比
+        air_source_heat_pump_data: [list]，模型输入数据，空气源热泵开关及出水温度温度设定
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
+        start_time: [float]，仿真开始时间，单位：秒
+        stop_time: [float]，仿真结束时间，单位：秒
+        time_out: [float]，仿真超时时间，单位：秒
+        model_input_type: [list]，模型输入名称和数据类型
+        model_output_name: [list]，模型输出名称
+        output_interval: [float]，FMU模型输出采样时间，单位：秒
+        full_open_result_txt_path: [string]，仿真结果保存txt文件路径
+
+    Returns:
+
+    """
+    full_open_result_list = []
+
+    # 冷水机模型，向用户侧供冷，阀门和水泵全开
+    full_open_result_list.append("冷水机模型，向用户侧供冷，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("冷冻水泵实际总流量" + "\t" + "冷冻水泵额定总流量" + "\t" + "冷冻水泵流量比例" + "\t" +
+                                 "大冷冻水泵实际总流量" + "\t" + "大冷冻水泵额定总流量" + "\t" + "大冷冻水泵流量比例" + "\t" +
+                                 "小冷冻水泵实际总流量" + "\t" + "小冷冻水泵额定总流量" + "\t" + "小冷冻水泵流量比例" + "\t" +
+                                 "大冷冻水泵实际总电功率" + "\t" + "小冷冻水泵实际总电功率" + "\t" + "冷冻水泵实际扬程")
+    chiller_chilled_pump1_Fw0_total = n_chiller_chilled_pump1 * chiller1_chilled_pump_Fw0
+    chiller_chilled_pump2_Fw0_total = n_chiller_chilled_pump2 * chiller2_chilled_pump_Fw0
+    chiller_chilled_pump_Fw0_total = chiller_chilled_pump1_Fw0_total + chiller_chilled_pump2_Fw0_total
+    chiller_chilled_pump_data = [chiller1_chilled_pump_f0, chiller1_chilled_pump_f0, chiller1_chilled_pump_f0,
+                                 chiller1_chilled_pump_f0, chiller2_chilled_pump_f0, chiller2_chilled_pump_f0]
+    chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
+    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_value_data = [0, 0]
+    chiller_user_value_data = [1, 1]
+    model_input_data = time_data + environment_input_data_default() + chiller_data + \
+                       chiller_chilled_pump_data + chiller_cooling_pump_data + \
+                       chiller_cooling_tower_data + chiller_chilled_value_data + \
+                       chiller_cooling_value_data + chiller_tower_value_data + \
+                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       air_source_heat_pump_input_data_default() + \
+                       cold_storage_input_data_default() + tower_chilled_input_data_default() + \
+                       user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：冷水机模型，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name,
+                                 output_interval, time_out, False, False)
+        # 获取仿真结果
+        chiller_Few_total = result['chiller_Few_total'][-1]
+        chiller_Few_big_total = result['chiller_Few_big'][-1]
+        chiller_Few_small_total = result['chiller_Few_small'][-1]
+        chiller_H_chilled_pump = result['chiller_H_chilled_pump'][-1]
+        chiller_chilled_pump_P_big_total = result['chiller_P_big_chilled_pump'][-1]
+        chiller_chilled_pump_P_small_total = result['chiller_P_small_chilled_pump'][-1]
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(chiller_Few_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_total / chiller_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump1_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_big_total / chiller_chilled_pump1_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump2_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_small_total / chiller_chilled_pump2_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_P_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_P_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：冷水机模型，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 冷水机模型，冷却水系统，阀门和水泵全开
+    full_open_result_list.append("冷水机模型，冷却水系统，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("冷却水泵实际总流量" + "\t" + "冷却水泵额定总流量" + "\t" + "冷却水泵流量比例" + "\t" +
+                                 "大冷却水泵实际总流量" + "\t" + "大冷却水泵额定总流量" + "\t" + "大冷却水泵流量比例" + "\t" +
+                                 "小冷却水泵实际总流量" + "\t" + "小冷却水泵额定总流量" + "\t" + "小冷却水泵流量比例" + "\t" +
+                                 "大冷却水泵实际总电功率" + "\t" + "小冷却水泵实际总电功率" + "\t" + "冷却水泵实际扬程")
+    chiller_cooling_pump1_Fw0_total = n_chiller_cooling_pump1 * chiller1_cooling_pump_Fw0
+    chiller_cooling_pump2_Fw0_total = n_chiller_cooling_pump2 * chiller2_cooling_pump_Fw0
+    chiller_cooling_pump_Fw0_total = chiller_cooling_pump1_Fw0_total + chiller_cooling_pump2_Fw0_total
+    chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
+    chiller_cooling_pump_data = [chiller1_cooling_pump_f0, chiller1_cooling_pump_f0, chiller1_cooling_pump_f0,
+                                 chiller1_cooling_pump_f0, chiller2_cooling_pump_f0, chiller2_cooling_pump_f0]
+    chiller_chilled_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_cooling_value_data = [1, 1, 1, 1, 1, 1]
+    chiller_tower_value_data = [1, 1, 1, 1, 1, 1]
+    chiller_tower_chilled_value_data = [0, 0]
+    chiller_user_value_data = [0, 0]
+    model_input_data = time_data + environment_input_data_default() + chiller_data + \
+                       chiller_chilled_pump_data + chiller_cooling_pump_data + \
+                       chiller_cooling_tower_data + chiller_chilled_value_data + \
+                       chiller_cooling_value_data + chiller_tower_value_data + \
+                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       air_source_heat_pump_input_data_default() + \
+                       cold_storage_input_data_default() + tower_chilled_input_data_default() + \
+                       user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：冷水机模型，冷却水系统，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name,
+                                 output_interval, time_out, False, False)
+        # 获取仿真结果
+        chiller_Fcw_total = result['chiller_Fcw_total'][-1]
+        chiller_Fcw_big_total = result['chiller_Fcw_big'][-1]
+        chiller_Fcw_small_total = result['chiller_Fcw_small'][-1]
+        chiller_H_cooling_pump = result['chiller_H_cooling_pump'][-1]
+        chiller_cooling_pump_P_big_total = result['chiller_P_big_cooling_pump'][-1]
+        chiller_cooling_pump_P_small_total = result['chiller_P_small_cooling_pump'][-1]
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(chiller_Fcw_total, 2)) + "\t" + \
+                  str(np.round(chiller_cooling_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Fcw_total / chiller_cooling_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Fcw_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_cooling_pump1_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Fcw_big_total / chiller_cooling_pump1_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Fcw_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_cooling_pump2_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Fcw_small_total / chiller_cooling_pump2_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_cooling_pump_P_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_cooling_pump_P_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_H_cooling_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：冷水机模型，冷却水系统，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 空气源热泵模型，向用户侧供冷，阀门和水泵全开
+    full_open_result_list.append("空气源热泵模型，向用户侧供冷，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("冷冻水泵实际总流量" + "\t" + "冷冻水泵额定总流量" + "\t" + "冷冻水泵流量比例" + "\t" +
+                                 "冷冻水泵实际总电功率" + "\t" + "冷冻水泵实际扬程")
+    ashp_chilled_pump_Fw0_total = n_ashp_chilled_pump * ashp_chilled_pump_Fw0
+    ashp_chilled_pump_data = [ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0]
+    ashp_chilled_value_data = [1, 1, 1, 1]
+    model_input_data = time_data + environment_input_data_default() + chiller_input_data_default() + \
+                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
+                       cold_storage_input_data_default() + tower_chilled_input_data_default() + \
+                       user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：空气源热泵模型，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name, output_interval,
+                                 time_out, False, False)
+        ashp_Few_total = result['ashp_Few_total'][-1]
+        ashp_H_chilled_pump = result['ashp_H_chilled_pump'][-1]
+        ashp_chilled_pump_P_total = result['ashp_P_total_chilled_pump'][-1]
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(ashp_Few_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(ashp_Few_total / ashp_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(ashp_chilled_pump_P_total, 2)) + "\t" + str(np.round(ashp_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：空气源热泵模型，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 蓄冷水罐模型，蓄冷工况，阀门和水泵全开
+    full_open_result_list.append("蓄冷水罐模型，蓄冷工况，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("冷冻水泵实际总流量" + "\t" + "冷冻水泵额定总流量" + "\t" + "冷冻水泵流量比例" + "\t" +
+                                 "冷冻水泵实际总电功率" + "\t" + "冷冻水泵实际扬程")
+    storage_chilled_pump_Fw0_total = n_storage_chilled_pump * storage_chilled_pump_Fw0
+    chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
+    chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
+    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_value_data = [0, 0]
+    chiller_user_value_data = [0, 0]
+    storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
+                                 storage_chilled_pump_f0, storage_chilled_pump_f0]
+    storage_user_value_data = [0, 0, 0]
+    storage_chiller_value_data = [1, 1, 1]
+    model_input_data = time_data + environment_input_data_default() + chiller_data + \
+                       chiller_chilled_pump_data + chiller_cooling_pump_data + \
+                       chiller_cooling_tower_data + chiller_chilled_value_data + \
+                       chiller_cooling_value_data + chiller_tower_value_data + \
+                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
+                       storage_user_value_data + storage_chiller_value_data + \
+                       tower_chilled_input_data_default() + user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：蓄冷水罐模型，蓄冷工况，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name,
+                                 output_interval, time_out, False, False)
+        # 获取仿真结果
+        storage_Few_total_from_chiller = result['storage_Few_total_from_chiller'][-1]
+        storage_H_chilled_pump = result['storage_H_chilled_pump'][-1]
+        storage_P_total_chilled_pump = result['storage_P_total_chilled_pump'][-1]
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(storage_Few_total_from_chiller, 2)) + "\t" + \
+                  str(np.round(storage_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(storage_Few_total_from_chiller / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(storage_P_total_chilled_pump, 2)) + "\t" + \
+                  str(np.round(storage_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：蓄冷水罐模型，蓄冷工况，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 蓄冷水罐模型，向用户侧供冷工况，阀门和水泵全开
+    full_open_result_list.append("蓄冷水罐模型，向用户侧供冷工况，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("冷冻水泵实际总流量" + "\t" + "冷冻水泵额定总流量" + "\t" + "冷冻水泵流量比例" + "\t" +
+                                 "冷冻水泵实际总电功率" + "\t" + "冷冻水泵实际扬程")
+    storage_chilled_pump_Fw0_total = n_storage_chilled_pump * storage_chilled_pump_Fw0
+    storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
+                                 storage_chilled_pump_f0, storage_chilled_pump_f0]
+    storage_user_value_data = [1, 1, 1]
+    storage_chiller_value_data = [0, 0, 0]
+    model_input_data = time_data + environment_input_data_default() + chiller_input_data_default() + \
+                       air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
+                       storage_user_value_data + storage_chiller_value_data + \
+                       tower_chilled_input_data_default() + user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：蓄冷水罐模型，向用户侧供冷工况，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time, model_input_data,
+                                 model_input_type, model_output_name, output_interval, time_out, False, False)
+        # 获取仿真结果
+        storage_Few_total_to_user = result['storage_Few_total_to_user'][-1]
+        storage_H_chilled_pump = result['storage_H_chilled_pump'][-1]
+        storage_P_total_chilled_pump = result['storage_P_total_chilled_pump'][-1]
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(storage_Few_total_to_user, 2)) + "\t" + \
+                  str(np.round(storage_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(storage_Few_total_to_user / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(storage_P_total_chilled_pump, 2)) + "\t" + \
+                  str(np.round(storage_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：蓄冷水罐模型，向用户侧供冷工况，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 冷却塔直接供冷模型，向用户侧供冷，阀门和水泵全开
+    full_open_result_list.append("冷却塔直接供冷模型，向用户侧供冷，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("冷冻水泵实际总流量" + "\t" + "冷冻水泵额定总流量" + "\t" + "冷冻水泵流量比例" + "\t" +
+                                 "冷冻水泵实际总电功率" + "\t" + "冷冻水泵实际扬程")
+    tower_chilled_pump_Fw0_total = n_tower_chilled_pump * tower_chilled_pump_Fw0
+    chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
+    chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
+    chiller_chilled_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_value_data = [1, 1, 1, 1, 1, 1]
+    chiller_tower_chilled_value_data = [1, 1]
+    chiller_user_value_data = [0, 0]
+    tower_chilled_pump_data = [tower_chilled_pump_f0, tower_chilled_pump_f0, tower_chilled_pump_f0, tower_chilled_pump_f0]
+    model_input_data = time_data + environment_input_data_default() + chiller_data + \
+                       chiller_chilled_pump_data + chiller_cooling_pump_data + \
+                       chiller_cooling_tower_data + chiller_chilled_value_data + \
+                       chiller_cooling_value_data + chiller_tower_value_data + \
+                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
+                       tower_chilled_pump_data + user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：冷却塔直接供冷模型，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name, output_interval,
+                                 time_out, False, False)
+        # 获取仿真结果
+        tower_chilled_Few_total = result['tower_chilled_Few_total'][-1]
+        tower_chilled_H_chilled_pump = result['tower_chilled_H_chilled_pump'][-1]
+        tower_chilled_P_total_chilled_pump = result['tower_chilled_P_total_chilled_pump'][-1]
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(tower_chilled_Few_total, 2)) + "\t" + \
+                  str(np.round(tower_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(tower_chilled_Few_total / tower_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(tower_chilled_P_total_chilled_pump, 2)) + "\t" + \
+                  str(np.round(tower_chilled_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：冷却塔直接供冷模型，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 用户负荷模型，循环泵，阀门和水泵全开
+    full_open_result_list.append("用户负荷模型，循环泵，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("冷冻水泵实际总流量" + "\t" + "冷冻水泵额定总流量" + "\t" + "冷冻水泵流量比例" + "\t" +
+                                 "冷冻水泵实际总电功率" + "\t" + "冷冻水泵实际扬程")
+    user_chilled_pump_Fw0_total = chiller_chilled_pump_Fw0_total + ashp_chilled_pump_Fw0_total + \
+                                  storage_chilled_pump_Fw0_total
+    model_input_data = time_data + main_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：用户负荷模型，循环泵，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name, output_interval,
+                                 time_out, False, False)
+        # 获取仿真结果
+        user_Few_total = result['user_Few_total'][-1]
+        user_H_chilled_pump = result['user_H_chilled_pump'][-1]
+        user_P_total_chilled_pump = result['user_P_total_chilled_pump'][-1]
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(user_Few_total, 2)) + "\t" + \
+                  str(np.round(user_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(user_Few_total / user_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(user_P_total_chilled_pump, 2)) + "\t" + \
+                  str(np.round(user_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：用户负荷模型，循环泵，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 冷水机+空气源热泵+蓄冷水罐，向用户侧供冷，阀门和水泵全开
+    full_open_result_list.append("冷水机+空气源热泵+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("系统实际总流量" + "\t" + "系统额定总流量" + "\t" + "系统流量比例" + "\t" +
+                                 "冷水机冷冻水泵实际总流量" + "\t" + "冷水机冷冻水泵额定总流量" + "\t" + "冷水机冷冻水泵流量比例" + "\t" +
+                                 "冷水机大冷冻水泵实际总流量" + "\t" + "冷水机大冷冻水泵额定总流量" + "\t" + "冷水机大冷冻水泵流量比例" + "\t" +
+                                 "冷水机小冷冻水泵实际总流量" + "\t" + "冷水机小冷冻水泵额定总流量" + "\t" + "冷水机小冷冻水泵流量比例" + "\t" +
+                                 "冷水机大冷冻水泵实际总电功率" + "\t" + "冷水机小冷冻水泵实际总电功率" + "\t" + "冷水机冷冻水泵实际扬程" + "\t" +
+                                 "空气源热泵冷冻水泵实际总流量" + "\t" + "空气源热泵冷冻水泵额定总流量" + "\t" + "空气源热泵冷冻水泵流量比例" + "\t" +
+                                 "空气源热泵冷冻水泵实际总电功率" + "\t" + "空气源热泵冷冻水泵实际扬程" + "\t" +
+                                 "蓄冷水罐冷冻水泵实际总流量" + "\t" + "蓄冷水罐冷冻水泵额定总流量" + "\t" + "蓄冷水罐冷冻水泵流量比例" + "\t" +
+                                 "蓄冷水罐冷冻水泵实际总电功率" + "\t" + "蓄冷水罐冷冻水泵实际扬程")
+    Few0_total = chiller_chilled_pump_Fw0_total + ashp_chilled_pump_Fw0_total + storage_chilled_pump_Fw0_total
+    chiller_chilled_pump_data = [chiller1_chilled_pump_f0, chiller1_chilled_pump_f0, chiller1_chilled_pump_f0,
+                                 chiller1_chilled_pump_f0, chiller2_chilled_pump_f0, chiller2_chilled_pump_f0]
+    chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
+    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_value_data = [0, 0]
+    chiller_user_value_data = [1, 1]
+    ashp_chilled_pump_data = [ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0]
+    ashp_chilled_value_data = [1, 1, 1, 1]
+    storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
+                                 storage_chilled_pump_f0, storage_chilled_pump_f0]
+    storage_user_value_data = [1, 1, 1]
+    storage_chiller_value_data = [0, 0, 0]
+    model_input_data = time_data + environment_input_data_default() + chiller_data + \
+                       chiller_chilled_pump_data + chiller_cooling_pump_data + \
+                       chiller_cooling_tower_data + chiller_chilled_value_data + \
+                       chiller_cooling_value_data + chiller_tower_value_data + \
+                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
+                       storage_chilled_pump_data + storage_user_value_data + storage_chiller_value_data + \
+                       tower_chilled_input_data_default() + user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：冷水机+空气源热泵+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name,
+                                 output_interval, time_out, False, False)
+        # 获取仿真结果
+        chiller_Few_total = result['chiller_Few_total'][-1]
+        chiller_Few_big_total = result['chiller_Few_big'][-1]
+        chiller_Few_small_total = result['chiller_Few_small'][-1]
+        chiller_H_chilled_pump = result['chiller_H_chilled_pump'][-1]
+        chiller_chilled_pump_P_big_total = result['chiller_P_big_chilled_pump'][-1]
+        chiller_chilled_pump_P_small_total = result['chiller_P_small_chilled_pump'][-1]
+        ashp_Few_total = result['ashp_Few_total'][-1]
+        ashp_H_chilled_pump = result['ashp_H_chilled_pump'][-1]
+        ashp_chilled_pump_P_total = result['ashp_P_total_chilled_pump'][-1]
+        storage_Few_total_to_user = result['storage_Few_total_to_user'][-1]
+        storage_H_chilled_pump = result['storage_H_chilled_pump'][-1]
+        storage_P_total_chilled_pump = result['storage_P_total_chilled_pump'][-1]
+        Few_total = chiller_Few_total + ashp_Few_total + storage_Few_total_to_user
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(Few_total, 2)) + "\t" + str(np.round(Few0_total, 2)) + "\t" + \
+                  str(np.round(Few_total / Few0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_total / chiller_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump1_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_big_total / chiller_chilled_pump1_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump2_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_small_total / chiller_chilled_pump2_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_P_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_P_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_H_chilled_pump, 4))  + "\t" + \
+                  str(np.round(ashp_Few_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(ashp_Few_total / ashp_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(ashp_chilled_pump_P_total, 2)) + "\t" + str(np.round(ashp_H_chilled_pump, 4)) + "\t" + \
+                  str(np.round(storage_Few_total_to_user, 2)) + "\t" + \
+                  str(np.round(storage_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(storage_Few_total_to_user / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(storage_P_total_chilled_pump, 2)) + "\t" + \
+                  str(np.round(storage_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：冷水机+空气源热泵+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 冷水机+空气源热泵，向用户侧供冷，阀门和水泵全开
+    full_open_result_list.append("冷水机+空气源热泵，向用户侧供冷，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("系统实际总流量" + "\t" + "系统额定总流量" + "\t" + "系统流量比例" + "\t" +
+                                 "冷水机冷冻水泵实际总流量" + "\t" + "冷水机冷冻水泵额定总流量" + "\t" + "冷水机冷冻水泵流量比例" + "\t" +
+                                 "冷水机大冷冻水泵实际总流量" + "\t" + "冷水机大冷冻水泵额定总流量" + "\t" + "冷水机大冷冻水泵流量比例" + "\t" +
+                                 "冷水机小冷冻水泵实际总流量" + "\t" + "冷水机小冷冻水泵额定总流量" + "\t" + "冷水机小冷冻水泵流量比例" + "\t" +
+                                 "冷水机大冷冻水泵实际总电功率" + "\t" + "冷水机小冷冻水泵实际总电功率" + "\t" + "冷水机冷冻水泵实际扬程" + "\t" +
+                                 "空气源热泵冷冻水泵实际总流量" + "\t" + "空气源热泵冷冻水泵额定总流量" + "\t" + "空气源热泵冷冻水泵流量比例" + "\t" +
+                                 "空气源热泵冷冻水泵实际总电功率" + "\t" + "空气源热泵冷冻水泵实际扬程")
+    Few0_total = chiller_chilled_pump_Fw0_total + ashp_chilled_pump_Fw0_total
+    chiller_chilled_pump_data = [chiller1_chilled_pump_f0, chiller1_chilled_pump_f0, chiller1_chilled_pump_f0,
+                                 chiller1_chilled_pump_f0, chiller2_chilled_pump_f0, chiller2_chilled_pump_f0]
+    chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
+    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_value_data = [0, 0]
+    chiller_user_value_data = [1, 1]
+    ashp_chilled_pump_data = [ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0]
+    ashp_chilled_value_data = [1, 1, 1, 1]
+    model_input_data = time_data + environment_input_data_default() + chiller_data + \
+                       chiller_chilled_pump_data + chiller_cooling_pump_data + \
+                       chiller_cooling_tower_data + chiller_chilled_value_data + \
+                       chiller_cooling_value_data + chiller_tower_value_data + \
+                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
+                       cold_storage_input_data_default() + tower_chilled_input_data_default() + \
+                       user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：冷水机+空气源热泵，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name,
+                                 output_interval, time_out, False, False)
+        # 获取仿真结果
+        chiller_Few_total = result['chiller_Few_total'][-1]
+        chiller_Few_big_total = result['chiller_Few_big'][-1]
+        chiller_Few_small_total = result['chiller_Few_small'][-1]
+        chiller_H_chilled_pump = result['chiller_H_chilled_pump'][-1]
+        chiller_chilled_pump_P_big_total = result['chiller_P_big_chilled_pump'][-1]
+        chiller_chilled_pump_P_small_total = result['chiller_P_small_chilled_pump'][-1]
+        ashp_Few_total = result['ashp_Few_total'][-1]
+        ashp_H_chilled_pump = result['ashp_H_chilled_pump'][-1]
+        ashp_chilled_pump_P_total = result['ashp_P_total_chilled_pump'][-1]
+        Few_total = chiller_Few_total + ashp_Few_total
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(Few_total, 2)) + "\t" + str(np.round(Few0_total, 2)) + "\t" + \
+                  str(np.round(Few_total / Few0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_total / chiller_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump1_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_big_total / chiller_chilled_pump1_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump2_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_small_total / chiller_chilled_pump2_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_P_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_P_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_H_chilled_pump, 4))  + "\t" + \
+                  str(np.round(ashp_Few_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(ashp_Few_total / ashp_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(ashp_chilled_pump_P_total, 2)) + "\t" + str(np.round(ashp_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：冷水机+空气源热泵，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 冷水机+蓄冷水罐，向用户侧供冷，阀门和水泵全开
+    full_open_result_list.append("冷水机+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("系统实际总流量" + "\t" + "系统额定总流量" + "\t" + "系统流量比例" + "\t" +
+                                 "冷水机冷冻水泵实际总流量" + "\t" + "冷水机冷冻水泵额定总流量" + "\t" + "冷水机冷冻水泵流量比例" + "\t" +
+                                 "冷水机大冷冻水泵实际总流量" + "\t" + "冷水机大冷冻水泵额定总流量" + "\t" + "冷水机大冷冻水泵流量比例" + "\t" +
+                                 "冷水机小冷冻水泵实际总流量" + "\t" + "冷水机小冷冻水泵额定总流量" + "\t" + "冷水机小冷冻水泵流量比例" + "\t" +
+                                 "冷水机大冷冻水泵实际总电功率" + "\t" + "冷水机小冷冻水泵实际总电功率" + "\t" + "冷水机冷冻水泵实际扬程" + "\t" +
+                                 "蓄冷水罐冷冻水泵实际总流量" + "\t" + "蓄冷水罐冷冻水泵额定总流量" + "\t" + "蓄冷水罐冷冻水泵流量比例" + "\t" +
+                                 "蓄冷水罐冷冻水泵实际总电功率" + "\t" + "蓄冷水罐冷冻水泵实际扬程")
+    Few0_total = chiller_chilled_pump_Fw0_total + storage_chilled_pump_Fw0_total
+    chiller_chilled_pump_data = [chiller1_chilled_pump_f0, chiller1_chilled_pump_f0, chiller1_chilled_pump_f0,
+                                 chiller1_chilled_pump_f0, chiller2_chilled_pump_f0, chiller2_chilled_pump_f0]
+    chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
+    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_value_data = [0, 0]
+    chiller_user_value_data = [1, 1]
+    storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
+                                 storage_chilled_pump_f0, storage_chilled_pump_f0]
+    storage_user_value_data = [1, 1, 1]
+    storage_chiller_value_data = [0, 0, 0]
+    model_input_data = time_data + environment_input_data_default() + chiller_data + \
+                       chiller_chilled_pump_data + chiller_cooling_pump_data + \
+                       chiller_cooling_tower_data + chiller_chilled_value_data + \
+                       chiller_cooling_value_data + chiller_tower_value_data + \
+                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       air_source_heat_pump_input_data_default() + \
+                       storage_chilled_pump_data + storage_user_value_data + storage_chiller_value_data + \
+                       tower_chilled_input_data_default() + user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：冷水机+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name,
+                                 output_interval, time_out, False, False)
+        # 获取仿真结果
+        chiller_Few_total = result['chiller_Few_total'][-1]
+        chiller_Few_big_total = result['chiller_Few_big'][-1]
+        chiller_Few_small_total = result['chiller_Few_small'][-1]
+        chiller_H_chilled_pump = result['chiller_H_chilled_pump'][-1]
+        chiller_chilled_pump_P_big_total = result['chiller_P_big_chilled_pump'][-1]
+        chiller_chilled_pump_P_small_total = result['chiller_P_small_chilled_pump'][-1]
+        storage_Few_total_to_user = result['storage_Few_total_to_user'][-1]
+        storage_H_chilled_pump = result['storage_H_chilled_pump'][-1]
+        storage_P_total_chilled_pump = result['storage_P_total_chilled_pump'][-1]
+        Few_total = chiller_Few_total + storage_Few_total_to_user
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(Few_total, 2)) + "\t" + str(np.round(Few0_total, 2)) + "\t" + \
+                  str(np.round(Few_total / Few0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_total / chiller_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump1_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_big_total / chiller_chilled_pump1_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_Few_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump2_Fw0_total, 2)) + "\t" + \
+                  str(np.round(chiller_Few_small_total / chiller_chilled_pump2_Fw0_total, 4)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_P_big_total, 2)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_P_small_total, 2)) + "\t" + \
+                  str(np.round(chiller_H_chilled_pump, 4))  + "\t" + \
+                  str(np.round(storage_Few_total_to_user, 2)) + "\t" + \
+                  str(np.round(storage_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(storage_Few_total_to_user / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(storage_P_total_chilled_pump, 2)) + "\t" + \
+                  str(np.round(storage_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：冷水机+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 空气源热泵+蓄冷水罐，向用户侧供冷，阀门和水泵全开
+    full_open_result_list.append("空气源热泵+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识：")
+    full_open_result_list.append("系统实际总流量" + "\t" + "系统额定总流量" + "\t" + "系统流量比例" + "\t" +
+                                 "空气源热泵冷冻水泵实际总流量" + "\t" + "空气源热泵冷冻水泵额定总流量" + "\t" + "空气源热泵冷冻水泵流量比例" + "\t" +
+                                 "空气源热泵冷冻水泵实际总电功率" + "\t" + "空气源热泵冷冻水泵实际扬程" + "\t" +
+                                 "蓄冷水罐冷冻水泵实际总流量" + "\t" + "蓄冷水罐冷冻水泵额定总流量" + "\t" + "蓄冷水罐冷冻水泵流量比例" + "\t" +
+                                 "蓄冷水罐冷冻水泵实际总电功率" + "\t" + "蓄冷水罐冷冻水泵实际扬程")
+    Few0_total = ashp_chilled_pump_Fw0_total + storage_chilled_pump_Fw0_total
+    ashp_chilled_pump_data = [ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0]
+    ashp_chilled_value_data = [1, 1, 1, 1]
+    storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
+                                 storage_chilled_pump_f0, storage_chilled_pump_f0]
+    storage_user_value_data = [1, 1, 1]
+    storage_chiller_value_data = [0, 0, 0]
+    model_input_data = time_data + environment_input_data_default() + chiller_input_data_default() + \
+                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
+                       storage_chilled_pump_data + storage_user_value_data + storage_chiller_value_data + \
+                       tower_chilled_input_data_default() + user_load_input_data_default()
+    try:
+        time1 = time.time()
+        print("正在进行：空气源热泵+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
+                                 model_input_data, model_input_type, model_output_name,
+                                 output_interval, time_out, False, False)
+        # 获取仿真结果
+        ashp_Few_total = result['ashp_Few_total'][-1]
+        ashp_H_chilled_pump = result['ashp_H_chilled_pump'][-1]
+        ashp_chilled_pump_P_total = result['ashp_P_total_chilled_pump'][-1]
+        storage_Few_total_to_user = result['storage_Few_total_to_user'][-1]
+        storage_H_chilled_pump = result['storage_H_chilled_pump'][-1]
+        storage_P_total_chilled_pump = result['storage_P_total_chilled_pump'][-1]
+        Few_total = ashp_Few_total + storage_Few_total_to_user
+        # 仿真结果生成txt
+        tmp_txt = str(np.round(Few_total, 2)) + "\t" + str(np.round(Few0_total, 2)) + "\t" + \
+                  str(np.round(Few_total / Few0_total, 4)) + "\t" + \
+                  str(np.round(ashp_Few_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(ashp_Few_total / ashp_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(ashp_chilled_pump_P_total, 2)) + "\t" + str(np.round(ashp_H_chilled_pump, 4)) + "\t" + \
+                  str(np.round(storage_Few_total_to_user, 2)) + "\t" + \
+                  str(np.round(storage_chilled_pump_Fw0_total, 2)) + "\t" + \
+                  str(np.round(storage_Few_total_to_user / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
+                  str(np.round(storage_P_total_chilled_pump, 2)) + "\t" + \
+                  str(np.round(storage_H_chilled_pump, 4)) + "\n"
+        full_open_result_list.append(tmp_txt)
+        time2 = time.time()
+        time_cost = np.round(time2 - time1, 2)
+        print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
+    except:
+        print("FMU仿真失败：空气源热泵+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识！")
+        print(traceback.format_exc() + "\n")
+
+    # 结果写入txt
+    write_txt_data(full_open_result_txt_path, full_open_result_list)

@@ -108,7 +108,7 @@ def user_load_input_data_default():
 
     """
     # 冷冻水泵
-    chilled_pump = [1480, 1480]
+    chilled_pump = [50, 50]
     # 返回结果
     return chilled_pump
 
