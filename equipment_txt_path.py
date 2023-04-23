@@ -1047,50 +1047,6 @@ def get_user_equipment_status_txt_path(txt_path):
     return file_Tdi_status, file_Hri_status, file_mau_status, file_fcu_status, file_ahu_status, file_rau_status
 
 
-def get_user_equipment_history_value_txt_path(txt_path):
-    """
-    获取用户末端设备和室内末端测点设备的历史数据txt文件路径
-
-    Args:
-        txt_path:
-
-    Returns:
-
-    """
-    # 上一个时刻的历史数据
-    file_Tdi_value = txt_path + "/history_value_status/user_terminal/previous_one_moment/history_value/" \
-                                "measure_point/Tdi.txt"
-    file_Hri_value = txt_path + "/history_value_status/user_terminal/previous_one_moment/history_value/" \
-                                "measure_point/Hri.txt"
-    file_fcu_Fea = txt_path + "/history_value_status/user_terminal/previous_one_moment/history_value/" \
-                              "fan_control_unit/Fea.txt"
-    file_fcu_Ted = txt_path + "/history_value_status/user_terminal/previous_one_moment/history_value/" \
-                              "fan_control_unit/Ted.txt"
-    file_fcu_Teo = txt_path + "/history_value_status/user_terminal/previous_one_moment/history_value/" \
-                              "fan_control_unit/Teo.txt"
-    # 返回结果
-    return file_Tdi_value, file_Hri_value, file_fcu_Fea, file_fcu_Ted, file_fcu_Teo
-
-
-def get_user_equipment_history_status_txt_path(txt_path):
-    """
-    获取用户末端设备和室内末端测点设备的历史状态txt文件路径
-
-    Args:
-        txt_path:
-
-    Returns:
-
-    """
-    # 上一个时刻的历史数据
-    file_Tdi_status = txt_path + "/history_value_status/user_terminal/previous_one_moment/history_status/Tdi.txt"
-    file_Hri_status = txt_path + "/history_value_status/user_terminal/previous_one_moment/history_status/Hri.txt"
-    file_fcu_status = txt_path + "/history_value_status/user_terminal/previous_one_moment/history_status/" \
-                                 "fan_control_unit.txt"
-    # 返回结果
-    return file_Tdi_status, file_Hri_status, file_fcu_status
-
-
 def get_environment_equipment_real_value_txt_path(txt_path):
     """
     获取环境参数测点的实际值txt文件路径
