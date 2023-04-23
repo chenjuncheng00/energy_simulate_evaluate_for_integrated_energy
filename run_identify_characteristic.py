@@ -3,12 +3,13 @@ from identify_hydraulic_characteristic import main_identify_hydraulic_characteri
 from identify_equipment_characteristic import main_identify_equipment_characteristic
 
 def run_identify_hydraulic_characteristic():
-    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230421.fmu"
+    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230423.fmu"
     start_time = (31 + 28 + 31 + 30 + 31) * 24 * 3600
     stop_time = start_time + 2 * 3600
     output_interval = 60
     time_out = 600
-    n_cal_f_pump = 3
+    n_cal_f_pump = 5
+    pump_f0_cal = True
     cfg_path_equipment = "./config/equipment_config.cfg"
     chiller_chilled_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/chiller_chilled.txt"
     chiller_cooling_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/chiller_cooling.txt"
@@ -25,7 +26,7 @@ def run_identify_hydraulic_characteristic():
                                            time_out, n_cal_f_pump, cfg_path_equipment, chiller_chilled_result_txt_path,
                                            chiller_cooling_result_txt_path, ashp_chilled_result_txt_path,
                                            storage_from_chiller_result_txt_path, storage_to_user_result_txt_path,
-                                           tower_chilled_result_txt_path, full_open_result_txt_path)
+                                           tower_chilled_result_txt_path, full_open_result_txt_path, pump_f0_cal)
 
 
 def run_equipment_characteristic():

@@ -42,9 +42,9 @@ def chiller_output_name():
          'chiller_P_total_cooling_pump', 'chiller_P_big_cooling_pump', 'chiller_P_small_cooling_pump',
          'chiller_P_total_cooling_tower']
     # 冷冻水流量，单位：t/h
-    Few = ['chiller_Few_total', 'chiller_Few_big', 'chiller_Few_small']
+    Few = ['chiller_Few_total', 'chiller_Few_big', 'chiller_Few_small', 'chiller_Few_chilled_pump_small']
     # 冷却水流量，单位：t/h
-    Fcw = ['chiller_Fcw_total', 'chiller_Fcw_big', 'chiller_Fcw_small']
+    Fcw = ['chiller_Fcw_total', 'chiller_Fcw_big', 'chiller_Fcw_small', 'chiller_Fcw_cooling_pump_small']
     # 冷冻水温度，单位：℃
     Te = ['chiller_Ted_all', 'chiller_Ted_big', 'chiller_Ted_small',
           'chiller_Tei_all', 'chiller_Tei_big', 'chiller_Tei_small',
