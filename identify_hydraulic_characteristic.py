@@ -296,24 +296,24 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                             if i == 0:
                                 chiller_Few_big = 0
                             else:
-                                chiller_Few_big = np.round(chiller_Few_big_total / i, 4)
+                                chiller_Few_big = chiller_Few_big_total / i
                             if j == 0:
                                 chiller_Few_small = 0
                             else:
-                                chiller_Few_small = np.round(chiller_Few_small_total / j, 4)
+                                chiller_Few_small = chiller_Few_small_total / j
                             # 单台水泵的数据
                             if k == 0:
                                 chilled_pump_Few_big = 0
                                 chilled_pump_P_big = 0
                             else:
-                                chilled_pump_Few_big = np.round(chilled_pump_Few_big_total / k, 4)
-                                chilled_pump_P_big = np.round(chilled_pump_P_big_total / k, 4)
+                                chilled_pump_Few_big = chilled_pump_Few_big_total / k
+                                chilled_pump_P_big = chilled_pump_P_big_total / k
                             if l == 0:
                                 chilled_pump_Few_small = 0
                                 chilled_pump_P_small = 0
                             else:
-                                chilled_pump_Few_small = np.round(chilled_pump_Few_small_total / l, 4)
-                                chilled_pump_P_small = np.round(chilled_pump_P_small_total / l, 4)
+                                chilled_pump_Few_small = chilled_pump_Few_small_total / l
+                                chilled_pump_P_small = chilled_pump_P_small_total / l
                             # 如果水泵频率不是50Hz，则用相似率换算数据
                             if n_cal_f == 0 and pump1_f < chiller1_chilled_pump_f_list[0] and \
                                     pump2_f < chiller2_chilled_pump_f_list[0]:
@@ -329,10 +329,13 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                             # 仿真结果生成txt
                             tmp_txt = str(i) + "\t" + str(j) + "\t" + str(k) + "\t" + str(l) + "\t" + \
                                       str(pump1_f) + "\t" + str(pump2_f) + "\t" + \
-                                      str(chiller_Few_big) + "\t" + str(chiller_Few_small) + "\t" + \
-                                      str(chilled_pump_Few_big) + "\t" + str(chilled_pump_Few_small) + "\t" + \
-                                      str(chilled_pump_P_big) + "\t" + str(chilled_pump_P_small) + "\t" + \
-                                      str(np.round(chilled_pump_H, 4))
+                                      str(np.round(chiller_Few_big, 2)) + "\t" + \
+                                      str(np.round(chiller_Few_small, 2)) + "\t" + \
+                                      str(np.round(chilled_pump_Few_big, 2)) + "\t" + \
+                                      str(np.round(chilled_pump_Few_small, 2)) + "\t" + \
+                                      str(np.round(chilled_pump_P_big, 2)) + "\t" + \
+                                      str(np.round(chilled_pump_P_small, 2)) + "\t" + \
+                                      str(np.round(chilled_pump_H, 2))
                             chiller_chilled_result_list.append(tmp_txt)
                             time2 = time.time()
                             time_cost = np.round(time2 - time1, 2)
@@ -490,24 +493,24 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                                 if i == 0:
                                     chiller_Fcw_big = 0
                                 else:
-                                    chiller_Fcw_big = np.round(chiller_Fcw_big_total / i, 4)
+                                    chiller_Fcw_big = chiller_Fcw_big_total / i
                                 if j == 0:
                                     chiller_Fcw_small = 0
                                 else:
-                                    chiller_Fcw_small = np.round(chiller_Fcw_small_total / j, 4)
+                                    chiller_Fcw_small = chiller_Fcw_small_total / j
                                 # 单台水泵的数据
                                 if l == 0:
                                     cooling_pump_Fcw_big = 0
                                     cooling_pump_P_big = 0
                                 else:
-                                    cooling_pump_Fcw_big = np.round(cooling_pump_Fcw_big_total / l, 4)
-                                    cooling_pump_P_big = np.round(cooling_pump_P_big_total / l, 4)
+                                    cooling_pump_Fcw_big = cooling_pump_Fcw_big_total / l
+                                    cooling_pump_P_big = cooling_pump_P_big_total / l
                                 if m == 0:
                                     cooling_pump_Fcw_small = 0
                                     cooling_pump_P_small = 0
                                 else:
-                                    cooling_pump_Fcw_small = np.round(cooling_pump_Fcw_small_total / m, 4)
-                                    cooling_pump_P_small = np.round(cooling_pump_P_small_total / m, 4)
+                                    cooling_pump_Fcw_small = cooling_pump_Fcw_small_total / m
+                                    cooling_pump_P_small = cooling_pump_P_small_total / m
                                 # 如果水泵频率不是50Hz，则用相似率换算数据
                                 if n_cal_f == 0 and pump1_f < chiller1_cooling_pump_f_list[0] and \
                                         pump2_f < chiller2_cooling_pump_f_list[0]:
@@ -523,10 +526,13 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                                 # 仿真结果生成txt
                                 tmp_txt = str(i) + "\t" + str(j) + "\t" + str(k) + "\t" + str(l) + "\t" + \
                                           str(m) + "\t" + str(pump1_f) + "\t" + str(pump2_f) + "\t" + \
-                                          str(chiller_Fcw_big) + "\t" + str(chiller_Fcw_small) + "\t" + \
-                                          str(cooling_pump_Fcw_big) + "\t" + str(cooling_pump_Fcw_small) + "\t" + \
-                                          str(cooling_pump_P_big) + "\t" + str(cooling_pump_P_small) + "\t" + \
-                                          str(np.round(cooling_pump_H, 4))
+                                          str(np.round(chiller_Fcw_big, 2)) + "\t" + \
+                                          str(np.round(chiller_Fcw_small, 2)) + "\t" + \
+                                          str(np.round(cooling_pump_Fcw_big, 2)) + "\t" + \
+                                          str(np.round(cooling_pump_Fcw_small, 2)) + "\t" + \
+                                          str(np.round(cooling_pump_P_big, 2)) + "\t" + \
+                                          str(np.round(cooling_pump_P_small, 2)) + "\t" + \
+                                          str(np.round(cooling_pump_H, 2))
                                 chiller_cooling_result_list.append(tmp_txt)
                                 time2 = time.time()
                                 time_cost = np.round(time2 - time1, 2)
@@ -626,8 +632,8 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
                         chilled_pump_Few = 0
                         chilled_pump_P = 0
                     else:
-                        chilled_pump_Few = np.round(Few_total / j, 4)
-                        chilled_pump_P = np.round(chilled_pump_P_total / j, 4)
+                        chilled_pump_Few = Few_total / j
+                        chilled_pump_P = chilled_pump_P_total / j
                     # 如果水泵频率不是50Hz，则用相似率换算数据
                     if n_cal_f == 0 and pump_f < ashp_chilled_pump_f_list[0]:
                         chilled_pump_Few = chilled_pump_Few * (ashp_chilled_pump_f_list[0] / pump_f)
@@ -635,8 +641,9 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
                         chilled_pump_P = chilled_pump_P * ((ashp_chilled_pump_f_list[0] / pump_f) ** 3)
                         pump_f = ashp_chilled_pump_f_list[0]
                     # 仿真结果生成txt
-                    tmp_txt = str(i) + "\t" + str(j) + "\t" + str(pump_f) + "\t" + str(chilled_pump_Few) + "\t" + \
-                              str(chilled_pump_P) + "\t" + str(np.round(chilled_pump_H, 4))
+                    tmp_txt = str(i) + "\t" + str(j) + "\t" + str(pump_f) + "\t" + \
+                              str(np.round(chilled_pump_Few, 2)) + "\t" + \
+                              str(np.round(chilled_pump_P, 2)) + "\t" + str(np.round(chilled_pump_H, 2))
                     ashp_chilled_result_list.append(tmp_txt)
                     time2 = time.time()
                     time_cost = np.round(time2 - time1, 2)
@@ -765,18 +772,18 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                         if i == 0:
                             chiller_Few_big = 0
                         else:
-                            chiller_Few_big = np.round(chiller_Few_big_total / i, 4)
+                            chiller_Few_big = chiller_Few_big_total / i
                         if j == 0:
                             chiller_Few_small = 0
                         else:
-                            chiller_Few_small = np.round(chiller_Few_small_total / j, 4)
+                            chiller_Few_small = chiller_Few_small_total / j
                         # 单台水泵的数据
                         if k == 0:
                             chilled_pump_Few = 0
                             chilled_pump_P = 0
                         else:
-                            chilled_pump_Few = np.round(Few_total_from_chiller / k, 4)
-                            chilled_pump_P = np.round(chilled_pump_P_total / k, 4)
+                            chilled_pump_Few = Few_total_from_chiller / k
+                            chilled_pump_P = chilled_pump_P_total / k
                         # 如果水泵频率不是50Hz，则用相似率换算数据
                         if n_cal_f == 0 and pump_f < storage_chilled_pump_f_list[0]:
                             chiller_Few_big = chiller_Few_big * (storage_chilled_pump_f_list[0] / pump_f)
@@ -787,9 +794,11 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                             pump_f = storage_chilled_pump_f_list[0]
                         # 仿真结果生成txt
                         tmp_txt = str(i) + "\t" + str(j) + "\t" + str(k) + "\t" + str(pump_f) + "\t" + \
-                                  str(chiller_Few_big) + "\t" + str(chiller_Few_small) + "\t" + \
-                                  str(chilled_pump_Few) + "\t" + str(chilled_pump_P) + "\t" + \
-                                  str(np.round(chilled_pump_H, 4))
+                                  str(np.round(chiller_Few_big, 2)) + "\t" + \
+                                  str(np.round(chiller_Few_small, 2)) + "\t" + \
+                                  str(np.round(chilled_pump_Few, 2)) + "\t" + \
+                                  str(np.round(chilled_pump_P, 2)) + "\t" + \
+                                  str(np.round(chilled_pump_H, 2))
                         storage_from_chiller_result_list.append(tmp_txt)
                         time2 = time.time()
                         time_cost = np.round(time2 - time1, 2)
@@ -871,8 +880,8 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, storage_chilled_pump_f
                     chilled_pump_Few = 0
                     chilled_pump_P = 0
                 else:
-                    chilled_pump_Few = np.round(Few_total_to_user / i, 4)
-                    chilled_pump_P = np.round(chilled_pump_P_total / i, 4)
+                    chilled_pump_Few = Few_total_to_user / i
+                    chilled_pump_P = chilled_pump_P_total / i
                 # 如果水泵频率不是50Hz，则用相似率换算数据
                 if n_cal_f == 0 and pump_f < storage_chilled_pump_f_list[0]:
                     chilled_pump_Few = chilled_pump_Few * (storage_chilled_pump_f_list[0] / pump_f)
@@ -880,8 +889,8 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, storage_chilled_pump_f
                     chilled_pump_P = chilled_pump_P * ((storage_chilled_pump_f_list[0] / pump_f) ** 3)
                     pump_f = storage_chilled_pump_f_list[0]
                 # 仿真结果生成txt
-                tmp_txt = str(i) + "\t" + str(pump_f) + "\t" + str(chilled_pump_Few) + "\t" + \
-                          str(chilled_pump_P) + "\t" + str(np.round(chilled_pump_H, 4))
+                tmp_txt = str(i) + "\t" + str(pump_f) + "\t" + str(np.round(chilled_pump_Few, 2)) + "\t" + \
+                          str(np.round(chilled_pump_P, 2)) + "\t" + str(np.round(chilled_pump_H, 2))
                 storage_to_user_result_list.append(tmp_txt)
                 time2 = time.time()
                 time_cost = np.round(time2 - time1, 2)
@@ -989,8 +998,8 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
                         chilled_pump_Few = 0
                         chilled_pump_P = 0
                     else:
-                        chilled_pump_Few = np.round(Few_total / j, 4)
-                        chilled_pump_P = np.round(chilled_pump_P_total / j, 4)
+                        chilled_pump_Few = Few_total / j
+                        chilled_pump_P = chilled_pump_P_total / j
                     # 如果水泵频率不是50Hz，则用相似率换算数据
                     if n_cal_f == 0 and pump_f < tower_chilled_pump_f_list[0]:
                         chilled_pump_Few = chilled_pump_Few * (tower_chilled_pump_f_list[0] / pump_f)
@@ -998,8 +1007,9 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
                         chilled_pump_P = chilled_pump_P * ((tower_chilled_pump_f_list[0] / pump_f) ** 3)
                         pump_f = tower_chilled_pump_f_list[0]
                     # 仿真结果生成txt
-                    tmp_txt = str(i) + "\t" + str(j) + "\t" + str(pump_f) + "\t" + str(chilled_pump_Few) + "\t" + \
-                              str(chilled_pump_P) + "\t" + str(np.round(chilled_pump_H, 4))
+                    tmp_txt = str(i) + "\t" + str(j) + "\t" + str(pump_f) + "\t" + \
+                              str(np.round(chilled_pump_Few, 2)) + "\t" + \
+                              str(np.round(chilled_pump_P, 2)) + "\t" + str(np.round(chilled_pump_H, 2))
                     tower_chilled_result_list.append(tmp_txt)
                     time2 = time.time()
                     time_cost = np.round(time2 - time1, 2)
@@ -1127,7 +1137,7 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
                   str(np.round(chiller_chilled_pump2_Fw0_total, 2)) + "\t" + \
                   str(np.round(chilled_pump_Few_small_total / chiller_chilled_pump2_Fw0_total, 4)) + "\t" + \
                   str(np.round(chilled_pump_P_big_total, 2)) + "\t" + \
-                  str(np.round(chilled_pump_P_small_total, 2)) + "\t" + str(np.round(chilled_pump_H, 4)) + "\n"
+                  str(np.round(chilled_pump_P_small_total, 2)) + "\t" + str(np.round(chilled_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1196,7 +1206,7 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
                   str(np.round(cooling_pump_Fcw_small_total / chiller_cooling_pump2_Fw0_total, 4)) + "\t" + \
                   str(np.round(cooling_pump_P_big_total, 2)) + "\t" + \
                   str(np.round(cooling_pump_P_small_total, 2)) + "\t" + \
-                  str(np.round(cooling_pump_H, 4)) + "\n"
+                  str(np.round(cooling_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1228,7 +1238,7 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
         # 仿真结果生成txt
         tmp_txt = str(np.round(Few_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(Few_total / ashp_chilled_pump_Fw0_total, 4)) + "\t" + \
-                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 4)) + "\n"
+                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1284,7 +1294,7 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
                   str(np.round(Few_total_from_chiller / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
                   str(np.round(chiller_Few_big_total, 2)) + "\t" + str(np.round(chiller_Few_small_total, 2)) + "\t" + \
                   str(np.round(chiller_Few_big / chiller_Few_small, 4)) + "\t" + \
-                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 4)) + "\n"
+                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1319,7 +1329,7 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
         tmp_txt = str(np.round(Few_total_to_user, 2)) + "\t" + \
                   str(np.round(storage_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(Few_total_to_user / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
-                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 4)) + "\n"
+                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1361,7 +1371,7 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
         # 仿真结果生成txt
         tmp_txt = str(np.round(Few_total, 2)) + "\t" + str(np.round(tower_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(Few_total / tower_chilled_pump_Fw0_total, 4)) + "\t" + \
-                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 4)) + "\n"
+                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1390,7 +1400,7 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
         # 仿真结果生成txt
         tmp_txt = str(np.round(Few_total, 2)) + "\t" + str(np.round(user_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(Few_total / user_chilled_pump_Fw0_total, 4)) + "\t" + \
-                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 4)) + "\n"
+                  str(np.round(chilled_pump_P_total, 2)) + "\t" + str(np.round(chilled_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1478,15 +1488,15 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
                   str(np.round(chiller_chilled_pump_Few_small_total / chiller_chilled_pump2_Fw0_total, 4)) + "\t" + \
                   str(np.round(chiller_chilled_pump_P_big_total, 2)) + "\t" + \
                   str(np.round(chiller_chilled_pump_P_small_total, 2)) + "\t" + \
-                  str(np.round(chiller_chilled_pump_H, 4)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_H, 2)) + "\t" + \
                   str(np.round(ashp_Few_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(ashp_Few_total / ashp_chilled_pump_Fw0_total, 4)) + "\t" + \
-                  str(np.round(ashp_chilled_pump_P_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_H, 4)) + "\t" + \
+                  str(np.round(ashp_chilled_pump_P_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_H, 2)) + "\t" + \
                   str(np.round(storage_Few_total_to_user, 2)) + "\t" + \
                   str(np.round(storage_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(storage_Few_total_to_user / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
                   str(np.round(storage_chilled_pump_P_total, 2)) + "\t" + \
-                  str(np.round(storage_chilled_pump_H, 4)) + "\n"
+                  str(np.round(storage_chilled_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1564,11 +1574,11 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
                   str(np.round(chiller_chilled_pump_Few_small_total / chiller_chilled_pump2_Fw0_total, 4)) + "\t" + \
                   str(np.round(chiller_chilled_pump_P_big_total, 2)) + "\t" + \
                   str(np.round(chiller_chilled_pump_P_small_total, 2)) + "\t" + \
-                  str(np.round(chiller_chilled_pump_H, 4)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_H, 2)) + "\t" + \
                   str(np.round(ashp_Few_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(ashp_Few_total / ashp_chilled_pump_Fw0_total, 4)) + "\t" + \
                   str(np.round(ashp_chilled_pump_P_total, 2)) + "\t" + \
-                  str(np.round(ashp_chilled_pump_H, 4)) + "\t" + "\n"
+                  str(np.round(ashp_chilled_pump_H, 2)) + "\t" + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1647,12 +1657,12 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
                   str(np.round(chiller_chilled_pump_Few_small_total / chiller_chilled_pump2_Fw0_total, 4)) + "\t" + \
                   str(np.round(chiller_chilled_pump_P_big_total, 2)) + "\t" + \
                   str(np.round(chiller_chilled_pump_P_small_total, 2)) + "\t" + \
-                  str(np.round(chiller_chilled_pump_H, 4)) + "\t" + \
+                  str(np.round(chiller_chilled_pump_H, 2)) + "\t" + \
                   str(np.round(storage_Few_total_to_user, 2)) + "\t" + \
                   str(np.round(storage_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(storage_Few_total_to_user / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
                   str(np.round(storage_chilled_pump_P_total, 2)) + "\t" + \
-                  str(np.round(storage_chilled_pump_H, 4)) + "\n"
+                  str(np.round(storage_chilled_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
@@ -1701,12 +1711,12 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
                   str(np.round(Few_total / Few0_total, 4)) + "\t" + \
                   str(np.round(ashp_Few_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(ashp_Few_total / ashp_chilled_pump_Fw0_total, 4)) + "\t" + \
-                  str(np.round(ashp_chilled_pump_P_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_H, 4)) + "\t" + \
+                  str(np.round(ashp_chilled_pump_P_total, 2)) + "\t" + str(np.round(ashp_chilled_pump_H, 2)) + "\t" + \
                   str(np.round(storage_Few_total_to_user, 2)) + "\t" + \
                   str(np.round(storage_chilled_pump_Fw0_total, 2)) + "\t" + \
                   str(np.round(storage_Few_total_to_user / storage_chilled_pump_Fw0_total, 4)) + "\t" + \
                   str(np.round(storage_chilled_pump_P_total, 2)) + "\t" + \
-                  str(np.round(storage_chilled_pump_H, 4)) + "\n"
+                  str(np.round(storage_chilled_pump_H, 2)) + "\n"
         full_open_result_list.append(tmp_txt)
         time2 = time.time()
         time_cost = np.round(time2 - time1, 2)
