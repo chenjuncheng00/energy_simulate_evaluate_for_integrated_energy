@@ -1,5 +1,5 @@
 import time, traceback, numpy as np
-from read_write_data import read_cfg_data, write_txt_data
+from algorithm_code.read_write_data import *
 from model_fmu_simulate import simulate_sample
 from model_fmu_input_type import main_model_input_type
 from model_fmu_input_data_default import environment_input_data_default, chiller_input_data_default, \
@@ -1590,6 +1590,7 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
     # 冷水机+蓄冷水罐，向用户侧供冷，阀门和水泵全开
     full_open_result_list.append("冷水机+蓄冷水罐，向用户侧供冷，阀门和水泵全开，水力特性辨识：")
     full_open_result_list.append("系统实际总流量" + "\t" + "系统额定总流量" + "\t" + "系统流量比例" + "\t" +
+                                 "大冷水机实际总流量" + "\t" + "小冷水机实际总流量" + "\t" + "冷水机实际流量分配比例" + "\t" +
                                  "冷水机冷冻水泵实际总流量" + "\t" + "冷水机冷冻水泵额定总流量" + "\t" + "冷水机冷冻水泵流量比例" + "\t" +
                                  "冷水机大冷冻水泵实际总流量" + "\t" + "冷水机大冷冻水泵额定总流量" + "\t" + "冷水机大冷冻水泵流量比例" + "\t" +
                                  "冷水机小冷冻水泵实际总流量" + "\t" + "冷水机小冷冻水泵额定总流量" + "\t" + "冷水机小冷冻水泵流量比例" + "\t" +
