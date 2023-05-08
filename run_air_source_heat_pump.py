@@ -29,16 +29,17 @@ def run_air_source_heat_pump(Q_total, n_calculate_hour, equipment_type_path, cfg
     # 实例化空气源热泵，输出空气源热泵列表
     # 系数依次对应:常数项、负荷率的三次方、负荷率的平方、负荷率的一次方
     air_source_heat_pump_cop_coef = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_cop_coef", 0)
+    air_source_heat_pump_Q0_coef = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_Q0_coef", 0)
     air_source_heat_pump_Q0 = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_Q0", 0)
     air_source_heat_pump_alpha = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_alpha", 0)
     air_source_heat_pump_beta = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_beta", 0)
     air_source_heat_pump_Few0 = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_Few0", 0)
     air_source_heat_pump_Rew = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_Rew", 0)
     air_source_heat_pump_f_status = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_f_status", 2)
-    air_source_heat_pump = Electric_Air_Conditioner(air_source_heat_pump_cop_coef, air_source_heat_pump_Q0,
-                                                    air_source_heat_pump_alpha, air_source_heat_pump_beta,
-                                                    air_source_heat_pump_Few0, air_source_heat_pump_Rew,
-                                                    air_source_heat_pump_f_status)
+    air_source_heat_pump = Electric_Air_Conditioner(air_source_heat_pump_cop_coef, air_source_heat_pump_Q0_coef,
+                                                    air_source_heat_pump_Q0, air_source_heat_pump_alpha,
+                                                    air_source_heat_pump_beta, air_source_heat_pump_Few0,
+                                                    air_source_heat_pump_Rew, air_source_heat_pump_f_status)
     # 实例化一级冷冻水泵
     chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_f0", 0)
     chilled_pump_fmax = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_fmax", 0)
