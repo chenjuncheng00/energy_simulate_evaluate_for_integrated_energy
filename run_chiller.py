@@ -45,6 +45,7 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
     # 实例化冷水机
     # 系数依次对应:常数项、负荷率的三次方、负荷率的平方、负荷率的一次方
     chiller1_cop_coef = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_cop_coef", 0)
+    chiller1_Q0_coef = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Q0_coef", 0)
     chiller1_Q0 = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Q0", 0)
     chiller1_alpha = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_alpha", 0)
     chiller1_beta = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_beta", 0)
@@ -53,11 +54,12 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
     chiller1_Rew = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Rew", 0)
     chiller1_Rcw = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Rcw", 0)
     chiller1_f_status = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_f_status", 2)
-    chiller1 = Electric_Air_Conditioner(chiller1_cop_coef, chiller1_Q0, chiller1_alpha, chiller1_beta,
-                                        chiller1_Few0, chiller1_Rew, chiller1_f_status)
+    chiller1 = Electric_Air_Conditioner(chiller1_cop_coef, chiller1_Q0_coef, chiller1_Q0, chiller1_alpha,
+                                        chiller1_beta, chiller1_Few0, chiller1_Rew, chiller1_f_status)
     chiller1.Fcw0 = chiller1_Fcw0
     chiller1.Rcw = chiller1_Rcw
     chiller2_cop_coef = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_cop_coef", 0)
+    chiller2_Q0_coef = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Q0_coef", 0)
     chiller2_Q0 = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Q0", 0)
     chiller2_alpha = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_alpha", 0)
     chiller2_beta = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_beta", 0)
@@ -66,8 +68,8 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
     chiller2_Rew = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Rew", 0)
     chiller2_Rcw = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Rcw", 0)
     chiller2_f_status = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_f_status", 2)
-    chiller2 = Electric_Air_Conditioner(chiller2_cop_coef, chiller2_Q0, chiller2_alpha, chiller2_beta,
-                                        chiller2_Few0, chiller2_Rew, chiller2_f_status)
+    chiller2 = Electric_Air_Conditioner(chiller2_cop_coef, chiller2_Q0_coef, chiller2_Q0, chiller2_alpha,
+                                        chiller2_beta, chiller2_Few0, chiller2_Rew, chiller2_f_status)
     chiller2.Fcw0 = chiller2_Fcw0
     chiller2.Rcw = chiller2_Rcw
     # 实例化冷却塔
@@ -154,6 +156,9 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
                                                 n_cooling_tower_list, equipment_type_path, cfg_path_public)
         ans_P_total = ans_opt[0]
         ans_Q_total = ans_opt[1]
+        chilled_value_open = ans_opt[2]
+        cooling_value_open = ans_opt[3]
+        tower_value_open = ans_opt[4]
     elif opt_only == False and cal_set == True:
         algorithm_chiller_double(Q_total, H_chilled_pump, 0, H_cooling_pump, chiller1,
                                  chiller2, chilled_pump1, chilled_pump2, None,
@@ -163,8 +168,14 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
                                  n_calculate_hour, cfg_path_equipment, cfg_path_public)
         ans_P_total = None
         ans_Q_total = None
+        chilled_value_open = None
+        cooling_value_open = None
+        tower_value_open = None
     else:
         ans_P_total = 0
         ans_Q_total = 0
+        chilled_value_open = 0
+        cooling_value_open = 0
+        tower_value_open = 0
     # 返回结果
-    return ans_P_total, ans_Q_total
+    return ans_P_total, ans_Q_total, chilled_value_open, cooling_value_open, tower_value_open

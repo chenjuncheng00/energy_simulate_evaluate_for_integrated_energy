@@ -3,7 +3,7 @@ from identify_hydraulic_characteristic import main_identify_hydraulic_characteri
 from identify_equipment_characteristic import main_identify_equipment_characteristic
 
 def run_identify_hydraulic_characteristic():
-    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230423.fmu"
+    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230508.fmu"
     start_time = (31 + 28 + 31 + 30 + 31) * 24 * 3600
     stop_time = start_time + 2 * 3600
     output_interval = 60
@@ -30,7 +30,7 @@ def run_identify_hydraulic_characteristic():
 
 
 def run_equipment_characteristic():
-    fmu_path = "./model_data/file_fmu/system_characteristic_20230417.fmu"
+    fmu_path = "./model_data/file_fmu/system_characteristic_20230508.fmu"
     start_time = 0
     stop_time = start_time + 2 * 3600
     output_interval = 60

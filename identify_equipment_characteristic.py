@@ -47,8 +47,8 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
     for i in range(n_cal_Teo + 1):
         Teo_set_list.append(Teo_set_min + i * Teo_set_step + 273.15)
     # 冷却水回水温度辨识范围，单位转换为：K
-    Tci_min = 20
-    Tci_max = 40
+    Tci_min = 18
+    Tci_max = 46
     Tci_step = 4
     n_cal_Tci = int((Tci_max - Tci_min) / Tci_step)
     Tci_list = []
@@ -66,7 +66,7 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
 
     # 流量比例上下限和步长
     Fw_min_ratio = 0.2
-    Fw_max_ratio = 1.2
+    Fw_max_ratio = 1.4
     Fw_step = 0.2
     n_Fw_cal = int((Fw_max_ratio - Fw_min_ratio) / Fw_step)
     # 流量辨识范围，单位转换为：kg/s
@@ -89,7 +89,7 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
 
     # 制冷功率辨识范围，单位：kW
     Q_min_ratio = 0.2
-    Q_max_ratio = 1
+    Q_max_ratio = 1.4
     Q_step = 0.2
     n_Q_cal = int((Q_max_ratio - Q_min_ratio) / Q_step)
     chiller1_Q_list = []
