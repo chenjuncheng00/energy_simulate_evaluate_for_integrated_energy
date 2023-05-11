@@ -36,8 +36,8 @@ def chiller_input_type():
 
     """
     # 空调主机，开关，True或False
-    main_equipment_turn = [('turn_chiller1', np.bool_), ('turn_chiller2', np.bool_), ('turn_chiller3', np.bool_),
-                           ('turn_chiller4', np.bool_), ('turn_chiller5', np.bool_), ('turn_chiller6', np.bool_)]
+    main_equipment_turn = [('chiller_turn1', np.bool_), ('chiller_turn2', np.bool_), ('chiller_turn3', np.bool_),
+                           ('chiller_turn4', np.bool_), ('chiller_turn5', np.bool_), ('chiller_turn6', np.bool_)]
     main_equipment_Teo_set = [('chiller_Teo_set', np.float_)]
     # 冷冻水泵，转速，0到1480
     chilled_pump = [('chiller_f_chilled_pump1', np.float_), ('chiller_f_chilled_pump2', np.float_),
@@ -84,8 +84,8 @@ def air_source_heat_pump_input_type():
 
     """
     # 空调主机，开关，True或False
-    main_equipment_turn = [('turn_ashp1', np.bool_), ('turn_ashp2', np.bool_),
-                           ('turn_ashp3', np.bool_), ('turn_ashp4', np.bool_)]
+    main_equipment_turn = [('ashp_turn1', np.bool_), ('ashp_turn2', np.bool_),
+                           ('ashp_turn3', np.bool_), ('ashp_turn4', np.bool_)]
     main_equipment_Teo_set = [('ashp_Teo_set', np.float_)]
     # 冷冻水泵，转速，0到1480
     chilled_pump = [('ashp_f_chilled_pump1', np.float_), ('ashp_f_chilled_pump2', np.float_),
@@ -129,8 +129,8 @@ def tower_chilled_input_type():
 
     """
     # 冷冻水泵，转速，0到1480
-    chilled_pump = [('tower_chilled_f_pump1', np.float_), ('tower_chilled_f_pump2', np.float_),
-                    ('tower_chilled_f_pump3', np.float_), ('tower_chilled_f_pump4', np.float_)]
+    chilled_pump = [('tower_chilled_f_chilled_pump1', np.float_), ('tower_chilled_f_chilled_pump2', np.float_),
+                    ('tower_chilled_f_chilled_pump3', np.float_), ('tower_chilled_f_chilled_pump4', np.float_)]
     # 返回结果
     return chilled_pump
 

@@ -27,12 +27,12 @@ def run_energy_storage_equipment(Q_total_list, time_list, Q0_total_in, Q0_total_
     n_chilled_value_in_storage = read_cfg_data(cfg_path_equipment, "蓄冷阀门_蓄能装置", "n_chilled_value", 1)
     n_chilled_value_to_user = read_cfg_data(cfg_path_equipment, "放冷阀门_蓄能装置", "n_chilled_value", 1)
     # 水泵性能系数
-    chilled_pump_to_user_Fw0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_to_user_Fw0_coef", 0)
-    chilled_pump_to_user_H0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_to_user_H0_coef", 0)
-    chilled_pump_to_user_P0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_to_user_P0_coef", 0)
-    chilled_pump_in_storage_Fw0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_in_storage_Fw0_coef", 0)
-    chilled_pump_in_storage_H0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_in_storage_H0_coef", 0)
-    chilled_pump_in_storage_P0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_in_storage_P0_coef", 0)
+    chilled_pump_to_user_Fw0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_to_user_Fw0_coef", 0)
+    chilled_pump_to_user_H0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_to_user_H0_coef", 0)
+    chilled_pump_to_user_P0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_to_user_P0_coef", 0)
+    chilled_pump_in_storage_Fw0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_in_storage_Fw0_coef", 0)
+    chilled_pump_in_storage_H0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_in_storage_H0_coef", 0)
+    chilled_pump_in_storage_P0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_in_storage_P0_coef", 0)
     # 实例化蓄能装置
     energy_storage_equipment_Q0 = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_Q0", 0)
     energy_storage_equipment_E0 = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_E0", 0)
@@ -43,14 +43,14 @@ def run_energy_storage_equipment(Q_total_list, time_list, Q0_total_in, Q0_total_
                                                         energy_storage_equipment_alpha, energy_storage_equipment_beta,
                                                         energy_storage_equipment_Few0, n_calculate_hour)
     # 实例化冷冻水泵
-    chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_f0", 0)
-    chilled_pump_fmax = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_fmax", 0)
-    chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_fmin", 0)
-    chilled_pump_Few0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_Few0", 0)
-    chilled_pump_H0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_H0", 0)
-    chilled_pump_P0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_P0", 0)
-    chilled_pump_Rw = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_Rw", 0)
-    chilled_pump_f_status = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_f_status", 2)
+    chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_f0", 0)
+    chilled_pump_fmax = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_fmax", 0)
+    chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_fmin", 0)
+    chilled_pump_Few0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_Few0", 0)
+    chilled_pump_H0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_H0", 0)
+    chilled_pump_P0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_P0", 0)
+    chilled_pump_Rw = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_Rw", 0)
+    chilled_pump_f_status = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_f_status", 2)
     # 冷冻水泵：向用户侧供冷工况
     chilled_pump_to_user = Water_Pump(chilled_pump_to_user_Fw0_coef, chilled_pump_to_user_H0_coef,
                                       chilled_pump_to_user_P0_coef, chilled_pump_f0, chilled_pump_fmax,

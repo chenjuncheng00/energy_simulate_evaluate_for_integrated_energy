@@ -20,8 +20,8 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
     # 设备数量
     n0_chiller1 = read_cfg_data(cfg_path_equipment, "冷水机1", "n_chiller1", 1)
     n0_chiller2 = read_cfg_data(cfg_path_equipment, "冷水机2", "n_chiller2", 1)
-    n0_chilled_pump1 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "n_chilled_pump1", 1)
-    n0_chilled_pump2 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "n_chilled_pump2", 1)
+    n0_chilled_pump1 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "n_chilled_pump1", 1)
+    n0_chilled_pump2 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "n_chilled_pump2", 1)
     n0_cooling_pump1 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "n_cooling_pump1", 1)
     n0_cooling_pump2 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "n_cooling_pump2", 1)
     n0_cooling_tower = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机", "n_cooling_tower", 1)
@@ -32,16 +32,16 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
     cooling_pump1_Fw0_coef = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "cooling_pump1_Fw0_coef", 0)
     cooling_pump1_H0_coef = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "cooling_pump1_H0_coef", 0)
     cooling_pump1_P0_coef = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "cooling_pump1_P0_coef", 0)
-    chilled_pump1_Fw0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_Fw0_coef", 0)
-    chilled_pump1_H0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_H0_coef", 0)
-    chilled_pump1_P0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_P0_coef", 0)
+    chilled_pump1_Fw0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_Fw0_coef", 0)
+    chilled_pump1_H0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_H0_coef", 0)
+    chilled_pump1_P0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_P0_coef", 0)
     # 水泵2性能系数
     cooling_pump2_Fw0_coef = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "cooling_pump2_Fw0_coef", 0)
     cooling_pump2_H0_coef = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "cooling_pump2_H0_coef", 0)
     cooling_pump2_P0_coef = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "cooling_pump2_P0_coef", 0)
-    chilled_pump2_Fw0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_Fw0_coef", 0)
-    chilled_pump2_H0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_H0_coef", 0)
-    chilled_pump2_P0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_P0_coef", 0)
+    chilled_pump2_Fw0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_Fw0_coef", 0)
+    chilled_pump2_H0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_H0_coef", 0)
+    chilled_pump2_P0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_P0_coef", 0)
     # 实例化冷水机
     # 系数依次对应:常数项、负荷率的三次方、负荷率的平方、负荷率的一次方
     chiller1_cop_coef = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_cop_coef", 0)
@@ -111,25 +111,25 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
                                cooling_pump2_f0, cooling_pump2_fmax, cooling_pump2_fmin, cooling_pump2_Fcw0,
                                cooling_pump2_H0, cooling_pump2_P0, cooling_pump2_Rw, cooling_pump2_f_status)
     # 实例化冷冻水泵
-    chilled_pump1_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_f0", 0)
-    chilled_pump1_fmax = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_fmax", 0)
-    chilled_pump1_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_fmin", 0)
-    chilled_pump1_Few0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_Few0", 0)
-    chilled_pump1_H0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_H0", 0)
-    chilled_pump1_P0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_P0", 0)
-    chilled_pump1_Rw = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_Rw", 0)
-    chilled_pump1_f_status = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_f_status", 2)
+    chilled_pump1_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_f0", 0)
+    chilled_pump1_fmax = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_fmax", 0)
+    chilled_pump1_fmin = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_fmin", 0)
+    chilled_pump1_Few0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_Few0", 0)
+    chilled_pump1_H0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_H0", 0)
+    chilled_pump1_P0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_P0", 0)
+    chilled_pump1_Rw = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_Rw", 0)
+    chilled_pump1_f_status = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_f_status", 2)
     chilled_pump1 = Water_Pump(chilled_pump1_Fw0_coef, chilled_pump1_H0_coef, chilled_pump1_P0_coef,
                                chilled_pump1_f0, chilled_pump1_fmax, chilled_pump1_fmin, chilled_pump1_Few0,
                                chilled_pump1_H0, chilled_pump1_P0, chilled_pump1_Rw, chilled_pump1_f_status)
-    chilled_pump2_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_f0", 0)
-    chilled_pump2_fmax = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_fmax", 0)
-    chilled_pump2_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_fmin", 0)
-    chilled_pump2_Few0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_Few0", 0)
-    chilled_pump2_H0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_H0", 0)
-    chilled_pump2_P0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_P0", 0)
-    chilled_pump2_Rw = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_Rw", 0)
-    chilled_pump2_f_status = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_f_status", 2)
+    chilled_pump2_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_f0", 0)
+    chilled_pump2_fmax = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_fmax", 0)
+    chilled_pump2_fmin = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_fmin", 0)
+    chilled_pump2_Few0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_Few0", 0)
+    chilled_pump2_H0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_H0", 0)
+    chilled_pump2_P0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_P0", 0)
+    chilled_pump2_Rw = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_Rw", 0)
+    chilled_pump2_f_status = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_f_status", 2)
     chilled_pump2 = Water_Pump(chilled_pump2_Fw0_coef, chilled_pump2_H0_coef, chilled_pump2_P0_coef,
                                chilled_pump2_f0, chilled_pump2_fmax, chilled_pump2_fmin, chilled_pump2_Few0,
                                chilled_pump2_H0, chilled_pump2_P0, chilled_pump2_Rw, chilled_pump2_f_status)
@@ -172,6 +172,7 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
         cooling_value_open = None
         tower_value_open = None
     else:
+        print("冷水机：Q_total数据范围异常，不进行计算！")
         ans_P_total = 0
         ans_Q_total = 0
         chilled_value_open = 0

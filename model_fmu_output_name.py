@@ -46,13 +46,13 @@ def chiller_output_name():
     # 冷却水流量，单位：t/h
     Fcw = ['chiller_Fcw_total', 'chiller_Fcw_big', 'chiller_Fcw_small', 'chiller_Fcw_cooling_pump_small']
     # 冷冻水温度，单位：℃
-    Te = ['chiller_Ted_all', 'chiller_Ted_big', 'chiller_Ted_small',
-          'chiller_Tei_all', 'chiller_Tei_big', 'chiller_Tei_small',
-          'chiller_Teo_all', 'chiller_Teo_big', 'chiller_Teo_small']
+    Te = ['chiller_Ted', 'chiller_Ted_big', 'chiller_Ted_small',
+          'chiller_Tei', 'chiller_Tei_big', 'chiller_Tei_small',
+          'chiller_Teo', 'chiller_Teo_big', 'chiller_Teo_small']
     # 冷却水温度，单位：℃
-    Tc = ['chiller_Tcd_all', 'chiller_Tcd_big', 'chiller_Tcd_small',
-          'chiller_Tci_all', 'chiller_Tci_big', 'chiller_Tci_small',
-          'chiller_Tco_all', 'chiller_Tco_big', 'chiller_Tco_small']
+    Tc = ['chiller_Tcd', 'chiller_Tcd_big', 'chiller_Tcd_small',
+          'chiller_Tci', 'chiller_Tci_big', 'chiller_Tci_small',
+          'chiller_Tco', 'chiller_Tco_big', 'chiller_Tco_small']
     # 冷却塔逼近度，单位：℃
     T_approach = ['chiller_T_approach_cooling_tower']
     # 水泵扬程，单位：m

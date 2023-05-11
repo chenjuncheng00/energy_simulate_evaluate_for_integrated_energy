@@ -15,13 +15,13 @@ def generate_system_topology(cfg_path_equipment, file_raw_pickle):
     n_user_load = 1
     n_chiller1 = read_cfg_data(cfg_path_equipment, "冷水机1", "n_chiller1", 1)
     n_chiller2 = read_cfg_data(cfg_path_equipment, "冷水机2", "n_chiller2", 1)
-    n_chiller1_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "n_chilled_pump1", 1)
-    n_chiller2_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "n_chilled_pump2", 1)
+    n_chiller1_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "n_chilled_pump1", 1)
+    n_chiller2_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "n_chilled_pump2", 1)
     n_chiller1_cooling_pump = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "n_cooling_pump1", 1)
     n_chiller2_cooling_pump = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "n_cooling_pump2", 1)
     n_chiller_cooling_tower = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机", "n_cooling_tower", 1)
     n_air_source_heat_pump = read_cfg_data(cfg_path_equipment, "空气源热泵", "n_air_source_heat_pump", 1)
-    n_ashp_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "n_chilled_pump", 1)
+    n_ashp_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "n_chilled_pump", 1)
     n_air_conditioner = n_chiller1 + n_chiller2 + n_air_source_heat_pump
     n_cooling_source = n_chiller_cooling_tower + 1  # 6台冷却塔+空气
     n_chilled_pump = n_chiller1_chilled_pump + n_chiller2_chilled_pump + n_ashp_chilled_pump

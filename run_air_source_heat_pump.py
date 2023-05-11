@@ -19,13 +19,13 @@ def run_air_source_heat_pump(Q_total, n_calculate_hour, equipment_type_path, cfg
 
     """
     n0_air_source_heat_pump = read_cfg_data(cfg_path_equipment, "空气源热泵", "n_air_source_heat_pump", 1)
-    n0_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "n_chilled_pump", 1)
+    n0_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "n_chilled_pump", 1)
     # 扬程需求值(建议比实际的最小扬程需求值大一点，留余量)
     H_chilled_pump = read_cfg_data(cfg_path_equipment, "水泵扬程需求", "H_ashp_chilled_pump", 0)
     # 水泵性能系数
-    chilled_pump_Fw0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_Fw0_coef", 0)
-    chilled_pump_H0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_H0_coef", 0)
-    chilled_pump_P0_coef = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_P0_coef", 0)
+    chilled_pump_Fw0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_Fw0_coef", 0)
+    chilled_pump_H0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_H0_coef", 0)
+    chilled_pump_P0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_P0_coef", 0)
     # 实例化空气源热泵，输出空气源热泵列表
     # 系数依次对应:常数项、负荷率的三次方、负荷率的平方、负荷率的一次方
     air_source_heat_pump_cop_coef = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_cop_coef", 0)
@@ -41,14 +41,14 @@ def run_air_source_heat_pump(Q_total, n_calculate_hour, equipment_type_path, cfg
                                                     air_source_heat_pump_beta, air_source_heat_pump_Few0,
                                                     air_source_heat_pump_Rew, air_source_heat_pump_f_status)
     # 实例化一级冷冻水泵
-    chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_f0", 0)
-    chilled_pump_fmax = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_fmax", 0)
-    chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_fmin", 0)
-    chilled_pump_Few0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_Few0", 0)
-    chilled_pump_H0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_H0", 0)
-    chilled_pump_P0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_P0", 0)
-    chilled_pump_Rw = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_Rw", 0)
-    chilled_pump_f_status = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_f_status", 2)
+    chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_f0", 0)
+    chilled_pump_fmax = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_fmax", 0)
+    chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_fmin", 0)
+    chilled_pump_Few0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_Few0", 0)
+    chilled_pump_H0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_H0", 0)
+    chilled_pump_P0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_P0", 0)
+    chilled_pump_Rw = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_Rw", 0)
+    chilled_pump_f_status = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_f_status", 2)
     chilled_pump = Water_Pump(chilled_pump_Fw0_coef, chilled_pump_H0_coef, chilled_pump_P0_coef, chilled_pump_f0,
                               chilled_pump_fmax, chilled_pump_fmin, chilled_pump_Few0, chilled_pump_H0,
                               chilled_pump_P0, chilled_pump_Rw, chilled_pump_f_status)
@@ -76,6 +76,7 @@ def run_air_source_heat_pump(Q_total, n_calculate_hour, equipment_type_path, cfg
         ans_P_total = None
         ans_Q_total = None
     else:
+        print("空气源热泵：Q_total数据范围异常，不进行计算！")
         ans_P_total = 0
         ans_Q_total = 0
     # 返回结果
