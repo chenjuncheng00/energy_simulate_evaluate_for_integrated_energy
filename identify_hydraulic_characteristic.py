@@ -1,6 +1,6 @@
 import time, traceback, numpy as np
 from algorithm_code.read_write_data import *
-from model_fmu_simulate import simulate_sample
+from algorithm_code.other import *
 from model_fmu_input_type import main_model_input_type
 from model_fmu_input_data_default import environment_input_data_default, chiller_input_data_default, \
                                          air_source_heat_pump_input_data_default, cold_storage_input_data_default, \
@@ -40,45 +40,45 @@ def main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_
     # 设备装机数量，阀门的数量等于主设备数量
     n_chiller1 = read_cfg_data(cfg_path_equipment, "冷水机1", "n_chiller1", 1)
     n_chiller2 = read_cfg_data(cfg_path_equipment, "冷水机2", "n_chiller2", 1)
-    n_chiller_chilled_pump1 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "n_chilled_pump1", 1)
-    n_chiller_chilled_pump2 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "n_chilled_pump2", 1)
+    n_chiller_chilled_pump1 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "n_chilled_pump1", 1)
+    n_chiller_chilled_pump2 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "n_chilled_pump2", 1)
     n_chiller_cooling_pump1 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "n_cooling_pump1", 1)
     n_chiller_cooling_pump2 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "n_cooling_pump2", 1)
     n_chiller_cooling_tower = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机", "n_cooling_tower", 1)
     n_air_source_heat_pump = read_cfg_data(cfg_path_equipment, "空气源热泵", "n_air_source_heat_pump", 1)
-    n_ashp_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "n_chilled_pump", 1)
-    n_storage_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "n_chilled_pump", 1)
-    n_tower_chilled_pump = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷却塔直接供冷", "n_chilled_pump", 1)
+    n_ashp_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "n_chilled_pump", 1)
+    n_storage_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "n_chilled_pump", 1)
+    n_tower_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷却塔直接供冷", "n_chilled_pump", 1)
     # 设备额定水流量
     chiller1_Few0 = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Few0", 0)
     chiller2_Few0 = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Few0", 0)
     chiller1_Fcw0 = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Fcw0", 0)
     chiller2_Fcw0 = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Fcw0", 0)
-    chiller1_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_Few0", 0)
-    chiller2_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_Few0", 0)
+    chiller1_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_Few0", 0)
+    chiller2_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_Few0", 0)
     chiller1_cooling_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "cooling_pump1_Fcw0", 0)
     chiller2_cooling_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "cooling_pump2_Fcw0", 0)
     chiller_cooling_tower_Fcw0 = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机", "cooling_tower_Fcw0", 0)
     air_source_heat_pump_Few0 = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_Few0", 0)
-    ashp_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_Few0", 0)
-    storage_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_Few0", 0)
-    tower_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷却塔直接供冷", "chilled_pump_Few0", 0)
+    ashp_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_Few0", 0)
+    storage_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_Few0", 0)
+    tower_chilled_pump_Fw0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷却塔直接供冷", "chilled_pump_Few0", 0)
     # 水泵额定转速
-    chiller1_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_f0", 0)
-    chiller2_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_f0", 0)
+    chiller1_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_f0", 0)
+    chiller2_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_f0", 0)
     chiller1_cooling_pump_f0 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "cooling_pump1_f0", 0)
     chiller2_cooling_pump_f0 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "cooling_pump2_f0", 0)
-    ashp_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_f0", 0)
-    storage_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_f0", 0)
-    tower_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷却塔直接供冷", "chilled_pump_f0", 0)
+    ashp_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_f0", 0)
+    storage_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_f0", 0)
+    tower_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷却塔直接供冷", "chilled_pump_f0", 0)
     # 水泵最小转速
-    chiller1_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机1", "chilled_pump1_fmin", 0)
-    chiller2_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷水机2", "chilled_pump2_fmin", 0)
+    chiller1_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机1", "chilled_pump1_fmin", 0)
+    chiller2_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷水机2", "chilled_pump2_fmin", 0)
     chiller1_cooling_pump_fmin = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "cooling_pump1_fmin", 0)
     chiller2_cooling_pump_fmin = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机2", "cooling_pump2_fmin", 0)
-    ashp_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_空气源热泵", "chilled_pump_fmin", 0)
-    storage_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_蓄能装置", "chilled_pump_fmin", 0)
-    tower_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "冷冻水泵_冷却塔直接供冷", "chilled_pump_fmin", 0)
+    ashp_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_fmin", 0)
+    storage_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_fmin", 0)
+    tower_chilled_pump_fmin = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷却塔直接供冷", "chilled_pump_fmin", 0)
 
     # 水泵转速测试列表，从大到小
     if n_cal_f_pump > 1:

@@ -1,6 +1,6 @@
 import time, traceback, numpy as np
 from algorithm_code.read_write_data import *
-from model_fmu_simulate import simulate_sample
+from algorithm_code.other import *
 
 def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
                                            time_out, cfg_path_equipment, chiller_big_cop_result_txt_path,
