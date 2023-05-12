@@ -4,51 +4,44 @@ FMU模型输入数值的默认值：
 2、数据顺序与model_fmu_input_type中一致
 """
 
-def main_input_data_default(default_data=0):
+def main_input_data_default():
     """
     整个模型的输入，数值
-    Args:
-        default_data: [int]，模式输入，1：开启、0：关闭
 
     Returns:
 
     """
-    model_input = environment_input_data_default() + chiller_input_data_default(default_data) + \
+    model_input = environment_input_data_default() + chiller_input_data_default() + \
                   air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
                   tower_chilled_input_data_default() + user_load_input_data_default()
     return model_input
 
 
-def chiller_input_data_default(default_data=0):
+def chiller_input_data_default():
     """
     冷水机模型输入，数值
-    Args:
-        default_data: [int]，模式输入，1：开启、0：关闭
 
     Returns:
 
     """
     # 空调主机
-    main_equipment = [bool(default_data), bool(default_data), bool(default_data),
-                      bool(default_data), bool(default_data), bool(default_data), 8]
+    main_equipment = [False, False, False, False, False, False, 8]
     # 冷冻水泵
-    chilled_pump = [50 * default_data, 50 * default_data, 50 * default_data,
-                    50 * default_data, 50 * default_data, 50 * default_data]
+    chilled_pump = [0, 0, 0, 0, 0, 0]
     # 冷却水泵
-    cooling_pump = [50 * default_data, 50 * default_data, 50 * default_data,
-                    50 * default_data, 50 * default_data, 50 * default_data]
+    cooling_pump = [0, 0, 0, 0, 0, 0]
     # 冷却塔风机
-    cooling_tower = [default_data, default_data, default_data, default_data, default_data, default_data]
+    cooling_tower = [0, 0, 0, 0, 0, 0]
     # 冷冻阀门
-    chilled_value = [default_data, default_data, default_data, default_data, default_data, default_data]
+    chilled_value = [0, 0, 0, 0, 0, 0]
     # 冷却阀门
-    cooling_value = [default_data, default_data, default_data, default_data, default_data, default_data]
+    cooling_value = [0, 0, 0, 0, 0, 0]
     # 冷却塔阀门
-    tower_value = [default_data, default_data, default_data, default_data, default_data, default_data]
+    tower_value = [0, 0, 0, 0, 0, 0]
     # 冷却塔直接供冷阀门
     tower_chilled_value = [0, 0]
     # 向用户侧供冷阀门
-    user_value = [default_data, default_data]
+    user_value = [0, 0]
     # 总输入
     chiller_input = main_equipment + chilled_pump + cooling_pump + cooling_tower + \
                     chilled_value + cooling_value + tower_value + tower_chilled_value + user_value

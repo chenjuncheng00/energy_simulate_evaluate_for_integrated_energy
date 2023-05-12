@@ -52,15 +52,8 @@ def run_air_source_heat_pump(Q_total, n_calculate_hour, equipment_type_path, cfg
     chilled_pump = Water_Pump(chilled_pump_Fw0_coef, chilled_pump_H0_coef, chilled_pump_P0_coef, chilled_pump_f0,
                               chilled_pump_fmax, chilled_pump_fmin, chilled_pump_Few0, chilled_pump_H0,
                               chilled_pump_P0, chilled_pump_Rw, chilled_pump_f_status)
-    # 判断Q_total是否满足要求
-    if Q_total < air_source_heat_pump.calculate_Q_min():
-        cal_set = False
-    elif Q_total > n0_air_source_heat_pump * air_source_heat_pump.calculate_Q_max():
-        cal_set = False
-    else:
-        cal_set = True
     # 仅优化空气源热泵系统的耗电功率
-    if opt_only == True and cal_set == True:
+    if opt_only == True:
         air_source_heat_pump_list = [air_source_heat_pump]
         n_air_source_heat_pump_list = [n0_air_source_heat_pump]
         chilled_pump_list = [chilled_pump]
@@ -70,13 +63,12 @@ def run_air_source_heat_pump(Q_total, n_calculate_hour, equipment_type_path, cfg
                                                 n_chilled_pump_list, [], [], [], equipment_type_path, cfg_path_public)
         ans_P_total = ans_opt[0]
         ans_Q_total = ans_opt[1]
-    elif opt_only == False and cal_set == True:
+    elif opt_only == False:
         algorithm_air_source_heat_pump(Q_total, H_chilled_pump, 0, air_source_heat_pump, chilled_pump, None,
                                        equipment_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
         ans_P_total = None
         ans_Q_total = None
     else:
-        print("空气源热泵：Q_total数据范围异常，不进行计算！")
         ans_P_total = 0
         ans_Q_total = 0
     # 返回结果

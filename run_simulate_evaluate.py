@@ -21,7 +21,7 @@ def run_simulate_evaluate():
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
 
     # FMU文件
-    file_fmu = "./model_data/file_fmu/integrated_air_conditioning_20230510.fmu"
+    file_fmu = "./model_data/file_fmu/integrated_air_conditioning_20230512.fmu"
     # FMU仿真参数
     start_time = (31 + 28 + 31 + 30 + 31 + 30) * 24 * 2600
     stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31) * 24 * 2600
@@ -66,17 +66,19 @@ def run_simulate_evaluate():
         txt_str += "\t" + fmu_output_name[i]
     write_txt_data(file_fmu_result_all, [txt_str])
     write_txt_data(file_fmu_result_last, [txt_str])
+    # FMU输入名称和数据类型
+    input_type_list = main_model_input_type()
+    input_data_list = [start_time] + main_input_data_default()
     # 先仿真一次，启动系统
     print("正在初始化FMU模型......")
-    input_type_list = main_model_input_type()
-    input_data_list = [start_time] + main_input_data_default(default_data=1)
-    main_simulate_pause_single(input_data_list, input_type_list, 4 * 3600, txt_path, add_input=False)
+    hours_init = 1
+    main_simulate_pause_single(input_data_list, input_type_list, hours_init * 3600, txt_path, add_input=False)
     # 修改FMU状态
     fmu_state_list = [0, 0, stop_time, output_interval, time_out]
     write_txt_data(file_fmu_state, fmu_state_list)
 
     # 运行
-    for i in range(n_simulate)[4:]:
+    for i in range(n_simulate)[hours_init:]:
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +
               str(np.round(100 * (i + 1) / n_simulate, 4)) + "%")
         # 读取Q_total

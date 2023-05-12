@@ -133,15 +133,8 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
     chilled_pump2 = Water_Pump(chilled_pump2_Fw0_coef, chilled_pump2_H0_coef, chilled_pump2_P0_coef,
                                chilled_pump2_f0, chilled_pump2_fmax, chilled_pump2_fmin, chilled_pump2_Few0,
                                chilled_pump2_H0, chilled_pump2_P0, chilled_pump2_Rw, chilled_pump2_f_status)
-    # 判断Q_total是否满足要求
-    if Q_total < min(chiller1.calculate_Q_min(), chiller2.calculate_Q_min()):
-        cal_set = False
-    elif Q_total > n0_chiller1 * chiller1.calculate_Q_max() + n0_chiller2 * chiller2.calculate_Q_max():
-        cal_set = False
-    else:
-        cal_set = True
     # 仅优化冷水机系统的耗电功率
-    if opt_only == True and cal_set == True:
+    if opt_only == True:
         chiller_list = [chiller1, chiller2]
         n_chiller_list = [n0_chiller1, n0_chiller2]
         chilled_pump_list = [chilled_pump1, chilled_pump2]
@@ -159,7 +152,7 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
         chilled_value_open = ans_opt[2]
         cooling_value_open = ans_opt[3]
         tower_value_open = ans_opt[4]
-    elif opt_only == False and cal_set == True:
+    elif opt_only == False:
         algorithm_chiller_double(Q_total, H_chilled_pump, 0, H_cooling_pump, chiller1,
                                  chiller2, chilled_pump1, chilled_pump2, None,
                                  None, cooling_pump1, cooling_pump2, cooling_tower,
@@ -172,7 +165,6 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
         cooling_value_open = None
         tower_value_open = None
     else:
-        print("冷水机：Q_total数据范围异常，不进行计算！")
         ans_P_total = 0
         ans_Q_total = 0
         chilled_value_open = 0
