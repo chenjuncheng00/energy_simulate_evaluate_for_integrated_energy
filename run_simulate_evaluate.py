@@ -2,6 +2,7 @@ import pickle
 import numpy as np
 from fmpy import *
 from algorithm_code.read_write_data import *
+from algorithm_code.control_command import *
 from algorithm_code.other import *
 from run_chiller import run_chiller
 from run_air_source_heat_pump import run_air_source_heat_pump
@@ -23,8 +24,8 @@ def run_simulate_evaluate():
     # FMU文件
     file_fmu = "./model_data/file_fmu/integrated_air_conditioning_20230512.fmu"
     # FMU仿真参数
-    start_time = (31 + 28 + 31 + 30 + 31 + 30) * 24 * 2600
-    stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31) * 24 * 2600
+    start_time = (31 + 28 + 31 + 30) * 24 * 3600
+    stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31) * 24 * 3600
     output_interval = 10
     time_out = 600
     # 模型初始化和实例化
@@ -76,6 +77,8 @@ def run_simulate_evaluate():
     # 修改FMU状态
     fmu_state_list = [0, 0, stop_time, output_interval, time_out]
     write_txt_data(file_fmu_state, fmu_state_list)
+    # 手动启动冷水机系统
+    manual_open_full_system(chiller_equipment_type_path, [], [], n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
     # 运行
     for i in range(n_simulate)[hours_init:]:
@@ -100,7 +103,8 @@ def run_simulate_evaluate():
                                  cfg_path_equipment, cfg_path_public, False)
         # 获取time，并仿真到指定时间
         time_now = read_txt_data(file_fmu_time)[0]
-        simulate_time = start_time + (i + 1) * 3600 * (1 / n_calculate_hour) - time_now
+        n_cal_now = int((time_now - start_time) / (3600 * (1 / n_calculate_hour)))
+        simulate_time = start_time + (n_cal_now + 1) * 3600 * (1 / n_calculate_hour) - time_now
         main_simulate_pause_single([], [], simulate_time, txt_path)
 
     # 修改FMU状态
