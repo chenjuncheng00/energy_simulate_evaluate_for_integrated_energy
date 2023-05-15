@@ -52,8 +52,8 @@ if __name__ == "__main__":
     # 系统初始化时，会将冷水机系统全开，但是其他系统全关
     ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
     ashp_real_value_dict = air_source_heat_pump_default_status(n_air_source_heat_pump, n_ashp_chilled_pump)
-    read_real_value_DO_station(ashp_real_value_dict, ashp_equipment_type_path, cfg_path_equipment)
+    read_real_value_DO_station(ashp_real_value_dict, n_user_value, ashp_equipment_type_path, cfg_path_equipment)
     chiller_equipment_type_path = ["chiller", txt_path]
     chiller_real_value_dict = chiller_default_status(n_chiller, n_chiller_chilled_pump, n_chiller_cooling_pump,
                                                      n_chiller_cooling_tower)
-    read_real_value_DO_station(chiller_real_value_dict, chiller_equipment_type_path, cfg_path_equipment)
+    read_real_value_DO_station(chiller_real_value_dict, n_user_value, chiller_equipment_type_path, cfg_path_equipment)
