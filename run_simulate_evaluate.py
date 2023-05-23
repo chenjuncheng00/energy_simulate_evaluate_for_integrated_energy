@@ -1,14 +1,14 @@
 import pickle
 import numpy as np
 from fmpy import *
-from algorithm_code.read_write_data import *
-from algorithm_code.control_command import *
-from algorithm_code.other import *
-from run_chiller import run_chiller
-from run_air_source_heat_pump import run_air_source_heat_pump
 from model_fmu_output_name import main_model_output_name
 from model_fmu_input_type import main_model_input_type
 from model_fmu_input_data_default import main_input_data_default
+from algorithm_code.read_write_data import *
+from algorithm_code.other import *
+from run_chiller import run_chiller
+from run_air_source_heat_pump import run_air_source_heat_pump
+from run_energy_storage_equipment import run_energy_storage_equipment, generate_Q_list, generate_time_name_list
 
 def run_simulate_evaluate():
 
@@ -20,9 +20,10 @@ def run_simulate_evaluate():
     chiller_equipment_type_path = ["chiller", txt_path]
     ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
+    tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
 
     # FMU文件
-    file_fmu = "./model_data/file_fmu/integrated_air_conditioning_20230512.fmu"
+    file_fmu = "./model_data/file_fmu/integrated_air_conditioning_20230522.fmu"
     # FMU仿真参数
     start_time = (31 + 28 + 31 + 30) * 24 * 3600
     stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31) * 24 * 3600
@@ -54,11 +55,17 @@ def run_simulate_evaluate():
     # 各系统制冷功率最大值
     chiller_Q0_max = 15600
     ashp_Q0_max = 4092
+    Q0_total_in = chiller_Q0_max
+    Q0_total_out = chiller_Q0_max + ashp_Q0_max
     # 冷负荷总需求功率
     file_Q_total = "./model_data/simulate_result/fmu_Q_total.txt"
+    file_Q_total_list = "./model_data/fmu_Q_total_list.txt"
+    Q_time_all_list = read_txt_data(file_Q_total_list, column_index=0)
+    Q_total_all_list = read_txt_data(file_Q_total_list, column_index=1)
+    write_txt_data(file_Q_total, [Q_total_all_list[0]])
     # 每小时计算次数
     n_calculate_hour = 1
-    n_simulate = int((stop_time - start_time) / 3600 / n_calculate_hour)
+    n_simulate = int((stop_time - start_time) / (3600 / n_calculate_hour))
     # 仿真结果
     file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
     file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
@@ -77,30 +84,49 @@ def run_simulate_evaluate():
     # 修改FMU状态
     fmu_state_list = [0, 0, stop_time, output_interval, time_out]
     write_txt_data(file_fmu_state, fmu_state_list)
-    # 手动启动冷水机系统
-    manual_open_full_system(chiller_equipment_type_path, [], [], n_calculate_hour, cfg_path_equipment, cfg_path_public)
+    # 逐时用电时间段列表，字符串，长度24
+    time_name_list = ["谷", "谷", "谷", "谷", "谷", "谷", "谷", "谷", "平", "平", "峰", "峰", "峰", "平", "平", "峰",
+                      "峰", "平", "平", "平", "峰", "峰", "峰", "平"]
 
-    # 运行
     for i in range(n_simulate)[hours_init:]:
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +
               str(np.round(100 * (i + 1) / n_simulate, 4)) + "%")
         # 读取Q_total
         Q_total = read_txt_data(file_Q_total)[0]
+
+        # 蓄冷水罐：仅优化，获取当前时刻的充放冷功率
+        Q_total_list = generate_Q_list(file_fmu_time, start_time, Q_time_all_list, Q_total_all_list, n_calculate_hour)
+        ans_ese = run_energy_storage_equipment(Q_total_list, time_name_list, Q0_total_in, Q0_total_out,
+                                               None, n_calculate_hour, storage_equipment_type_path,
+                                               cfg_path_equipment, cfg_path_public, True)
+        Q_out_ese = ans_ese[0]
+        Q_total -= Q_out_ese  # 更新Q_total
+
         # 冷水机总负荷：包括蓄冷水罐蓄冷功率
         chiller_Q = min(Q_total, chiller_Q0_max)
-        # # 先优化一次冷水机，不进行控制，用于获取阀门开启比例，用于蓄冷水罐和冷却塔直接供冷计算
-        # ans_chiller = run_chiller(chiller_Q, n_calculate_hour, chiller_equipment_type_path,
-        #                           cfg_path_equipment, cfg_path_public, True)
-        # chiller_chilled_value_open = ans_chiller[2]
+        # 先优化一次冷水机，不进行控制，用于获取阀门开启比例，用于蓄冷水罐和冷却塔直接供冷计算
+        ans_chiller = run_chiller(chiller_Q, n_calculate_hour, chiller_equipment_type_path,
+                                  cfg_path_equipment, cfg_path_public, True)
+        chiller_chilled_value_open = ans_chiller[2]
         # chiller_cooling_value_open = ans_chiller[3]
         # chiller_tower_value_open = ans_chiller[4]
+
         # 冷水机优化和控制
         run_chiller(chiller_Q, n_calculate_hour, chiller_equipment_type_path, cfg_path_equipment,
                     cfg_path_public, False)
+
+        # 蓄冷水罐：优化+控制
+        run_energy_storage_equipment(Q_total_list, time_name_list, Q0_total_in, Q0_total_out,
+                                     chiller_chilled_value_open, n_calculate_hour, storage_equipment_type_path,
+                                     cfg_path_equipment, cfg_path_public, False)
+        # 修改time_list
+        time_name_list = generate_time_name_list(time_name_list)
+
         # 空气源热泵优化和控制
         air_source_heat_pump_Q = min(Q_total - chiller_Q, ashp_Q0_max)
         run_air_source_heat_pump(air_source_heat_pump_Q, n_calculate_hour, ashp_equipment_type_path,
                                  cfg_path_equipment, cfg_path_public, False)
+
         # 获取time，并仿真到指定时间
         time_now = read_txt_data(file_fmu_time)[0]
         n_cal_now = int((time_now - start_time) / (3600 * (1 / n_calculate_hour)))

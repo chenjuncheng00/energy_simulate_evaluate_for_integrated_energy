@@ -65,7 +65,7 @@ def run_air_source_heat_pump(Q_total, n_calculate_hour, equipment_type_path, cfg
         ans_Q_total = ans_opt[1]
     elif opt_only == False:
         algorithm_air_source_heat_pump(Q_total, H_chilled_pump, 0, air_source_heat_pump, chilled_pump, None,
-                                       equipment_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
+                                       equipment_type_path, n_calculate_hour, 0, cfg_path_equipment, cfg_path_public)
         ans_P_total = None
         ans_Q_total = None
     else:

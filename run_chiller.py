@@ -81,12 +81,12 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
     cooling_tower_Fcw0 = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机", "cooling_tower_Fcw0", 0)
     cooling_tower_P0 = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机", "cooling_tower_P0", 0)
     cooling_tower_Rcw = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机", "cooling_tower_Rcw", 0)
-    cooling_tower_approach_limit = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机",
-                                                 "cooling_tower_approach_limit", 0)
+    cooling_tower_approach_design = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机",
+                                                  "cooling_tower_approach_design", 0)
     cooling_tower_f_status = read_cfg_data(cfg_path_equipment, "冷却塔_冷水机", "cooling_tower_f_status", 2)
     cooling_tower = Cooling_Tower(cooling_tower_approach_coef, cooling_tower_f0, cooling_tower_fmax,
                                   cooling_tower_fmin, cooling_tower_Fcw0, cooling_tower_P0, cooling_tower_Rcw,
-                                  cooling_tower_approach_limit, cooling_tower_f_status)
+                                  cooling_tower_approach_design, cooling_tower_f_status)
     # 实例化冷却水泵
     cooling_pump1_f0 = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "cooling_pump1_f0", 0)
     cooling_pump1_fmax = read_cfg_data(cfg_path_equipment, "冷却水泵_冷水机1", "cooling_pump1_fmax", 0)
@@ -158,7 +158,7 @@ def run_chiller(Q_total, n_calculate_hour, equipment_type_path, cfg_path_equipme
                                  None, cooling_pump1, cooling_pump2, cooling_tower,
                                  None, n0_chiller1, n0_chiller2, n0_chilled_pump1, n0_chilled_pump2,
                                  0, 0, n0_cooling_pump1,n0_cooling_pump2, n0_cooling_tower, 0, equipment_type_path,
-                                 n_calculate_hour, cfg_path_equipment, cfg_path_public)
+                                 n_calculate_hour, 2, cfg_path_equipment, cfg_path_public)
         ans_P_total = None
         ans_Q_total = None
         chilled_value_open = None

@@ -1,9 +1,11 @@
 from algorithm_code.custom_model import *
 from algorithm_code.read_write_data import *
 from algorithm_code import *
+from algorithm_code.optimization_single import *
 
 def run_energy_storage_equipment(Q_total_list, time_list, Q0_total_in, Q0_total_out, chilled_value_open,
-                                 n_calculate_hour, equipment_type_path, cfg_path_equipment, cfg_path_public):
+                                 n_calculate_hour, equipment_type_path, cfg_path_equipment, cfg_path_public,
+                                 opt_only):
     """
 
     Args:
@@ -16,6 +18,7 @@ def run_energy_storage_equipment(Q_total_list, time_list, Q0_total_in, Q0_total_
         equipment_type_path: [string]，[list]，设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
         cfg_path_equipment: [string]，设备信息参数cfg文件路径
         cfg_path_public: [string]，公用参数cfg文件路径
+        opt_only: [boolean]，是否仅进行优化计算
 
     Returns:
 
@@ -61,9 +64,70 @@ def run_energy_storage_equipment(Q_total_list, time_list, Q0_total_in, Q0_total_
                                          chilled_pump_in_storage_P0_coef, chilled_pump_f0, chilled_pump_fmax,
                                          chilled_pump_fmin, chilled_pump_Few0, chilled_pump_H0, chilled_pump_P0,
                                          chilled_pump_Rw, chilled_pump_f_status)
-    # 计算
-    algorithm_energy_storage_equipment(Q_total_list, time_list, Q0_total_in, Q0_total_out, energy_storage_equipment,
-                                       chilled_pump_to_user, chilled_pump_in_storage, None, chilled_value_open,
-                                       H_chilled_pump_to_user, H_chilled_pump_in_storage, 0,
-                                       n_chilled_value_in_storage, n_chilled_value_to_user, equipment_type_path,
-                                       n_calculate_hour, cfg_path_equipment, cfg_path_public)
+    if opt_only == True:
+        # 仅优化
+        ans = main_optimization_energy_storage_equipment(equipment_type_path, Q_total_list, time_list, Q0_total_in,
+                                                         Q0_total_out, energy_storage_equipment)
+        Q_out_now = ans[0]
+        Q_plan_list = ans[1]
+        E_now = ans[2]
+        E_plan_list = ans[3]
+    else:
+        # 优化+设备控制
+        algorithm_energy_storage_equipment(Q_total_list, time_list, Q0_total_in, Q0_total_out, energy_storage_equipment,
+                                           chilled_pump_to_user, chilled_pump_in_storage, None, chilled_value_open,
+                                           H_chilled_pump_to_user, H_chilled_pump_in_storage, 0,
+                                           n_chilled_value_in_storage, n_chilled_value_to_user, equipment_type_path,
+                                           n_calculate_hour, cfg_path_equipment, cfg_path_public)
+        Q_out_now = 0
+        Q_plan_list = []
+        E_now = 0
+        E_plan_list = []
+    # 返回结果
+    return Q_out_now, Q_plan_list, E_now, E_plan_list
+
+
+def generate_Q_list(file_fmu_time, start_time, Q_time_list, Q_total_list, n_calculate_hour):
+    """
+    获取从当前时刻，向后24个计算间隔的负荷数据列表
+    Args:
+        file_fmu_time:
+        start_time:
+        Q_time_list:
+        Q_total_list:
+        n_calculate_hour:
+
+    Returns:
+
+    """
+    # 获取time
+    time_now = read_txt_data(file_fmu_time)[0]
+    # Q_time_list的时间间隔是1800秒
+    if int((time_now - start_time) / 1800) - (time_now - start_time) / 1800 < 0:
+        time_now = int((time_now - start_time) / 1800) * 1800 + 1800 + start_time
+    else:
+        time_now = int((time_now - start_time) / 1800) * 1800 + start_time
+    index_now = Q_time_list.index(time_now)
+    time_step = 3600 / n_calculate_hour
+    index_step = int(time_step / 1800)
+    Q_list = []
+    for i in range(24):
+        Q_tmp = Q_total_list[index_now + i * index_step]
+        Q_list.append(Q_tmp)
+    return Q_list
+
+
+def generate_time_name_list(time_name_list):
+    """
+    将传入的长度24的时间名称列表根据时间平移滚动，形成新的列表
+    Args:
+        time_name_list:
+
+    Returns:
+
+    """
+    time_name_23 = time_name_list[23]
+    for i in range(23):
+        time_name_list[-i + 23] = time_name_list[-i + 22]
+    time_name_list[0] = time_name_23
+    return time_name_list
