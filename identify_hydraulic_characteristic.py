@@ -704,8 +704,9 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
     chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
     chiller_tower_chilled_value_data = [0, 0]
     chiller_user_value_data = [0, 0]
-    storage_user_value_data = [0, 0, 0]
+    # 阀门列表：先是蓄冷阀门，然后是放冷阀门
     storage_chiller_value_data = [1, 1, 1]
+    storage_user_value_data = [0, 0, 0]
     for i in range(n_chiller1 + 1):
         for j in range(n_chiller2 + 1):
             for k in range(n_storage_chilled_pump + 1):
@@ -752,7 +753,7 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                                        chiller_cooling_value_data + chiller_tower_value_data + \
                                        chiller_tower_chilled_value_data + chiller_user_value_data + \
                                        air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
-                                       storage_user_value_data + storage_chiller_value_data + \
+                                       storage_chiller_value_data + storage_user_value_data + \
                                        tower_chilled_input_data_default() + user_load_input_data_default()
                     # FMU仿真
                     try:
@@ -842,8 +843,9 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, storage_chilled_pump_f
     storage_to_user_result_list.append("蓄冷水罐冷冻水泵开启数量" + "\t" + "蓄冷水罐冷冻水泵转速" + "\t" +
                                        "蓄冷水罐冷冻水泵单台水流量" + "\t" + "蓄冷水罐冷冻水泵单台电功率" + "\t" +
                                        "蓄冷水罐冷冻水泵扬程")
-    storage_user_value_data = [1, 1, 1]
+    # 阀门列表：先是蓄冷阀门，然后是放冷阀门
     storage_chiller_value_data = [0, 0, 0]
+    storage_user_value_data = [1, 1, 1]
     for i in range(n_storage_chilled_pump + 1):
         if i == 0:
             continue
@@ -864,7 +866,7 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, storage_chilled_pump_f
             # 整个模型输入数值
             model_input_data = time_data + environment_input_data_default() + chiller_input_data_default() + \
                                air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
-                               storage_user_value_data + storage_chiller_value_data + \
+                               storage_chiller_value_data + storage_user_value_data + \
                                tower_chilled_input_data_default() + user_load_input_data_default()
             # FMU仿真
             try:

@@ -522,7 +522,7 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
                         Tcd = Tin - tower_Tout
                         approach = tower_Tout - Two
                         # 仿真结果生成txt
-                        if Tcd > 0.1 and approach > 0.1:
+                        if Tcd > 0.1 and approach > 0.1 and approach <= 5:
                             tmp_txt = str(Two - 273.15) + "\t" + str(np.round(Fcw * 3.6, 2)) + "\t" + \
                                       str(np.round(f, 2)) + "\t" + str(np.round(Tin - 273.15, 2)) + "\t" + \
                                       str(np.round(tower_Tout - 273.15, 2)) + "\t" + \

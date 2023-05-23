@@ -109,12 +109,13 @@ def cold_storage_input_type():
     # 冷冻水泵，转速，0到1480
     chilled_pump = [('storage_f_chilled_pump1', np.float_), ('storage_f_chilled_pump2', np.float_),
                     ('storage_f_chilled_pump3', np.float_), ('storage_f_chilled_pump4', np.float_)]
-    # 向用户侧供冷阀门，开度比，0到1
-    user_value = [('storage_turn_user_value1', np.float_), ('storage_turn_user_value2', np.float_),
-                  ('storage_turn_user_value3', np.float_)]
+    # 阀门列表：先是蓄冷阀门，然后是放冷阀门
     # 从冷水机蓄冷阀门，开度比，0到1
-    chiller_value = [('storage_turn_chiller_value1', np.float_), ('storage_turn_chiller_value2', np.float_),
-                     ('storage_turn_chiller_value3', np.float_)]
+    chiller_value = [('storage_turn_chilled_value1', np.float_), ('storage_turn_chilled_value2', np.float_),
+                     ('storage_turn_chilled_value3', np.float_)]
+    # 向用户侧供冷阀门，开度比，0到1
+    user_value = [('storage_turn_chilled_value4', np.float_), ('storage_turn_chilled_value5', np.float_),
+                  ('storage_turn_chilled_value6', np.float_)]
     # 总输入
     storage_input = chilled_pump + user_value + chiller_value
     # 返回结果
