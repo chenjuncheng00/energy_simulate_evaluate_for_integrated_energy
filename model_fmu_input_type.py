@@ -117,9 +117,9 @@ def cold_storage_input_type():
     user_value = [('storage_turn_chilled_value4', np.float_), ('storage_turn_chilled_value5', np.float_),
                   ('storage_turn_chilled_value6', np.float_)]
     # 总输入
-    storage_input = chilled_pump + user_value + chiller_value
+    storage_input = chilled_pump + chiller_value + user_value
     # 返回结果
-    return storage_input, chilled_pump, user_value, chiller_value
+    return storage_input, chilled_pump, chiller_value, user_value
 
 
 def tower_chilled_input_type():

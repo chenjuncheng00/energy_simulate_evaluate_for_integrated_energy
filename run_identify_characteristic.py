@@ -3,7 +3,7 @@ from identify_hydraulic_characteristic import main_identify_hydraulic_characteri
 from identify_equipment_characteristic import main_identify_equipment_characteristic
 
 def run_identify_hydraulic_characteristic():
-    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230512.fmu"
+    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230522.fmu"
     start_time = (31 + 28 + 31 + 30 + 31) * 24 * 3600
     stop_time = start_time + 2 * 3600
     output_interval = 60
@@ -16,7 +16,9 @@ def run_identify_hydraulic_characteristic():
     ashp_chilled_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/ashp_chilled.txt"
     storage_from_chiller_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/storage_from_chiller.txt"
     storage_to_user_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/storage_to_user.txt"
+    chiller_user_storage_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/chiller_user_storage.txt"
     tower_chilled_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/tower_chilled.txt"
+    tower_cooling_chilled_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/tower_cooling_chilled.txt"
     full_open_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/full_open.txt"
     # 模型初始化
     fmu_unzipdir = extract(fmu_path)
@@ -26,7 +28,8 @@ def run_identify_hydraulic_characteristic():
                                            time_out, n_cal_f_pump, cfg_path_equipment, chiller_chilled_result_txt_path,
                                            chiller_cooling_result_txt_path, ashp_chilled_result_txt_path,
                                            storage_from_chiller_result_txt_path, storage_to_user_result_txt_path,
-                                           tower_chilled_result_txt_path, full_open_result_txt_path, pump_f0_cal)
+                                           chiller_user_storage_result_txt_path, tower_chilled_result_txt_path,
+                                           tower_cooling_chilled_result_txt_path, full_open_result_txt_path, pump_f0_cal)
 
 
 def run_equipment_characteristic():
