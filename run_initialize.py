@@ -58,7 +58,7 @@ if __name__ == "__main__":
     path_fmu_result = "./model_data/simulate_result"
     clear_all_txt_data(path_fmu_result)
     # 冷负荷总需求功率
-    file_Q_total = "./model_data/simulate_result/fmu_Q_total.txt"
+    file_Q_total = "model_data/simulate_result/fmu_Q_user.txt"
     write_txt_data(file_Q_total, [10000])
 
     # 系统初始化时，会将冷水机系统全开，但是其他系统全关
