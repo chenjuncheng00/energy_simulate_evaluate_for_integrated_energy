@@ -77,12 +77,13 @@ def cold_storage_input_data_default():
     """
     # 冷冻水泵
     chilled_pump = [0, 0, 0, 0]
-    # 向用户侧供冷阀门
-    user_value = [0, 0, 0]
+    # 阀门列表：先是蓄冷阀门，然后是放冷阀门
     # 从冷水机蓄冷阀门
     chiller_value = [0, 0, 0]
+    # 向用户侧供冷阀门
+    user_value = [0, 0, 0]
     # 总输入
-    storage_input = chilled_pump + user_value + chiller_value
+    storage_input = chilled_pump + chiller_value + user_value
     # 返回结果
     return storage_input
 

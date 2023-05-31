@@ -53,6 +53,9 @@ if __name__ == "__main__":
     n_storage_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "n_chilled_pump", 1)
     initialize_txt_energy_storage_equipment(txt_path, n_chilled_pump_secondary, n_storage_chilled_pump,
                                             n_chilled_value_in_storage, n_chilled_value_to_user)
+    file_storage_E = txt_path + "/real_value/energy_storage_equipment/Q_plan_E_plan/energy_storage_equipment_E.txt"
+    energy_storage_equipment_E0 = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_E0", 0)
+    write_txt_data(file_storage_E, [energy_storage_equipment_E0])
 
     # FMU仿真结果
     path_fmu_result = "./model_data/simulate_result"

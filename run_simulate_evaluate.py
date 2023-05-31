@@ -2,8 +2,6 @@ import pickle
 import numpy as np
 from fmpy import *
 from model_fmu_output_name import main_model_output_name
-from model_fmu_input_type import main_model_input_type
-from model_fmu_input_data_default import main_input_data_default
 from algorithm_code.optimization_single import *
 from algorithm_code.optimization_universal import *
 from algorithm_code.algorithm_equipment import *
@@ -12,6 +10,7 @@ from algorithm_code.custom_model import *
 from algorithm_code.other import *
 from algorithm_code import *
 from calculate_energy_storage_value import generate_Q_list, generate_time_name_list
+from fmu_simulate_initialize import fmu_simulate_initialize
 
 def run_simulate_evaluate():
 
@@ -229,9 +228,12 @@ def run_simulate_evaluate():
     energy_storage_equipment_alpha = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_alpha", 0)
     energy_storage_equipment_beta = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_beta", 0)
     energy_storage_equipment_Few0 = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_Few0", 0)
+    energy_storage_equipment_SOE_min = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_SOE_min", 0)
     energy_storage_equipment = Energy_Storage_Equipment(energy_storage_equipment_Q0, energy_storage_equipment_E0,
                                                         energy_storage_equipment_alpha, energy_storage_equipment_beta,
-                                                        energy_storage_equipment_Few0, n_calculate_hour)
+                                                        energy_storage_equipment_Few0, energy_storage_equipment_SOE_min,
+                                                        n_calculate_hour)
+    energy_storage_equipment.SOE = 1
     # 实例化冷冻水泵
     storage_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_f0", 0)
     storage_chilled_pump_fmax = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "chilled_pump_fmax", 0)
@@ -275,11 +277,8 @@ def run_simulate_evaluate():
     write_txt_data(file_fmu_address, fmu_address_list)
     # FMU模型仿真时间：仿真开始的时间(start_time)
     file_fmu_time = txt_path + "/process_data/fmu_time.txt"
-    write_txt_data(file_fmu_time, [start_time])
     # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
     file_fmu_state = txt_path + "/process_data/fmu_state.txt"
-    fmu_state_list = [1, 0, stop_time, output_interval, time_out]
-    write_txt_data(file_fmu_state, fmu_state_list)
     # FMU模型输出名称
     file_fmu_output_name = txt_path + "/process_data/fmu_output_name.pkl"
     fmu_output_name = main_model_output_name()
@@ -306,21 +305,13 @@ def run_simulate_evaluate():
         txt_str += "\t" + fmu_output_name[i]
     write_txt_data(file_fmu_result_all, [txt_str])
     write_txt_data(file_fmu_result_last, [txt_str])
-    # FMU输入名称和数据类型
-    input_type_list = main_model_input_type()
-    input_data_list = [start_time] + main_input_data_default()
-    # 先仿真一次，启动系统
-    print("正在初始化FMU模型......")
-    hours_init = 1
-    main_simulate_pause_single(input_data_list, input_type_list, hours_init * 3600, txt_path, add_input=False)
-    # 修改FMU状态
-    fmu_state_list = [0, 0, stop_time, output_interval, time_out]
-    write_txt_data(file_fmu_state, fmu_state_list)
+    # FMU模型初始化
+    fmu_simulate_initialize(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out, txt_path)
     # 逐时用电时间段列表，字符串，长度24
     time_name_list = ["谷", "谷", "谷", "谷", "谷", "谷", "谷", "谷", "平", "平", "峰", "峰", "峰", "平", "平", "峰",
                       "峰", "平", "平", "平", "峰", "峰", "峰", "平"]
 
-    for i in range(n_simulate)[hours_init:]:
+    for i in range(n_simulate):
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +
               str(np.round(100 * (i + 1) / n_simulate, 4)) + "%")
         # 读取Q_user
@@ -329,8 +320,6 @@ def run_simulate_evaluate():
         # 第1步：仅进行蓄冷水罐优化计算，获取当前时刻的充放冷功率，不进行控制
         input_log_1 = "第1步：仅进行蓄冷水罐优化计算，获取当前时刻的充放冷功率，不进行控制..."
         print(input_log_1)
-        write_txt_data(file_fmu_input_log, [input_log_1, "\n" + "\n"], 1)
-        write_txt_data(file_fmu_input_feedback_log, [input_log_1, "\n" + "\n"], 1)
         Q_user_list = generate_Q_list(file_fmu_time, start_time, Q_time_all_list, Q_user_all_list, n_calculate_hour)
         ans_ese = main_optimization_energy_storage_equipment(storage_equipment_type_path, Q_user_list, time_name_list,
                                                              Q0_total_in, Q0_total_out, energy_storage_equipment)
@@ -343,8 +332,6 @@ def run_simulate_evaluate():
             # 第2-1步：用蓄冷功率优化一次冷水机计算，不进行控制，用于获取阀门开启比例
             input_log_2_1 = "第2-1步：用蓄冷功率优化一次冷水机计算，不进行控制，用于获取阀门开启比例..."
             print(input_log_2_1)
-            write_txt_data(file_fmu_input_log, [input_log_2_1, "\n" + "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_1, "\n" + "\n"], 1)
             chiller_Q_storage = - Q_out_ese  # 冷水机蓄冷负荷
             ans_chiller1 = optimization_system_universal(chiller_Q_storage, H_chiller_chilled_pump, 0,
                                                          H_chiller_cooling_pump, chiller_list,
@@ -358,8 +345,6 @@ def run_simulate_evaluate():
             # 第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取阀门开启比例
             input_log_2_2 = "第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取阀门开启比例..."
             print(input_log_2_2)
-            write_txt_data(file_fmu_input_log, [input_log_2_2, "\n" + "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_2, "\n" + "\n"], 1)
             chiller_Q_user = min(Q_user, chiller_Q0_max)
             ans_chiller2 = optimization_system_universal(chiller_Q_user, H_chiller_chilled_pump, 0,
                                                          H_chiller_cooling_pump, chiller_list,
@@ -373,8 +358,8 @@ def run_simulate_evaluate():
             # 第2-3步：用向用户侧供冷供冷+蓄冷功率，冷水机优化和控制，但是不进行冷冻水泵控制
             input_log_2_3 = "第2-3步：用向用户侧供冷供冷+蓄冷功率，冷水机优化和控制，但是不进行冷冻水泵控制..."
             print(input_log_2_3)
-            write_txt_data(file_fmu_input_log, [input_log_2_3, "\n" + "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_3, "\n" + "\n"], 1)
+            write_txt_data(file_fmu_input_log, [input_log_2_3, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_3, "\n"], 1)
             chiller_Q_total = min(Q_total, chiller_Q0_max)
             algorithm_chiller_double(chiller_Q_total, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                      chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
@@ -387,17 +372,17 @@ def run_simulate_evaluate():
             # 第2-4步：用向用户侧供冷功率，冷水机优化和控制，仅进行冷冻水泵控制
             input_log_2_4 = "第2-4步：用向用户侧供冷功率，冷水机优化和控制，仅进行冷冻水泵控制..."
             print(input_log_2_4)
-            write_txt_data(file_fmu_input_log, [input_log_2_4, "\n" + "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_4, "\n" + "\n"], 1)
+            write_txt_data(file_fmu_input_log, [input_log_2_4, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_4, "\n"], 1)
             algorithm_chilled_pump(chiller_Q_user, H_chiller_chilled_pump, 0, chiller_user_chilled_value_open,
                                    chiller_chilled_pump_list, [], n_chiller_chilled_pump_list, [],
                                    chiller_equipment_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
-            # 第2-5步：蓄冷水罐和水泵优化+控制
-            input_log_2_5 = "第2-5步：蓄冷水罐和水泵优化+控制..."
+            # 第2-5步：蓄冷水罐和水泵优化+控制，蓄冷工况
+            input_log_2_5 = "第2-5步：蓄冷水罐和水泵优化+控制，蓄冷工况..."
             print(input_log_2_5)
-            write_txt_data(file_fmu_input_log, [input_log_2_5, "\n" + "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_5, "\n" + "\n"], 1)
+            write_txt_data(file_fmu_input_log, [input_log_2_5, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_5, "\n"], 1)
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
                                                energy_storage_equipment, chilled_pump_to_user, chilled_pump_in_storage,
                                                None, chiller_storage_chilled_value_open, H_chilled_pump_to_user,
@@ -408,19 +393,19 @@ def run_simulate_evaluate():
             # 第2-6步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_6 = "第2-6步：用向用户侧供冷功率，空气源热泵优化和控制..."
             print(input_log_2_6)
-            write_txt_data(file_fmu_input_log, [input_log_2_6, "\n" + "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_6, "\n" + "\n"], 1)
+            write_txt_data(file_fmu_input_log, [input_log_2_6, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_6, "\n"], 1)
             ashp_Q_user = min(Q_user - chiller_Q_user, ashp_Q0_max)
             algorithm_air_source_heat_pump(ashp_Q_user, H_ashp_chilled_pump, 0, air_source_heat_pump,
                                            ashp_chilled_pump, None, ashp_equipment_type_path, n_calculate_hour,
                                            0, cfg_path_equipment, cfg_path_public)
 
-        else:
-            # 第2-1步：蓄冷水罐和水泵优化+控制，蓄冷工况
-            input_log_2_1 = "第2-1步：蓄冷水罐和水泵优化+控制，蓄冷工况..."
+        elif Q_out_ese > 0:
+            # 第2-1步：蓄冷水罐和水泵优化+控制，供冷工况
+            input_log_2_1 = "第2-1步：蓄冷水罐和水泵优化+控制，供冷工况..."
             print(input_log_2_1)
-            write_txt_data(file_fmu_input_log, [input_log_2_1, "\n" + "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_1, "\n" + "\n"], 1)
+            write_txt_data(file_fmu_input_log, [input_log_2_1, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_1, "\n"], 1)
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
                                                energy_storage_equipment, chilled_pump_to_user, chilled_pump_in_storage,
                                                None, None, H_chilled_pump_to_user, H_chilled_pump_in_storage, 0,
@@ -431,8 +416,8 @@ def run_simulate_evaluate():
             # 第2-2步：用向用户侧供冷供冷，冷水机优化和控制
             input_log_2_2 = "第2-2步：用向用户侧供冷供冷，冷水机优化和控制..."
             print(input_log_2_2)
-            write_txt_data(file_fmu_input_log, [input_log_2_2, "\n" + "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_2, "\n" + "\n"], 1)
+            write_txt_data(file_fmu_input_log, [input_log_2_2, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_2, "\n"], 1)
             chiller_Q_user = min(Q_total, chiller_Q0_max)
             algorithm_chiller_double(chiller_Q_user, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                      chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
@@ -445,8 +430,32 @@ def run_simulate_evaluate():
             # 第2-3步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_3 = "第2-3步：用向用户侧供冷功率，空气源热泵优化和控制..."
             print(input_log_2_3)
-            write_txt_data(file_fmu_input_log, [input_log_2_3, "\n" + "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_3, "\n" + "\n"], 1)
+            write_txt_data(file_fmu_input_log, [input_log_2_3, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_3, "\n"], 1)
+            ashp_Q_user = min(Q_total - chiller_Q_user, ashp_Q0_max)
+            algorithm_air_source_heat_pump(ashp_Q_user, H_ashp_chilled_pump, 0, air_source_heat_pump,
+                                           ashp_chilled_pump, None, ashp_equipment_type_path, n_calculate_hour,
+                                           0, cfg_path_equipment, cfg_path_public)
+        else:
+            # 第2-1步：用向用户侧供冷供冷，冷水机优化和控制
+            input_log_2_1 = "第2-1步：用向用户侧供冷供冷，冷水机优化和控制..."
+            print(input_log_2_1)
+            write_txt_data(file_fmu_input_log, [input_log_2_1, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_1, "\n"], 1)
+            chiller_Q_user = min(Q_total, chiller_Q0_max)
+            algorithm_chiller_double(chiller_Q_user, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
+                                     chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
+                                     chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
+                                     n0_chiller1, n0_chiller2, n0_chiller_chilled_pump1, n0_chiller_chilled_pump2,
+                                     0, 0, n0_chiller_cooling_pump1, n0_chiller_cooling_pump2, n0_chiller_cooling_tower,
+                                     0, chiller_equipment_type_path, n_calculate_hour, n_chiller_user_value,
+                                     cfg_path_equipment, cfg_path_public)
+
+            # 第2-2步：用向用户侧供冷功率，空气源热泵优化和控制
+            input_log_2_2 = "第2-2步：用向用户侧供冷功率，空气源热泵优化和控制..."
+            print(input_log_2_2)
+            write_txt_data(file_fmu_input_log, [input_log_2_2, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_2, "\n"], 1)
             ashp_Q_user = min(Q_total - chiller_Q_user, ashp_Q0_max)
             algorithm_air_source_heat_pump(ashp_Q_user, H_ashp_chilled_pump, 0, air_source_heat_pump,
                                            ashp_chilled_pump, None, ashp_equipment_type_path, n_calculate_hour,
@@ -457,13 +466,13 @@ def run_simulate_evaluate():
         # 第3步：获取time，并仿真到指定时间
         input_log_3 = "第3步：获取time，并仿真到指定时间..."
         print(input_log_3)
-        write_txt_data(file_fmu_input_log, [input_log_3, "\n" + "\n"], 1)
-        write_txt_data(file_fmu_input_feedback_log, [input_log_3, "\n" + "\n"], 1)
+        write_txt_data(file_fmu_input_log, [input_log_3, "\n"], 1)
+        write_txt_data(file_fmu_input_feedback_log, [input_log_3, "\n"], 1)
         time_now = read_txt_data(file_fmu_time)[0]
         n_cal_now = int((time_now - start_time) / (3600 * (1 / n_calculate_hour)))
         simulate_time = start_time + (n_cal_now + 1) * 3600 * (1 / n_calculate_hour) - time_now
         main_simulate_pause_single([], [], simulate_time, txt_path)
-        print("\n" + "\n")
+        print("\n")
 
     # 修改FMU状态
     fmu_state_list = [0, 1, stop_time, output_interval, time_out]
