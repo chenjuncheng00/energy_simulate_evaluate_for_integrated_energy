@@ -5,7 +5,7 @@ from model_fmu_input_data_default import air_source_heat_pump_input_data_default
 from algorithm_code.other import *
 from algorithm_code.read_write_data import *
 
-def fmu_simulate_initialize(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out, txt_path):
+def initialize_complete_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out, txt_path):
     """
 
     Args:

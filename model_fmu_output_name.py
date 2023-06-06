@@ -1,7 +1,9 @@
 
-def main_model_output_name():
+def main_model_output_name(load_mode=0):
     """
     整个模型的输出，名称
+    Args:
+        load_mode: [int]，0：user_load；1：simple_load
 
     Returns:
 
@@ -17,12 +19,34 @@ def main_model_output_name():
     # 冷却塔直接供冷模型
     tower_chilled_output = tower_chilled_output_name()[0]
     # 用户侧模型
-    user_output = user_load_output_name()[0]
+    if load_mode == 0:
+        user_output = user_load_output_name()[0]
+    else:
+        user_output = simple_load_output_name()
     # 总输出
     model_output = environment_output + chiller_output + air_source_heat_pump_output + storage_output + \
                    tower_chilled_output + user_output
     # 返回结果
     return model_output
+
+
+def environment_output_name():
+    """
+    环境温湿度输出，名称
+
+    Returns:
+
+    """
+    # 室外干球温度，单位：K
+    Tdo = ['weather_data.TDryBul']
+    # 室外湿球温度，单位：K
+    Two = ['weather_data.TWetBul']
+    # 室外相对湿度，单位：1
+    Hro = ['weather_data.relHum']
+    # 总输出
+    environment_output = Tdo + Two + Hro
+    # 返回结果
+    return environment_output, Tdo, Two, Hro
 
 
 def chiller_output_name():
@@ -164,20 +188,13 @@ def user_load_output_name():
     return user_output, room_T, room_H, Q, P, Few, Te, H_pump
 
 
-def environment_output_name():
+def simple_load_output_name():
     """
-    环境温湿度输出，名称
-
+    简单的负荷模型输出，名称
     Returns:
 
     """
-    # 室外干球温度，单位：K
-    Tdo = ['weather_data.TDryBul']
-    # 室外湿球温度，单位：K
-    Two = ['weather_data.TWetBul']
-    # 室外相对湿度，单位：1
-    Hro = ['weather_data.relHum']
-    # 总输出
-    environment_output = Tdo + Two + Hro
+    # 制冷功率，单位：kW
+    user_Q = ['user_Q_chiller', 'user_Q_ashp', 'user_Q_storage', 'user_Q_tower_chilled']
     # 返回结果
-    return environment_output, Tdo, Two, Hro
+    return user_Q

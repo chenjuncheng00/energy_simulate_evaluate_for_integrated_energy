@@ -1,6 +1,7 @@
 from fmpy import extract, read_model_description
 from identify_hydraulic_characteristic import main_identify_hydraulic_characteristic
 from identify_equipment_characteristic import main_identify_equipment_characteristic
+from identify_system_dynamics import main_identify_system_dynamics
 
 def run_identify_hydraulic_characteristic():
     fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230522.fmu"
@@ -53,6 +54,40 @@ def run_equipment_characteristic():
                                            cooling_tower_approach_result_txt_path)
 
 
+def run_identify_system_dynamics(txt_path):
+    """
+
+    Args:
+        txt_path: [string]，相对路径
+
+    Returns:
+
+    """
+    fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_20230602.fmu"
+    # 模型初始化
+    fmu_unzipdir = extract(fmu_path)
+    fmu_description = read_model_description(fmu_unzipdir)
+    start_time = 0
+    stop_time = start_time + 20 * 3600
+    output_interval = 10
+    Ts = 10 * 60  # 采样时间
+    time_out = 600
+    chiller_equipment_type_path = ["chiller", txt_path]
+    cfg_path_equipment = "./config/equipment_config.cfg"
+    cfg_path_public = "./config/public_config.cfg"
+    # 辨识的冷负荷列表，单位：kW
+    chiller_Q_list = [900, 1900, 4000, 6000, 8000, 10000, 12000, 14000]
+    # 传递函数极点的最大数
+    np_max = 3
+    # 系统辨识得分的目标
+    fitpercent_target = 95
+    main_identify_system_dynamics(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval, Ts,
+                                  time_out, np_max, fitpercent_target, chiller_Q_list, chiller_equipment_type_path,
+                                  cfg_path_equipment, cfg_path_public)
+
+
 if __name__ == "__main__":
     run_identify_hydraulic_characteristic()
     run_equipment_characteristic()
+    txt_path = "../optimal_control_algorithm_for_cooling_season"
+    run_identify_system_dynamics(txt_path)

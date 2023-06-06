@@ -4,17 +4,37 @@ FMU模型输入数值的默认值：
 2、数据顺序与model_fmu_input_type中一致
 """
 
-def main_input_data_default():
+def main_input_data_default(load_mode=0):
     """
     整个模型的输入，数值
+    Args:
+        load_mode: [int]，0：user_load；1：simple_load
 
     Returns:
 
     """
+    if load_mode == 0:
+        user_load_input_data = user_load_input_data_default()
+    else:
+        user_load_input_data = simple_load_input_data_default()
     model_input = environment_input_data_default() + chiller_input_data_default() + \
                   air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
-                  tower_chilled_input_data_default() + user_load_input_data_default()
+                  tower_chilled_input_data_default() + user_load_input_data
     return model_input
+
+
+def environment_input_data_default():
+    """
+    环境温湿度输入，名称和数据类型
+
+    Returns:
+
+    """
+    Tdo = [35]
+    Two = [27]
+    environment_input = Tdo + Two
+    # 返回结果
+    return environment_input
 
 
 def chiller_input_data_default():
@@ -113,16 +133,13 @@ def user_load_input_data_default():
     # 返回结果
     return chilled_pump
 
-
-def environment_input_data_default():
+def simple_load_input_data_default():
     """
-    环境温湿度输入，名称和数据类型
-
+    简单的负荷模型输入，数值
     Returns:
 
     """
-    Tdo = [30]
-    Two = [25]
-    environment_input = Tdo + Two
+    # 负荷值(冷负荷：正值；热负荷：负值)，单位：W
+    Q_input = [0]
     # 返回结果
-    return environment_input
+    return Q_input
