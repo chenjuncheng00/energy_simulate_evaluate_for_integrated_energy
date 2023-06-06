@@ -1,6 +1,7 @@
 import numpy as np
 import pickle
 import traceback
+import matplotlib.pyplot as plt
 from fmpy import *
 from air_conditioner_dynamic import *
 from algorithm_code.read_write_data import *
@@ -15,24 +16,26 @@ from model_fmu_output_name import chiller_output_name, cold_storage_output_name,
 from model_fmu_input_name import chiller_input_name, cold_storage_input_name
 
 def main_identify_system_dynamics(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval, Ts,
-                                  time_out, np_max, fitpercent_target, chiller_Q_list, chiller_equipment_type_path,
-                                  cfg_path_equipment, cfg_path_public):
+                                  time_out, np_max, fitpercent_target, chiller_object_list, chiller_Y_mode_list,
+                                  chiller_Q_list, chiller_equipment_type_path, cfg_path_equipment, cfg_path_public):
     """
 
     Args:
-        fmu_unzipdir:
-        fmu_description:
-        start_time:
-        stop_time:
-        output_interval:
+        fmu_unzipdir: [string]，FMU模型解压后的路径
+        fmu_description: [object]，获取FMU模型描述
+        start_time: [float]，仿真开始时间，单位：秒
+        stop_time: [float]，仿真结束时间，单位：秒
+        output_interval: [float]，FMU模型输出采样时间，单位：秒
         Ts: [float]，采样时间
-        time_out:
-        np_max:
-        fitpercent_target:
-        chiller_Q_list:
-        chiller_equipment_type_path:
-        cfg_path_equipment:
-        cfg_path_public:
+        time_out: [float]，仿真超时时间，单位：秒
+        np_max: [int]，传递函数极点最大值
+        fitpercent_target: [float]，传递函数辨识得分目标
+        chiller_object_list: [list]，需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
+        chiller_Y_mode_list: [list]，模型输出模式：EER/Tei
+        chiller_Q_list: [list]，模型辨识指定的制冷功率，列表，单位：kW
+        chiller_equipment_type_path: [string]，[list]，设备类型名称，相对路径
+        cfg_path_equipment:[string]，设备信息参数cfg文件路径
+        cfg_path_public:[string]，公用参数cfg文件路径
 
     Returns:
 
@@ -70,14 +73,12 @@ def main_identify_system_dynamics(fmu_unzipdir, fmu_description, start_time, sto
     # 传递函数数据的.txt文件文件所在的文件夹路径
     path_tf = './model_data/file_txt/result_system_dynamics'
     # 冷水机系统动态特性辨识
-    chiller_object_list = ["Teo", "Few", "Fcw", "Fca"]
-    chiller_Y_mode_list = ["EER", "Tei"]
     identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, file_fmu_time, file_fmu_state,
                               file_fmu_output_name, file_fmu_result_all, file_fmu_result_last, file_pkl_chiller,
                               file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, path_result_EER,
                               path_result_Tei, path_tf, path_Few_EER_tfdata, path_Fcw_EER_tfdata, path_Fca_EER_tfdata,
                               path_Teo_EER_tfdata, path_Few_Tei_tfdata, path_Fcw_Tei_tfdata, path_Fca_Tei_tfdata,
-                              path_Teo_Tei_tfdata, chiller_object_list, chiller_Y_mode_list, np_max, fitpercent_target,
+                              path_Teo_Tei_tfdata, np_max, fitpercent_target, chiller_object_list, chiller_Y_mode_list,
                               chiller_Q_list, chiller_equipment_type_path, cfg_path_equipment, cfg_path_public)
 
 
@@ -86,7 +87,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                               file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, path_result_EER,
                               path_result_Tei, path_tf, path_Few_EER_tfdata, path_Fcw_EER_tfdata, path_Fca_EER_tfdata,
                               path_Teo_EER_tfdata, path_Few_Tei_tfdata, path_Fcw_Tei_tfdata, path_Fca_Tei_tfdata,
-                              path_Teo_Tei_tfdata, object_list, Y_mode_list, np_max, fitpercent_target, Q_list,
+                              path_Teo_Tei_tfdata, np_max, fitpercent_target, object_list, Y_mode_list, Q_list,
                               chiller_equipment_type_path, cfg_path_equipment, cfg_path_public):
     """
 
@@ -117,10 +118,10 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
         path_Fcw_Tei_tfdata: [string]，冷却水流量阶跃响应传递函数建模数据
         path_Fca_Tei_tfdata: [string]，冷却塔风量阶跃响应传递函数建模数据
         path_Teo_Tei_tfdata: [string]，冷冻水出水温度阶跃响应传递函数建模数据
-        object_list: [list]，需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
-        Y_mode_list: [list]，模型输出模式：EER/Tei
         np_max: [int]，传递函数极点最大值
         fitpercent_target: [float]，传递函数辨识得分目标
+        object_list: [list]，需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
+        Y_mode_list: [list]，模型输出模式：EER/Tei
         Q_list: [list]，模型辨识指定的制冷功率，列表，单位：kW
         chiller_equipment_type_path: [string]，[list]，设备类型名称，相对路径
         cfg_path_equipment:[string]，设备信息参数cfg文件路径
@@ -136,13 +137,6 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
     # FMU模型输出名称
     fmu_output_name = chiller_output_name()[0] + cold_storage_output_name()[0] + simple_load_output_name() + \
                       chiller_input_name()[0] + cold_storage_input_name()[0]
-    # 仿真结果
-    txt_str = "start_time" + "\t" + "pause_time"
-    for i in range(len(fmu_output_name)):
-        txt_str += "\t" + fmu_output_name[i]
-    write_txt_data(file_fmu_result_all, [txt_str])
-    write_txt_data(file_fmu_result_last, [txt_str])
-
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:
         chiller_dict = pickle.load(f_obj)
@@ -179,12 +173,18 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
         for j in range(len(object_list)):
             tf_obj = object_list[j]
             # 第1步:初始化FMU模型
-            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，正在初始化FMU模型......")
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在初始化FMU模型!")
             # 重置所有内容
             run_initialize(txt_path)
             # 生成FMU输出名称文件
             with open(file_fmu_output_name, 'wb') as f:
                 pickle.dump(fmu_output_name, f)
+            # 仿真结果
+            txt_str = "start_time" + "\t" + "pause_time"
+            for i in range(len(fmu_output_name)):
+                txt_str += "\t" + fmu_output_name[i]
+            write_txt_data(file_fmu_result_all, [txt_str])
+            write_txt_data(file_fmu_result_last, [txt_str])
             # 模型初始化和实例化
             fmu_instance = instantiate_fmu(unzipdir=fmu_unzipdir, model_description=fmu_description)
             # 获取内存地址
@@ -212,7 +212,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
             fmu_state_list = [0, 0, stop_time, output_interval, time_out]
             write_txt_data(file_fmu_state, fmu_state_list)
             # 第3步：优化冷水机系统并进行控制命令下发
-            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，正在优化冷水机系统并进行控制命令下发......")
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在优化冷水机系统并进行控制命令下发!")
             algorithm_chiller_double(Q_input, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                      chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
                                      chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
@@ -220,35 +220,49 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                                      0, 0, n0_chiller_cooling_pump1, n0_chiller_cooling_pump2, n0_chiller_cooling_tower,
                                      0, chiller_equipment_type_path, n_calculate_hour, n_chiller_user_value,
                                      cfg_path_equipment, cfg_path_public)
-            # 第4步：系统仿真10小时，确保系统稳定，并获取数据
-            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，正在持续仿真，确保系统稳定......")
+            # 第4步：系统仿真15小时，确保系统稳定，并获取数据
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在持续仿真，确保系统稳定!")
             # 修改采样时间
             fmu_state_list = [0, 0, stop_time, Ts, time_out]
             write_txt_data(file_fmu_state, fmu_state_list)
-            simulate_time = 10 * 3600
+            simulate_time = 15 * 3600
             # 模型输入名称和类型
             input_type_list = simple_load_input_type()
             # 模型输入数据
             input_data_list = [Q_input * 1000]
             result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time, txt_path)
             # 获取系统稳定后的数据，用于系统辨识初始值
-            chiller_f_chilled_pump_list = [result["chiller_f_chilled_pump1"], result["chiller_f_chilled_pump2"],
-                                           result["chiller_f_chilled_pump3"], result["chiller_f_chilled_pump4"],
-                                           result["chiller_f_chilled_pump5"], result["chiller_f_chilled_pump6"]]
-            chiller_f_cooling_pump_list = [result["chiller_f_cooling_pump1"], result["chiller_f_cooling_pump2"],
-                                           result["chiller_f_cooling_pump3"], result["chiller_f_cooling_pump4"],
-                                           result["chiller_f_cooling_pump5"], result["chiller_f_cooling_pump6"]]
-            chiller_f_cooling_tower_list = [result["chiller_f_cooling_tower1"], result["chiller_f_cooling_tower2"],
-                                            result["chiller_f_cooling_tower3"], result["chiller_f_cooling_tower4"],
-                                            result["chiller_f_cooling_tower5"], result["chiller_f_cooling_tower6"]]
-            chiller_Teo0 = result["chiller_Teo"]
-            chiller_Few0 = result["chiller_Few_total"]
-            chiller_Fcw0 = result["chiller_Fcw_total"]
-            chiller_EER0 = result["chiller_EER"]
-            chiller_Tei0 = result["chiller_Tei"]
+            chiller_f_chilled_pump_list = [list(result["chiller_f_chilled_pump1"]),
+                                           list(result["chiller_f_chilled_pump2"]),
+                                           list(result["chiller_f_chilled_pump3"]),
+                                           list(result["chiller_f_chilled_pump4"]),
+                                           list(result["chiller_f_chilled_pump5"]),
+                                           list(result["chiller_f_chilled_pump6"])]
+            chiller_f_cooling_pump_list = [list(result["chiller_f_cooling_pump1"]),
+                                           list(result["chiller_f_cooling_pump2"]),
+                                           list(result["chiller_f_cooling_pump3"]),
+                                           list(result["chiller_f_cooling_pump4"]),
+                                           list(result["chiller_f_cooling_pump5"]),
+                                           list(result["chiller_f_cooling_pump6"])]
+            chiller_f_cooling_tower_list = [list(result["chiller_f_cooling_tower1"]),
+                                            list(result["chiller_f_cooling_tower2"]),
+                                            list(result["chiller_f_cooling_tower3"]),
+                                            list(result["chiller_f_cooling_tower4"]),
+                                            list(result["chiller_f_cooling_tower5"]),
+                                            list(result["chiller_f_cooling_tower6"])]
+            chiller_Teo0 = list(result["chiller_Teo"])
+            chiller_Few0 = list(result["chiller_Few_total"])
+            chiller_Fcw0 = list(result["chiller_Fcw_total"])
+            chiller_EER0 = list(result["chiller_EER"])
+            chiller_Tei0 = list(result["chiller_Tei"])
             chiller_Fca0 = calculate_sum_value_list(chiller_f_cooling_tower_list)
+            chiller_Q0 = list(result["chiller_Q_total"])
+            chiller_P0 = list(result["chiller_P_total_main_equipment"])
+            chilled_pump_P0 = list(result["chiller_P_total_chilled_pump"])
+            cooling_pump_P0 = list(result["chiller_P_total_cooling_pump"])
+            cooling_tower_P0 = list(result["chiller_P_total_cooling_tower"])
             # 第5步：生成系统阶跃响应实验的输入数据
-            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，正在生成系统阶跃响应实验的输入数据......")
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在生成系统阶跃响应实验的输入数据！")
             # 确定step_value
             if tf_obj == "Teo":
                 step_value = 2
@@ -267,18 +281,26 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 input_data_list = None
                 input_type_list = None
             # 第6步：系统阶跃响应实验
-            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，正在进行系统阶跃响应实验，实验对象为：" + tf_obj)
-            simulate_time = 3 * 3600
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在进行系统阶跃响应实验！")
+            simulate_time = 4 * 3600
             result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time, txt_path)
-            chiller_f_cooling_tower_list = [result["chiller_f_cooling_tower1"], result["chiller_f_cooling_tower2"],
-                                            result["chiller_f_cooling_tower3"], result["chiller_f_cooling_tower4"],
-                                            result["chiller_f_cooling_tower5"], result["chiller_f_cooling_tower6"]]
-            chiller_Teo1 = result["chiller_Teo"]
-            chiller_Few1 = result["chiller_Few_total"]
-            chiller_Fcw1 = result["chiller_Fcw_total"]
+            chiller_f_cooling_tower_list = [list(result["chiller_f_cooling_tower1"]),
+                                            list(result["chiller_f_cooling_tower2"]),
+                                            list(result["chiller_f_cooling_tower3"]),
+                                            list(result["chiller_f_cooling_tower4"]),
+                                            list(result["chiller_f_cooling_tower5"]),
+                                            list(result["chiller_f_cooling_tower6"])]
+            chiller_Teo1 = list(result["chiller_Teo"])
+            chiller_Few1 = list(result["chiller_Few_total"])
+            chiller_Fcw1 = list(result["chiller_Fcw_total"])
             chiller_Fca1 = calculate_sum_value_list(chiller_f_cooling_tower_list)
-            chiller_EER1 = result["chiller_EER"]
-            chiller_Tei1 = result["chiller_Tei"]
+            chiller_EER1 = list(result["chiller_EER"])
+            chiller_Tei1 = list(result["chiller_Tei"])
+            chiller_Q1 = list(result["chiller_Q_total"])
+            chiller_P1 = list(result["chiller_P_total_main_equipment"])
+            chilled_pump_P1 = list(result["chiller_P_total_chilled_pump"])
+            cooling_pump_P1 = list(result["chiller_P_total_cooling_pump"])
+            cooling_tower_P1 = list(result["chiller_P_total_cooling_tower"])
             # 读取仿真的数据，并截取需要的部分
             chiller_Teo_list = chiller_Teo0 + chiller_Teo1
             chiller_Few_list = chiller_Few0 + chiller_Few1
@@ -286,32 +308,71 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
             chiller_Fca_list = chiller_Fca0 + chiller_Fca1
             chiller_EER_list = chiller_EER0 + chiller_EER1
             chiller_Tei_list = chiller_Tei0 + chiller_Tei1
+            chiller_Q_list = chiller_Q0 + chiller_Q1
+            chiller_P_list = chiller_P0 + chiller_P1
+            chilled_pump_P_list = chilled_pump_P0 + chilled_pump_P1
+            cooling_pump_P_list = cooling_pump_P0 + cooling_pump_P1
+            cooling_tower_P_list = cooling_tower_P0 + cooling_tower_P1
+            P_total_list = []
+            # Q、P、EER绘图
+            for o in range(len(chiller_Q_list)):
+                P_total = chiller_P_list[o] + chilled_pump_P_list[o] + cooling_pump_P_list[o] + cooling_tower_P_list[o]
+                P_total_list.append(P_total)
+            plt.figure(1)
+            plt.title("X = " + tf_obj + "，chiller_Q")
+            plt.xlabel("t(s)")
+            plt.ylabel("chiller_Q")
+            plt.plot(chiller_Q_list, color='blue', label='chiller_Q')
+            plt.figure(2)
+            plt.title("X = " + tf_obj + "，P_total")
+            plt.xlabel("t(s)")
+            plt.ylabel("P_total")
+            plt.plot(P_total_list, color='blue', label='P_total')
+            plt.figure(3)
+            plt.title("X = " + tf_obj + "，EER")
+            plt.xlabel("t(s)")
+            plt.ylabel("EER")
+            plt.plot(chiller_EER_list, color='blue', label='EER')
+            plt.legend()
+            plt.show()
             # 第7步：确定传递函数辨识的输入X和输出Y
-            # 只保留最后5个小时的数据
+            # 只保留最后6个小时的数据，并换算到0初始值条件下
             # 模型输入X
             if tf_obj == "Teo":
-                start_index = int(len(chiller_Teo_list) - 5 * 3600 / Ts)
+                start_index = int(len(chiller_Teo_list) - 6 * 3600 / Ts)
                 X_list = chiller_Teo_list[start_index:]
+                for n in range(len(X_list)):
+                    X_list[n] = X_list[n] - chiller_Teo0[-1]
             elif tf_obj == "Few":
-                start_index = int(len(chiller_Few_list) - 5 * 3600 / Ts)
+                start_index = int(len(chiller_Few_list) - 6 * 3600 / Ts)
                 X_list = chiller_Few_list[start_index:]
+                for n in range(len(X_list)):
+                    X_list[n] = X_list[n] - chiller_Few0[-1]
             elif tf_obj == "Fcw":
-                start_index = int(len(chiller_Fcw_list) - 5 * 3600 / Ts)
+                start_index = int(len(chiller_Fcw_list) - 6 * 3600 / Ts)
                 X_list = chiller_Fcw_list[start_index:]
+                for n in range(len(X_list)):
+                    X_list[n] = X_list[n] - chiller_Fcw0[-1]
             elif tf_obj == "Fca":
-                start_index = int(len(chiller_Fca_list) - 5 * 3600 / Ts)
+                start_index = int(len(chiller_Fca_list) - 6 * 3600 / Ts)
                 X_list = chiller_Fca_list[start_index:]
+                for n in range(len(X_list)):
+                    X_list[n] = X_list[n] - chiller_Fca0[-1]
             else:
                 X_list = None
             # 模型输出Y
             for k in range(len(Y_mode_list)):
                 Y_mode = Y_mode_list[k]
                 if Y_mode == "EER":
-                    start_index = int(len(chiller_EER_list) - 5 * 3600 / Ts)
+                    start_index = int(len(chiller_EER_list) - 6 * 3600 / Ts)
                     Y_list = chiller_EER_list[start_index:]
+                    for n in range(len(Y_list)):
+                        Y_list[n] = Y_list[n] - chiller_EER0[-1]
                 elif Y_mode == "Tei":
-                    start_index = int(len(chiller_Tei_list) - 5 * 3600 / Ts)
+                    start_index = int(len(chiller_Tei_list) - 6 * 3600 / Ts)
                     Y_list = chiller_Tei_list[start_index:]
+                    for n in range(len(Y_list)):
+                        Y_list[n] = Y_list[n] - chiller_Tei0[-1]
                 else:
                     Y_list = None
                 # 拼接数据，写入txt
@@ -336,7 +397,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 elif tf_obj == "Fca" and Y_mode == "Tei":
                     write_txt_data(path_Fca_Tei_tfdata, tf_txt_list)
             # 第8步：终止FMU模型
-            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，正在终止FMU模型.....")
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在终止FMU模型！")
             # 修改FMU状态
             fmu_state_list = [0, 1, stop_time, output_interval, time_out]
             write_txt_data(file_fmu_state, fmu_state_list)
@@ -347,7 +408,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
         print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，所有的传递函数辨识数据生成完成！")
         for m in range(len(Y_mode_list)):
             Y_mode = Y_mode_list[m]
-            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，正在进行传递函数辨识，被辨识的对象为：" + Y_mode)
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输出：" + Y_mode + "，正在进行传递函数辨识!")
             info_txt = "Q=" + str(round(Q_input, 2)) + "kW, "
             try:
                 # 传递函数系统辨识

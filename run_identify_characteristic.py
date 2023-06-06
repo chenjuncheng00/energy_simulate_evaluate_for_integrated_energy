@@ -68,22 +68,26 @@ def run_identify_system_dynamics(txt_path):
     fmu_unzipdir = extract(fmu_path)
     fmu_description = read_model_description(fmu_unzipdir)
     start_time = 0
-    stop_time = start_time + 20 * 3600
+    stop_time = start_time + 24 * 3600
     output_interval = 10
     Ts = 10 * 60  # 采样时间
     time_out = 600
     chiller_equipment_type_path = ["chiller", txt_path]
     cfg_path_equipment = "./config/equipment_config.cfg"
     cfg_path_public = "./config/public_config.cfg"
+    # 需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
+    chiller_object_list = ["Teo", "Few", "Fcw", "Fca"]
+    # 模型输出模式：EER/Tei
+    chiller_Y_mode_list = ["EER", "Tei"]
     # 辨识的冷负荷列表，单位：kW
-    chiller_Q_list = [900, 1900, 4000, 6000, 8000, 10000, 12000, 14000]
+    chiller_Q_list = [13000, 11000, 9000, 7000, 5000, 3000]
     # 传递函数极点的最大数
     np_max = 3
     # 系统辨识得分的目标
     fitpercent_target = 95
     main_identify_system_dynamics(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval, Ts,
-                                  time_out, np_max, fitpercent_target, chiller_Q_list, chiller_equipment_type_path,
-                                  cfg_path_equipment, cfg_path_public)
+                                  time_out, np_max, fitpercent_target, chiller_object_list, chiller_Y_mode_list,
+                                  chiller_Q_list, chiller_equipment_type_path, cfg_path_equipment, cfg_path_public)
 
 
 if __name__ == "__main__":
