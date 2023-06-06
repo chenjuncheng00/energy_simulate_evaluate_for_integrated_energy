@@ -10,6 +10,7 @@ from algorithm_code.other import *
 from algorithm_code import *
 from calculate_energy_storage_value import generate_Q_list, generate_time_name_list
 from initialize_complete_system import initialize_complete_system
+from run_initialize import run_initialize
 
 def run_complete_system():
     """
@@ -17,6 +18,15 @@ def run_complete_system():
     Returns:
 
     """
+    # 设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
+    txt_path = "../optimal_control_algorithm_for_cooling_season"
+    chiller_equipment_type_path = ["chiller", txt_path]
+    ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
+    storage_equipment_type_path = ["energy_storage_equipment", txt_path]
+    # tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
+    # 重置所有内容
+    run_initialize(txt_path)
+
     # cfg文件路径
     cfg_path_equipment = "./config/equipment_config.cfg"
     cfg_path_public = "./config/public_config.cfg"
@@ -26,12 +36,6 @@ def run_complete_system():
     file_pkl_stroage = "./model_data/file_equipment/storage.pkl"
     # file_pkl_tower_chilled = "./model_data/file_equipment/tower_chilled.pkl"
     file_pkl_system = "./model_data/file_equipment/system.pkl"
-    # 设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
-    chiller_equipment_type_path = ["chiller", txt_path]
-    ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
-    storage_equipment_type_path = ["energy_storage_equipment", txt_path]
-    # tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
 
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:
