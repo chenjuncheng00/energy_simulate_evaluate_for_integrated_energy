@@ -2,8 +2,15 @@ from algorithm_code.read_write_data import *
 from system_default_status import air_source_heat_pump_default_status, chiller_default_status, storage_default_status, \
                                   tower_chilled_default_status
 
-if __name__ == "__main__":
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
+def run_initialize(txt_path):
+    """
+
+    Args:
+        txt_path: [string]，相对路径
+
+    Returns:
+
+    """
     # 从配置文件读取设置的设备参数
     cfg_path_equipment = "./config/equipment_config.cfg"
     # 系统公用二级冷冻水泵数量
@@ -78,3 +85,7 @@ if __name__ == "__main__":
     tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     tower_chilled_real_value_dict = tower_chilled_default_status(n_tower_chilled_pump)
     read_real_value_DO_station(tower_chilled_real_value_dict, 0, tower_chilled_equipment_type_path, cfg_path_equipment)
+
+if __name__ == "__main__":
+    txt_path = "../optimal_control_algorithm_for_cooling_season"
+    run_initialize(txt_path)

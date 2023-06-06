@@ -1,8 +1,10 @@
 import numpy as np
 
-def main_model_input_type():
+def main_model_input_type(load_mode=0):
     """
     整个模型的输入，名称和数据类型
+    Args:
+        load_mode: [int]，0：user_load；1：simple_load
 
     Returns:
 
@@ -20,12 +22,29 @@ def main_model_input_type():
     # 冷却塔直接供冷模型
     tower_chilled_input = tower_chilled_input_type()
     # 用户负荷模型
-    user_input = user_load_input_type()
+    if load_mode == 0:
+        user_input = user_load_input_type()
+    else:
+        user_input = simple_load_input_type()
     # 模型总输入
     model_input = time_input + environment_input + chiller_input + air_source_heat_pump_input + storage_input + \
                   tower_chilled_input + user_input
     # 返回结果
     return model_input
+
+
+def environment_input_type():
+    """
+    环境温湿度输入，名称和数据类型
+
+    Returns:
+
+    """
+    Tdo = [('Tdo', np.float_)]
+    Two = [('Two', np.float_)]
+    environment_input = Tdo + Two
+    # 返回结果
+    return environment_input, Tdo, Two
 
 
 def chiller_input_type():
@@ -39,11 +58,11 @@ def chiller_input_type():
     main_equipment_turn = [('chiller_turn1', np.bool_), ('chiller_turn2', np.bool_), ('chiller_turn3', np.bool_),
                            ('chiller_turn4', np.bool_), ('chiller_turn5', np.bool_), ('chiller_turn6', np.bool_)]
     main_equipment_Teo_set = [('chiller_Teo_set', np.float_)]
-    # 冷冻水泵，转速，0到1480
+    # 冷冻水泵，转速，0到50
     chilled_pump = [('chiller_f_chilled_pump1', np.float_), ('chiller_f_chilled_pump2', np.float_),
                     ('chiller_f_chilled_pump3', np.float_), ('chiller_f_chilled_pump4', np.float_),
                     ('chiller_f_chilled_pump5', np.float_), ('chiller_f_chilled_pump6', np.float_)]
-    # 冷却水泵，转速，0到1480
+    # 冷却水泵，转速，0到50
     cooling_pump = [('chiller_f_cooling_pump1', np.float_), ('chiller_f_cooling_pump2', np.float_),
                     ('chiller_f_cooling_pump3', np.float_), ('chiller_f_cooling_pump4', np.float_),
                     ('chiller_f_cooling_pump5', np.float_), ('chiller_f_cooling_pump6', np.float_)]
@@ -87,7 +106,7 @@ def air_source_heat_pump_input_type():
     main_equipment_turn = [('ashp_turn1', np.bool_), ('ashp_turn2', np.bool_),
                            ('ashp_turn3', np.bool_), ('ashp_turn4', np.bool_)]
     main_equipment_Teo_set = [('ashp_Teo_set', np.float_)]
-    # 冷冻水泵，转速，0到1480
+    # 冷冻水泵，转速，0到50
     chilled_pump = [('ashp_f_chilled_pump1', np.float_), ('ashp_f_chilled_pump2', np.float_),
                     ('ashp_f_chilled_pump3', np.float_), ('ashp_f_chilled_pump4', np.float_)]
     # 冷冻阀门，开度比，0到1
@@ -106,7 +125,7 @@ def cold_storage_input_type():
     Returns:
 
     """
-    # 冷冻水泵，转速，0到1480
+    # 冷冻水泵，转速，0到50
     chilled_pump = [('storage_f_chilled_pump1', np.float_), ('storage_f_chilled_pump2', np.float_),
                     ('storage_f_chilled_pump3', np.float_), ('storage_f_chilled_pump4', np.float_)]
     # 阀门列表：先是蓄冷阀门，然后是放冷阀门
@@ -129,7 +148,7 @@ def tower_chilled_input_type():
     Returns:
 
     """
-    # 冷冻水泵，转速，0到1480
+    # 冷冻水泵，转速，0到50
     chilled_pump = [('tower_chilled_f_chilled_pump1', np.float_), ('tower_chilled_f_chilled_pump2', np.float_),
                     ('tower_chilled_f_chilled_pump3', np.float_), ('tower_chilled_f_chilled_pump4', np.float_)]
     # 返回结果
@@ -143,21 +162,19 @@ def user_load_input_type():
     Returns:
 
     """
-    # 冷冻水泵，转速，0到1480
+    # 冷冻水泵，转速，0到50
     chilled_pump = [('user_f_chilled_pump1', np.float_), ('user_f_chilled_pump2', np.float_)]
     # 返回结果
     return chilled_pump
 
 
-def environment_input_type():
+def simple_load_input_type():
     """
-    环境温湿度输入，名称和数据类型
-
+    简单的负荷模型输入，名称和数据类型
     Returns:
 
     """
-    Tdo = [('Tdo', np.float_)]
-    Two = [('Two', np.float_)]
-    environment_input = Tdo + Two
+    # 负荷值(冷负荷：正值；热负荷：负值)，单位：W
+    Q_input = [('Q_input', np.float_)]
     # 返回结果
-    return environment_input, Tdo, Two
+    return Q_input
