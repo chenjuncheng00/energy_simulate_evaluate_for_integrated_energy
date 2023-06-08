@@ -1,12 +1,11 @@
 import numpy as np
 import pickle
-import traceback
 import matplotlib.pyplot as plt
 from fmpy import *
 from air_conditioner_dynamic import *
-from algorithm_code.read_write_data import *
-from algorithm_code.other import *
 from algorithm_code import *
+from algorithm_code.other import *
+from algorithm_code.read_write_data import *
 from algorithm_code.optimization_double import *
 from algorithm_code.optimization_single import *
 from algorithm_code.optimization_universal import *
@@ -19,7 +18,7 @@ from model_fmu_output_name import chiller_output_name, cold_storage_output_name,
 from model_fmu_input_name import chiller_input_name, cold_storage_input_name
 
 def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                  Ts, time_out, np_max, fitpercent_target, chiller_object_list, chiller_Y_mode_list,
+                                  Ts, time_out, np_max, fitpercent_target_list, chiller_object_list, chiller_Y_mode_list,
                                   chiller_Q_list, EER_mode, chiller_equipment_type_path, cfg_path_equipment,
                                   cfg_path_public):
     """
@@ -34,7 +33,7 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
         Ts: [float]，采样时间
         time_out: [float]，仿真超时时间，单位：秒
         np_max: [int]，传递函数极点最大值
-        fitpercent_target: [float]，传递函数辨识得分目标
+        fitpercent_target_list: [list]，传递函数辨识得分目标，列表
         chiller_object_list: [list]，需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
         chiller_Y_mode_list: [list]，模型输出模式：EER/Tei
         chiller_Q_list: [list]，模型辨识指定的制冷功率，列表，单位：kW
@@ -88,9 +87,9 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
                               file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, path_result_EER,
                               path_result_Tei, path_tf, path_matlab, path_Few_EER_tfdata, path_Fcw_EER_tfdata,
                               path_Fca_EER_tfdata, path_Teo_EER_tfdata, path_Few_Tei_tfdata, path_Fcw_Tei_tfdata,
-                              path_Fca_Tei_tfdata, path_Teo_Tei_tfdata, np_max, fitpercent_target, chiller_object_list,
-                              chiller_Y_mode_list, chiller_Q_list, EER_mode, chiller_equipment_type_path,
-                              cfg_path_equipment, cfg_path_public)
+                              path_Fca_Tei_tfdata, path_Teo_Tei_tfdata, np_max, fitpercent_target_list,
+                              chiller_object_list, chiller_Y_mode_list, chiller_Q_list, EER_mode,
+                              chiller_equipment_type_path, cfg_path_equipment, cfg_path_public)
 
 
 def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, file_fmu_time, file_fmu_state,
@@ -98,7 +97,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                               file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, path_result_EER,
                               path_result_Tei, path_tf, path_matlab, path_Few_EER_tfdata, path_Fcw_EER_tfdata,
                               path_Fca_EER_tfdata, path_Teo_EER_tfdata, path_Few_Tei_tfdata, path_Fcw_Tei_tfdata,
-                              path_Fca_Tei_tfdata, path_Teo_Tei_tfdata, np_max, fitpercent_target, object_list,
+                              path_Fca_Tei_tfdata, path_Teo_Tei_tfdata, np_max, fitpercent_target_list, object_list,
                               Y_mode_list, Q_list, EER_mode, chiller_equipment_type_path, cfg_path_equipment,
                               cfg_path_public):
     """
@@ -132,7 +131,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
         path_Fca_Tei_tfdata: [string]，冷却塔风量阶跃响应传递函数建模数据
         path_Teo_Tei_tfdata: [string]，冷冻水出水温度阶跃响应传递函数建模数据
         np_max: [int]，传递函数极点最大值
-        fitpercent_target: [float]，传递函数辨识得分目标
+        fitpercent_target_list: [list]，传递函数辨识得分目标，列表
         object_list: [list]，需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
         Y_mode_list: [list]，模型输出模式：EER/Tei
         Q_list: [list]，模型辨识指定的制冷功率，列表，单位：kW
@@ -192,6 +191,8 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
     # 最后要保存的
     n_data_save1 = 2 * 3600 / Ts
     n_data_save2 = simulate_time2 / Ts
+    # plot的图编号
+    index_figure = 1
     # 遍历所有制冷功率
     for i in range(len(Q_list)):
         # 获取制冷功率，单位：kW
@@ -395,9 +396,10 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
             else:
                 X_list = None
             # 绘图
-            plt.subplot(1, 3, 1)
+            plt.figure(index_figure)
+            plt.title("Q_input(kW):" + str(Q_input) + "; " + tf_obj)
             plt.plot(X_list)
-            plt.title(tf_obj)
+            index_figure += 1
             # 模型输出Y
             for k in range(len(Y_mode_list)):
                 Y_mode = Y_mode_list[k]
@@ -410,46 +412,51 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                     for l in range(len(Y_list)):
                         Y_list[l] -= Y0
                     # 绘图
-                    plt.subplot(1, 3, 2)
+                    plt.figure(index_figure)
+                    plt.title("Q_input(kW):" + str(Q_input) + "; " + "EER: " + tf_obj)
                     plt.plot(Y_list)
-                    plt.title("EER: " + tf_obj)
+                    index_figure += 1
                 elif Y_mode == "Tei":
                     start_index0 = int(len(chiller_Tei0) - n_data_save1)
                     Y0_list = chiller_Tei0[start_index0:]
                     Y0 = sum(Y0_list) / len(Y0_list)
                     start_index1 = int(len(chiller_Tei_list) - (n_data_save1 + n_data_save2))
                     Y_list = chiller_Tei_list[start_index1:]
+                    # 如果是Fcw或者Fca，则Y_list全部改成0
                     for l in range(len(Y_list)):
-                        Y_list[l] -= Y0
+                        if tf_obj == "Fcw" or tf_obj == "Fca":
+                            Y_list[l] = 0
+                        else:
+                            Y_list[l] -= Y0
                     # 绘图
-                    plt.subplot(1, 3, 3)
+                    plt.figure(index_figure)
+                    plt.title("Q_input(kW):" + str(Q_input) + "; " + "Tei: " + tf_obj)
                     plt.plot(Y_list)
-                    plt.title("Tei: " + tf_obj)
+                    index_figure += 1
                 else:
                     Y_list = None
                 # 拼接数据，写入txt
-                tf_txt_list = []
+                tf_data_txt_list = []
                 for l in range(len(X_list)):
                     tmp = str(X_list[l]) + "\t" + str(Y_list[l])
-                    tf_txt_list.append(tmp)
+                    tf_data_txt_list.append(tmp)
                 if tf_obj == "Teo" and Y_mode == "EER":
-                    write_txt_data(path_Teo_EER_tfdata, tf_txt_list)
+                    write_txt_data(path_Teo_EER_tfdata, tf_data_txt_list)
                 elif tf_obj == "Few" and Y_mode == "EER":
-                    write_txt_data(path_Few_EER_tfdata, tf_txt_list)
+                    write_txt_data(path_Few_EER_tfdata, tf_data_txt_list)
                 elif tf_obj == "Fcw" and Y_mode == "EER":
-                    write_txt_data(path_Fcw_EER_tfdata, tf_txt_list)
+                    write_txt_data(path_Fcw_EER_tfdata, tf_data_txt_list)
                 elif tf_obj == "Fca" and Y_mode == "EER":
-                    write_txt_data(path_Fca_EER_tfdata, tf_txt_list)
+                    write_txt_data(path_Fca_EER_tfdata, tf_data_txt_list)
                 elif tf_obj == "Teo" and Y_mode == "Tei":
-                    write_txt_data(path_Teo_Tei_tfdata, tf_txt_list)
+                    write_txt_data(path_Teo_Tei_tfdata, tf_data_txt_list)
                 elif tf_obj == "Few" and Y_mode == "Tei":
-                    write_txt_data(path_Few_Tei_tfdata, tf_txt_list)
+                    write_txt_data(path_Few_Tei_tfdata, tf_data_txt_list)
                 elif tf_obj == "Fcw" and Y_mode == "Tei":
-                    write_txt_data(path_Fcw_Tei_tfdata, tf_txt_list)
+                    write_txt_data(path_Fcw_Tei_tfdata, tf_data_txt_list)
                 elif tf_obj == "Fca" and Y_mode == "Tei":
-                    write_txt_data(path_Fca_Tei_tfdata, tf_txt_list)
+                    write_txt_data(path_Fca_Tei_tfdata, tf_data_txt_list)
             # 绘图
-            plt.suptitle("Q_input(kW)：" + str(Q_input))
             plt.show()
             # 第9步：终止FMU模型
             print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在终止FMU模型！")
@@ -464,29 +471,38 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
         for m in range(len(Y_mode_list)):
             Y_mode = Y_mode_list[m]
             print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输出：" + Y_mode + "，正在进行传递函数辨识!")
-            info_txt = "Q=" + str(round(Q_input, 2)) + "kW, "
-            try:
-                # 传递函数系统辨识
-                ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, object_list, np_max, fitpercent_target,
-                                                    i + 1, Y_mode, False)
-                tf_txt = "# " + Y_mode + "模型: " + info_txt + "\n"
-                tf_txt += ans_tf
-                tf_txt_list = [tf_txt]
-            except:
-                print_txt = "正在进行辨识的模型类型为：" + Y_mode + "；传递函数辨识出现异常，工况点序号为：" + \
-                            str(i + 1) + ", " + info_txt
-                tf_txt_list = []
-                print(print_txt)
-                print(traceback.format_exc())
-                pass
-            # 将结果写入txt文件
-            if Y_mode == "EER":
-                path_result = path_result_EER
-            elif Y_mode == "Tei":
-                path_result = path_result_Tei
-            else:
-                path_result = None
-            write_txt_data(path_result, tf_txt_list, write_model=1)
+            for n in range(len(object_list)):
+                tf_obj = object_list[n]
+                for o in range(len(fitpercent_target_list)):
+                    fitpercent_target = fitpercent_target_list[o]
+                    info_txt = "Q=" + str(round(Q_input, 2)) + "kW"+ "; object: " + tf_obj + \
+                               "; fitpercent_target=" + str(fitpercent_target)
+                    try:
+                        # 传递函数系统辨识
+                        ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, [tf_obj], np_max,
+                                                            fitpercent_target, i + 1, Y_mode, True)
+                        tf_txt = "# " + Y_mode + "模型: " + info_txt + "\n"
+                        tf_txt += ans_tf
+                        tf_txt_list = [tf_txt]
+                        # 将结果写入txt文件
+                        if Y_mode == "EER":
+                            path_result = path_result_EER
+                        elif Y_mode == "Tei":
+                            path_result = path_result_Tei
+                        else:
+                            path_result = None
+                        # 记录结果
+                        write_txt_data(path_result, tf_txt_list, write_model=1)
+                        # 结束循环
+                        print_txt = "传递函数辨识完成, 辨识的模型类型为：" + Y_mode + "；工况点序号为：" + \
+                                    str(i + 1) + ", " + info_txt
+                        print(print_txt)
+                        break
+                    except:
+                        print_txt = "传递函数辨识出现异常, 辨识的模型类型为：" + Y_mode + "；工况点序号为：" + \
+                                    str(i + 1) + ", " + info_txt
+                        print(print_txt)
+                        pass
 
 
 def calculate_Fw_step_value(equipment_type, tf_obj, Fw_total, pump_list, n_pump_list, chilled_value_open,
@@ -579,7 +595,10 @@ def calculate_Fca_step_value(value_list):
     for i in range(len(value_list)):
         tmp_list = []
         for j in range(len(value_list[i])):
-            tmp_list.append(50 * value_list[i][j])
+            if value_list[i][j] <= 1:
+                tmp_list.append(50 * value_list[i][j])
+            else:
+                tmp_list.append(value_list[i][j])
         new_value_list.append(tmp_list)
     # 只取value_list最后的值
     value_last_list = []
@@ -603,7 +622,8 @@ def calculate_Fca_step_value(value_list):
             input_data_list.append(0)
         else:
             n_open += 1
-            input_data_list.append(value + step_value)
+            # 输入的值要是0-1的小数，所以要除以50
+            input_data_list.append((value + step_value) / 50)
     # 返回结果
     return input_data_list, input_type_list
 
@@ -622,7 +642,10 @@ def calculate_sum_tower_f_list(value_list):
     for i in range(len(value_list)):
         tmp_list = []
         for j in range(len(value_list[i])):
-            tmp_list.append(50 * value_list[i][j])
+            if value_list[i][j] <= 1:
+                tmp_list.append(50 * value_list[i][j])
+            else:
+                tmp_list.append(value_list[i][j])
         new_value_list.append(tmp_list)
     # value_list中的每一个值想加
     sum_value_list = []

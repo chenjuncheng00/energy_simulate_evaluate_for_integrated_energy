@@ -85,7 +85,7 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     start_time = 0
     stop_time = start_time + 30 * 3600
     output_interval = 10
-    Ts = 40 * 60  # 采样时间
+    Ts = 10 * 60  # 采样时间
     time_out = 600
     chiller_equipment_type_path = ["chiller", txt_path]
     cfg_path_equipment = "./config/equipment_config.cfg"
@@ -101,9 +101,9 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     # 传递函数极点的最大数
     np_max = 3
     # 系统辨识得分的目标
-    fitpercent_target = 90
+    fitpercent_target_list = [95, 90, 85, 80, 75, 70]
     main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                  Ts, time_out, np_max, fitpercent_target, chiller_object_list, chiller_Y_mode_list,
+                                  Ts, time_out, np_max, fitpercent_target_list, chiller_object_list, chiller_Y_mode_list,
                                   chiller_Q_list, EER_mode, chiller_equipment_type_path, cfg_path_equipment,
                                   cfg_path_public)
 
