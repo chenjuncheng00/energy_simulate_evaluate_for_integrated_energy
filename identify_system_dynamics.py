@@ -186,7 +186,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
     # 仿真各个阶段的时间，单位：秒
     simulate_time0 = 2 * 3600  # 初始化FMU
     simulate_time1 = 16 * 3600  # 系统稳定
-    simulate_time2 = 4 * 3600  # 阶跃响应实验
+    simulate_time2 = 8 * 3600  # 阶跃响应实验
     simulate_time3 = 2 * 3600  # 终止FMU
     # 最后要保存的
     n_data_save1 = 2 * 3600 / Ts
@@ -468,41 +468,29 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
 
         # 第10步：辨识传递函数
         print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，所有的传递函数辨识数据生成完成！")
-        for m in range(len(Y_mode_list)):
-            Y_mode = Y_mode_list[m]
+        for j in range(len(Y_mode_list)):
+            Y_mode = Y_mode_list[j]
             print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输出：" + Y_mode + "，正在进行传递函数辨识!")
-            for n in range(len(object_list)):
-                tf_obj = object_list[n]
-                for o in range(len(fitpercent_target_list)):
-                    fitpercent_target = fitpercent_target_list[o]
-                    info_txt = "Q=" + str(round(Q_input, 2)) + "kW"+ "; object: " + tf_obj + \
-                               "; fitpercent_target=" + str(fitpercent_target)
-                    try:
-                        # 传递函数系统辨识
-                        ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, [tf_obj], np_max,
-                                                            fitpercent_target, i + 1, Y_mode, True)
-                        tf_txt = "# " + Y_mode + "模型: " + info_txt + "\n"
-                        tf_txt += ans_tf
-                        tf_txt_list = [tf_txt]
-                        # 将结果写入txt文件
-                        if Y_mode == "EER":
-                            path_result = path_result_EER
-                        elif Y_mode == "Tei":
-                            path_result = path_result_Tei
-                        else:
-                            path_result = None
-                        # 记录结果
-                        write_txt_data(path_result, tf_txt_list, write_model=1)
-                        # 结束循环
-                        print_txt = "传递函数辨识完成, 辨识的模型类型为：" + Y_mode + "；工况点序号为：" + \
-                                    str(i + 1) + ", " + info_txt
-                        print(print_txt)
-                        break
-                    except:
-                        print_txt = "传递函数辨识出现异常, 辨识的模型类型为：" + Y_mode + "；工况点序号为：" + \
-                                    str(i + 1) + ", " + info_txt
-                        print(print_txt)
-                        pass
+            info_txt = "Q=" + str(round(Q_input, 2)) + "kW"
+            # 传递函数系统辨识
+            ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, object_list, np_max,
+                                                fitpercent_target_list, i + 1, Y_mode, True)
+            tf_txt = "# " + Y_mode + "模型: " + info_txt + "\n"
+            tf_txt += ans_tf
+            tf_txt_list = [tf_txt]
+            # 将结果写入txt文件
+            if Y_mode == "EER":
+                path_result = path_result_EER
+            elif Y_mode == "Tei":
+                path_result = path_result_Tei
+            else:
+                path_result = None
+            # 记录结果
+            write_txt_data(path_result, tf_txt_list, write_model=1)
+            # 结束循环
+            print_txt = "传递函数辨识完成, 辨识的模型类型为：" + Y_mode + "；工况点序号为：" + \
+                        str(i + 1) + ", " + info_txt + "\n"
+            print(print_txt)
 
 
 def calculate_Fw_step_value(equipment_type, tf_obj, Fw_total, pump_list, n_pump_list, chilled_value_open,
