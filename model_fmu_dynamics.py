@@ -34,6 +34,14 @@ def model_fmu_dynamics():
     tf1_Tei_list = [[tf21_1, tf22_1, tf23_1, tf24_1]]
     tf1_list = [tf1_EER_list[0], tf1_Tei_list[0]]
     # 13000kW权值列表
+    r1_1 = 327.89
+    r2_1 = 916.76
+    r3_1 = 1000.0
+    r4_1 = 0.01
+    q1_1 = 6575.59
+    q2_1 = 10000.0
+    r1_list = [r1_1, r2_1, r3_1, r4_1]
+    q1_list = [q1_1, q2_1]
 
     # EER模型: Q=11000kW
     tf11_2 = (-0.937 * s ** 2 - 0.000606 * s - 2.874 * 10 ** (-8)) / (s ** 2 + 0.0002834 * s + 1.526 * 10 ** (-7))
@@ -53,6 +61,14 @@ def model_fmu_dynamics():
     tf2_Tei_list = [[tf21_2, tf22_2, tf23_2, tf24_2]]
     tf2_list = [tf2_EER_list[0], tf2_Tei_list[0]]
     # 11000kW权值列表
+    r1_2 = 42.38
+    r2_2 = 0.01
+    r3_2 = 40.5
+    r4_2 = 100.0
+    q1_2 = 645.27
+    q2_2 = 389.58
+    r2_list = [r1_2, r2_2, r3_2, r4_2]
+    q2_list = [q1_2, q2_2]
 
     # EER模型: Q=9000kW
     tf11_3 = (-1.015 * s ** 2 - 0.000329 * s - 6.155 * 10 ** (-8)) / \
@@ -75,6 +91,14 @@ def model_fmu_dynamics():
     tf3_Tei_list = [[tf21_3, tf22_3, tf23_3, tf24_3]]
     tf3_list = [tf3_EER_list[0], tf3_Tei_list[0]]
     # 9000kW权值列表
+    r1_3 = 98.21
+    r2_3 = 0.01
+    r3_3 = 56.54
+    r4_3 = 0.01
+    q1_3 = 1000.0
+    q2_3 = 365.9
+    r3_list = [r1_3, r2_3, r3_3, r4_3]
+    q3_list = [q1_3, q2_3]
 
     # EER模型: Q=7500kW
     tf11_4 = (-0.903 * s ** 3 + 0.0002535 * s ** 2 - 6.69 * 10 ** (-7) * s + 6.655 * 10 ** (-11)) / \
@@ -95,6 +119,14 @@ def model_fmu_dynamics():
     tf4_Tei_list = [[tf21_4, tf22_4, tf23_4, tf24_4]]
     tf4_list = [tf4_EER_list[0], tf4_Tei_list[0]]
     # 7500kW权值列表
+    r1_4 = 0.01
+    r2_4 = 0.01
+    r3_4 = 134.04
+    r4_4 = 0.01
+    q1_4 = 2824.57
+    q2_4 = 1500.37
+    r4_list = [r1_4, r2_4, r3_4, r4_4]
+    q4_list = [q1_4, q2_4]
 
     # 模型列表
     Np_list = [Np, Np, Np, Np]
@@ -102,6 +134,8 @@ def model_fmu_dynamics():
     model_EER_list = [tf1_EER_list, tf2_EER_list, tf3_EER_list, tf4_EER_list]
     model_Tei_list = [tf1_Tei_list, tf2_Tei_list, tf3_Tei_list, tf4_Tei_list]
     model_list = [tf1_list, tf2_list, tf3_list, tf4_list]
+    r_list = [r1_list, r2_list, r3_list, r4_list]
+    q_list = [q1_list, q2_list, q3_list, q4_list]
 
     # 返回结果
-    return model_list, model_EER_list, model_Tei_list, Np_list, Nc_list
+    return model_list, model_EER_list, model_Tei_list, Np_list, Nc_list, r_list, q_list
