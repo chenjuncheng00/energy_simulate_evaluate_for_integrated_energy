@@ -92,7 +92,7 @@ def run_complete_system():
     file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
     # FMU仿真参数
     start_time = (31 + 28 + 31 + 30) * 24 * 3600
-    stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31) * 24 * 3600
+    stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31) * 24 * 3600 - 3600
     output_interval = 10
     time_out = 600
     # 模型初始化和实例化
@@ -141,6 +141,8 @@ def run_complete_system():
     # 逐时用电时间段列表，字符串，长度24
     time_name_list = ["谷", "谷", "谷", "谷", "谷", "谷", "谷", "谷", "平", "平", "峰", "峰", "峰", "平", "平", "峰",
                       "峰", "平", "平", "平", "峰", "峰", "峰", "平"]
+    # 冷冻水额定温差
+    Ted_set = read_cfg_data(cfg_path_public, "计算目标设定值", "Ted_set", 0)
 
     for i in range(n_simulate):
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +
@@ -206,7 +208,8 @@ def run_complete_system():
             print(input_log_2_4)
             write_txt_data(file_fmu_input_log, [input_log_2_4, "\n"], 1)
             write_txt_data(file_fmu_input_feedback_log, [input_log_2_4, "\n"], 1)
-            algorithm_chilled_pump(chiller_Q_user, H_chiller_chilled_pump, 0, chiller_user_chilled_value_open,
+            chiller_Few_user = chiller_Q_user * 3.6 / 4.18 / Ted_set
+            algorithm_chilled_pump(chiller_Few_user, H_chiller_chilled_pump, 0, chiller_user_chilled_value_open,
                                    chiller_chilled_pump_list, [], n_chiller_chilled_pump_list, [],
                                    chiller_equipment_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 

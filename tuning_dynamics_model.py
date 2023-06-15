@@ -41,7 +41,7 @@ def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limi
     for i in range(n_input):
         r_min_list.append(r_min)
         r_max_list.append(r_max)
-    q_min = 1
+    q_min = 10
     q_max = 10000
     q_min_list = []
     q_max_list = []
