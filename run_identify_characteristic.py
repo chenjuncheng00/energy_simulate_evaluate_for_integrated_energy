@@ -109,14 +109,14 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
 
 
 if __name__ == "__main__":
-    # 水力特性模型辨识
-    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_20230522.fmu"
+    # # 水力特性模型辨识
+    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
     # run_identify_hydraulic_characteristic(fmu_path)
-    # 设备性能模型辨识
-    # fmu_path = "./model_data/file_fmu/system_characteristic_20230508.fmu"
+    # # 设备性能模型辨识
+    # fmu_path = "./model_data/file_fmu/system_characteristic_Cvode.fmu"
     # run_equipment_characteristic(fmu_path)
     # 系统动态特性辨识
     path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
-    fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_20230606.fmu"
+    fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Cvode.fmu"
     txt_path = "../optimal_control_algorithm_for_cooling_season"
     run_identify_system_dynamics(fmu_path, path_matlab, txt_path)

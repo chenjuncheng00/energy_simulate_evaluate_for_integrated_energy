@@ -12,14 +12,17 @@ from calculate_energy_storage_value import generate_Q_list, generate_time_name_l
 from initialize_complete_system import initialize_complete_system
 from run_initialize import run_initialize
 
-def run_complete_system():
+def run_complete_system(txt_path, file_fmu):
     """
     完整系统：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+复杂的用户末端
+    Args:
+        txt_path: [string]，相对路径
+        file_fmu: [string]，FMU模型文件
+
     Returns:
 
     """
     # 设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
     chiller_equipment_type_path = ["chiller", txt_path]
     ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
@@ -86,8 +89,7 @@ def run_complete_system():
         system_dict = pickle.load(f_obj)
     n_calculate_hour = system_dict["n_calculate_hour"]
 
-    # FMU文件
-    file_fmu = "./model_data/file_fmu/integrated_air_conditioning_20230522.fmu"
+    # 日志文件
     file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
     file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
     # FMU仿真参数
@@ -348,4 +350,6 @@ def run_complete_system():
 
 
 if __name__ == "__main__":
-    run_complete_system()
+    txt_path = "../optimal_control_algorithm_for_cooling_season"
+    file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
+    run_complete_system(txt_path, file_fmu)
