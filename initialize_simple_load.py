@@ -48,7 +48,7 @@ def initialize_simple_load(file_fmu_time, file_fmu_state, start_time, stop_time,
                       cold_storage_input_type()[0] + simple_load_input_type()
     # 模型输入数据
     input_data_list = [t0_initialize] + environment_input_data_default() + chiller_input_data + \
-                      cold_storage_input_data_default() + [14000 * 1000]
+                      cold_storage_input_data_default() + simple_load_input_data_default()
     # FMU仿真
     main_simulate_pause_single(input_data_list, input_type_list, simulate_time, txt_path, add_input=False)
 

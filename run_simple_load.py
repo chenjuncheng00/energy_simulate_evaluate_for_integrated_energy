@@ -9,10 +9,14 @@ from algorithm_code import *
 from initialize_simple_load import initialize_simple_load
 from run_initialize import run_initialize
 
-def run_simple_load():
+def run_simple_load(txt_path, file_fmu):
     """
     冷水机+蓄冷水罐+简单的用户负荷
     搜算优化算法+GPC控制算法
+    Args:
+        txt_path: [string]，相对路径
+        file_fmu: [string]，FMU模型文件
+
     Returns:
 
     """
@@ -20,7 +24,6 @@ def run_simple_load():
     cfg_path_equipment = "./config/equipment_config.cfg"
     cfg_path_public = "./config/public_config.cfg"
     # 设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
     chiller_equipment_type_path = ["chiller", txt_path]
     # storage_equipment_type_path = ["energy_storage_equipment", txt_path]
     # 重置所有内容
@@ -72,8 +75,7 @@ def run_simple_load():
         system_dict = pickle.load(f_obj)
     n_calculate_hour = system_dict["n_calculate_hour"]
 
-    # FMU文件
-    file_fmu = "./model_data/file_fmu/chiller_and_storage_with_simple_load_20230606.fmu"
+    # 日志文件
     # file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
     # file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
     # FMU仿真参数
@@ -102,7 +104,7 @@ def run_simple_load():
     with open(file_fmu_output_name, 'wb') as f:
         pickle.dump(fmu_output_name, f)
     # 冷负荷总需求功率
-    file_Q_user = "model_data/simulate_result/fmu_Q_user.txt"
+    file_Q_user = "./model_data/simulate_result/fmu_Q_user.txt"
     file_Q_user_list = "./model_data/fmu_Q_user_list.txt"
     # Q_time_all_list = read_txt_data(file_Q_user_list, column_index=0)
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
@@ -151,4 +153,6 @@ def run_simple_load():
 
 
 if __name__ == "__main__":
-    run_simple_load()
+    txt_path = "../optimal_control_algorithm_for_cooling_season"
+    file_fmu = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Cvode.fmu"
+    run_simple_load(txt_path, file_fmu)
