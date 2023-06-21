@@ -67,3 +67,4 @@ def initialize_simple_load(file_fmu_time, file_fmu_state, start_time, stop_time,
                       cold_storage_input_data_default() + simple_load_input_data_default()
     # FMU仿真
     main_simulate_pause_single(input_data_list, input_type_list, simulate_time, txt_path, add_input=False)
+    print("\n")
