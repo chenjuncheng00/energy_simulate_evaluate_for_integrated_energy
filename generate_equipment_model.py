@@ -234,7 +234,7 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
 
     # 实例化蓄冷系统设备模型
     # 每小时计算次数
-    n_calculate_hour = 1
+    n_calculate_hour = 0.5
     # 扬程需求值(建议比实际的最小扬程需求值大一点，留余量)
     H_chilled_pump_to_user = read_cfg_data(cfg_path_equipment, "水泵扬程需求", "H_storage_chilled_pump_to_user", 0)
     H_chilled_pump_in_storage = read_cfg_data(cfg_path_equipment, "水泵扬程需求", "H_storage_chilled_pump_in_storage", 0)

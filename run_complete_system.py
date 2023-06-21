@@ -5,6 +5,7 @@ from model_fmu_output_name import main_model_output_name
 from algorithm_code.optimization_single import *
 from algorithm_code.optimization_universal import *
 from algorithm_code.algorithm_equipment import *
+from algorithm_code.algorithm_Teo_set import *
 from algorithm_code.read_write_data import *
 from algorithm_code.other import *
 from algorithm_code import *
@@ -340,6 +341,12 @@ def run_complete_system(txt_path, file_fmu):
         n_cal_now = int((time_now - start_time) / (3600 * (1 / n_calculate_hour)))
         simulate_time = start_time + (n_cal_now + 1) * 3600 * (1 / n_calculate_hour) - time_now
         main_simulate_pause_single([], [], simulate_time, txt_path)
+
+        # 第4步：根据用户末端室内的温湿度，修正Teo
+        input_log_4 = "第4步：根据用户末端室内的温湿度，修正Teo..."
+        print(input_log_4)
+        algorithm_Teo_set_user(chiller_equipment_type_path, n_calculate_hour)
+        algorithm_Teo_set_user(ashp_equipment_type_path, n_calculate_hour)
         print("\n")
 
     # 修改FMU状态
