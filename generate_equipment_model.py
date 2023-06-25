@@ -1,6 +1,5 @@
 import pickle
-from algorithm_code.custom_model import *
-from algorithm_code.read_write_data import *
+from algorithm_code import *
 
 def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, file_pkl_tower_chilled,
                              file_pkl_system, cfg_path_equipment):

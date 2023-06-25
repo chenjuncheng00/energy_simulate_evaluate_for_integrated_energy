@@ -1,4 +1,4 @@
-from algorithm_code.read_write_data import *
+from algorithm_code import *
 from system_default_status import air_source_heat_pump_default_status, chiller_default_status, storage_default_status, \
                                   tower_chilled_default_status
 
@@ -68,7 +68,7 @@ def run_initialize(txt_path):
     path_fmu_result = "./model_data/simulate_result"
     clear_all_txt_data(path_fmu_result)
     # 冷负荷总需求功率
-    file_Q_total = "model_data/simulate_result/fmu_Q_user.txt"
+    file_Q_total = "./model_data/simulate_result/fmu_Q_user.txt"
     write_txt_data(file_Q_total, [10000])
 
     # 系统初始化时，会将冷水机系统全开，但是其他系统全关

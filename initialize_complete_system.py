@@ -1,9 +1,8 @@
+from algorithm_code import *
 from model_fmu_input_type import main_model_input_type
 from model_fmu_input_data_default import air_source_heat_pump_input_data_default, user_load_input_data_default, \
                                          tower_chilled_input_data_default, environment_input_data_default, \
                                          main_input_data_default
-from algorithm_code.other import *
-from algorithm_code.read_write_data import *
 
 def initialize_complete_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out, txt_path):
     """
