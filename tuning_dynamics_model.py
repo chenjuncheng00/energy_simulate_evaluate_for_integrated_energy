@@ -1,7 +1,7 @@
 import time
 import numpy as np
 from GPC_tuning import *
-from algorithm_code.read_write_data import *
+from algorithm_code import *
 from model_fmu_dynamics import model_fmu_dynamics
 
 def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, fit_target):

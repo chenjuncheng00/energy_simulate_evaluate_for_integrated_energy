@@ -4,11 +4,6 @@ import matplotlib.pyplot as plt
 from fmpy import *
 from air_conditioner_dynamic import *
 from algorithm_code import *
-from algorithm_code.other import *
-from algorithm_code.read_write_data import *
-from algorithm_code.optimization_double import *
-from algorithm_code.optimization_single import *
-from algorithm_code.optimization_universal import *
 from run_initialize import run_initialize
 from model_fmu_input_type import chiller_input_type, cold_storage_input_type, \
                                  simple_load_input_type, environment_input_type

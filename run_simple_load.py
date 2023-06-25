@@ -1,11 +1,9 @@
 import pickle
 import numpy as np
 from fmpy import *
+from algorithm_code import *
 from model_fmu_output_name import chiller_output_name, cold_storage_output_name, simple_load_output_name
 from model_fmu_input_type import simple_load_input_type
-from algorithm_code.read_write_data import *
-from algorithm_code.other import *
-from algorithm_code import *
 from initialize_simple_load import initialize_simple_load
 from run_initialize import run_initialize
 

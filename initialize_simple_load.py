@@ -3,8 +3,7 @@ from model_fmu_input_type import chiller_input_type, cold_storage_input_type, \
                                  simple_load_input_type, environment_input_type
 from model_fmu_input_data_default import chiller_input_data_default, cold_storage_input_data_default, \
                                          simple_load_input_data_default, environment_input_data_default
-from algorithm_code.other import *
-from algorithm_code.read_write_data import *
+from algorithm_code import *
 
 def initialize_simple_load(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out, txt_path):
     """

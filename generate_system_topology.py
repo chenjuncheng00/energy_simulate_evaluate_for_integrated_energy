@@ -1,5 +1,5 @@
 import pickle
-from algorithm_code.read_write_data import *
+from algorithm_code import *
 
 def generate_system_topology(cfg_path_equipment, file_raw_pickle):
     """
