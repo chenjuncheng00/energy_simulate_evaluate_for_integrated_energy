@@ -5,12 +5,12 @@ from fmpy import *
 from air_conditioner_dynamic import *
 from algorithm_code import *
 from run_initialize import run_initialize
-from model_fmu_input_type import chiller_input_type, cold_storage_input_type, \
-                                 simple_load_input_type, environment_input_type
+from model_fmu_input_name import get_fmu_input_name
+from model_fmu_input_type import chiller_input_type, cold_storage_input_type, simple_load_input_type, \
+                                 environment_input_type
 from model_fmu_input_data_default import chiller_input_data_default, cold_storage_input_data_default, \
                                          simple_load_input_data_default, environment_input_data_default
 from model_fmu_output_name import chiller_output_name, cold_storage_output_name, simple_load_output_name
-from model_fmu_input_name import chiller_input_name, cold_storage_input_name
 
 def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
                                   Ts, time_out, np_max, fitpercent_target_list, chiller_object_list, chiller_Y_mode_list,
@@ -49,7 +49,7 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
     # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
     file_fmu_state = txt_path + "/process_data/fmu_state.txt"
     # FMU模型输出名称
-    file_fmu_output_name = txt_path + "/process_data/fmu_output_name.pkl"
+    file_fmu_input_output_name = txt_path + "/process_data/fmu_input_output_name.pkl"
     # 仿真结果
     file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
     file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
@@ -78,7 +78,7 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
 
     # 冷水机系统动态特性辨识
     identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, file_fmu_time, file_fmu_state,
-                              file_fmu_output_name, file_fmu_result_all, file_fmu_result_last, file_pkl_chiller,
+                              file_fmu_input_output_name, file_fmu_result_all, file_fmu_result_last, file_pkl_chiller,
                               file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, path_result_EER,
                               path_result_Tei, path_tf, path_matlab, path_Few_EER_tfdata, path_Fcw_EER_tfdata,
                               path_Fca_EER_tfdata, path_Teo_EER_tfdata, path_Few_Tei_tfdata, path_Fcw_Tei_tfdata,
@@ -88,7 +88,7 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
 
 
 def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, file_fmu_time, file_fmu_state,
-                              file_fmu_output_name, file_fmu_result_all, file_fmu_result_last, file_pkl_chiller,
+                              file_fmu_input_output_name, file_fmu_result_all, file_fmu_result_last, file_pkl_chiller,
                               file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, path_result_EER,
                               path_result_Tei, path_tf, path_matlab, path_Few_EER_tfdata, path_Fcw_EER_tfdata,
                               path_Fca_EER_tfdata, path_Teo_EER_tfdata, path_Few_Tei_tfdata, path_Fcw_Tei_tfdata,
@@ -103,7 +103,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
         file_fmu_address: [string]，储存FMU模型对象内存地址文件路径
         file_fmu_time: [string]，储存FMU模型仿真时间(start_time)的文件路径
         file_fmu_state: [string]，储存FMU模型状态的文件路径
-        file_fmu_output_name: [string]，储存FMU模型输出名称的文件路径
+        file_fmu_input_output_name: [string]，储存FMU模型输入输出名称的文件路径
         file_fmu_result_all: [string]，储存FMU模型所有仿真结果的文件路径
         file_fmu_result_last: [string]，储存FMU模型每次仿真最后时刻结果的文件路径
         file_pkl_chiller: [string]，冷水机系统信息储存路径
@@ -142,9 +142,12 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
     equipment_type = chiller_equipment_type_path[0]
     # 相对路径
     txt_path = chiller_equipment_type_path[1]
-    # FMU模型输出名称
-    fmu_output_name = chiller_output_name()[0] + cold_storage_output_name()[0] + simple_load_output_name() + \
-                      chiller_input_name()[0] + cold_storage_input_name()[0]
+    # 获取模型的输入名称
+    chiller_input_name = get_fmu_input_name(chiller_input_type()[0])
+    cold_storage_input_name = get_fmu_input_name(cold_storage_input_type()[0])
+    # FMU模型输出名称，包括所有输入输出名称
+    fmu_input_output_name = chiller_output_name()[0] + cold_storage_output_name()[0] + simple_load_output_name() + \
+                            chiller_input_name + cold_storage_input_name
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:
         chiller_dict = pickle.load(f_obj)
@@ -200,12 +203,12 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
             # 重置所有内容
             run_initialize(txt_path)
             # 生成FMU输出名称文件
-            with open(file_fmu_output_name, 'wb') as f:
-                pickle.dump(fmu_output_name, f)
+            with open(file_fmu_input_output_name, 'wb') as f:
+                pickle.dump(fmu_input_output_name, f)
             # 仿真结果
             txt_str = "start_time" + "\t" + "pause_time"
-            for k in range(len(fmu_output_name)):
-                txt_str += "\t" + fmu_output_name[k]
+            for k in range(len(fmu_input_output_name)):
+                txt_str += "\t" + fmu_input_output_name[k]
             write_txt_data(file_fmu_result_all, [txt_str])
             write_txt_data(file_fmu_result_last, [txt_str])
             # 模型初始化和实例化

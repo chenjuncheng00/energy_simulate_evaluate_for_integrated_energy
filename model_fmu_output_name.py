@@ -85,10 +85,32 @@ def chiller_output_name():
     COP = ['chiller_COP', 'chiller_COP_big', 'chiller_COP_small']
     # EER
     EER = ['chiller_EER']
+    # 单台设备的电功率，单位：W
+    chiller_P = ['chillers_model.chiller_big1.P', 'chillers_model.chiller_big2.P', 'chillers_model.chiller_big3.P',
+                 'chillers_model.chiller_big4.P', 'chillers_model.chiller_small1.P', 'chillers_model.chiller_small2.P']
+    chilled_pump_P = ['chillers_model.chilled_pump_big1.P', 'chillers_model.chilled_pump_big2.P',
+                      'chillers_model.chilled_pump_big3.P', 'chillers_model.chilled_pump_big4.P',
+                      'chillers_model.chilled_pump_small1.P', 'chillers_model.chilled_pump_small2.P']
+    cooling_pump_P = ['chillers_model.cooling_pump_big1.P', 'chillers_model.cooling_pump_big2.P',
+                      'chillers_model.cooling_pump_big3.P', 'chillers_model.cooling_pump_big4.P',
+                      'chillers_model.cooling_pump_small1.P', 'chillers_model.cooling_pump_small2.P']
+    cooling_tower_P = ['chillers_model.cooling_tower1.PFan', 'chillers_model.cooling_tower2.PFan',
+                       'chillers_model.cooling_tower3.PFan', 'chillers_model.cooling_tower4.PFan',
+                       'chillers_model.cooling_tower5.PFan', 'chillers_model.cooling_tower6.PFan']
+    # 单台冷水机冷冻水流量，单位：kg/s
+    chiller_Few = ['chillers_model.chiller_big1.m2_flow', 'chillers_model.chiller_big2.m2_flow',
+                   'chillers_model.chiller_big3.m2_flow', 'chillers_model.chiller_big4.m2_flow',
+                   'chillers_model.chiller_small1.m2_flow', 'chillers_model.chiller_small2.m2_flow']
+    # 单台冷水机冷却水流量，单位：kg/s
+    chiller_Fcw = ['chillers_model.chiller_big1.m1_flow', 'chillers_model.chiller_big2.m1_flow',
+                   'chillers_model.chiller_big3.m1_flow', 'chillers_model.chiller_big4.m1_flow',
+                   'chillers_model.chiller_small1.m1_flow', 'chillers_model.chiller_small2.m1_flow']
     # 总输出
-    chiller_output = Q + Qct + P + Few + Fcw + Te + Tc + T_approach + H_pump + COP + EER
+    chiller_output = Q + Qct + P + Few + Fcw + Te + Tc + T_approach + H_pump + COP + EER + \
+                     chiller_P + chilled_pump_P + cooling_pump_P + cooling_tower_P + chiller_Few + chiller_Fcw
     # 返回结果
-    return chiller_output, Q, Qct, P, Few, Fcw, Te, Tc, T_approach, H_pump, COP, EER
+    return chiller_output, Q, Qct, P, Few, Fcw, Te, Tc, T_approach, H_pump, COP, EER, chiller_P, chilled_pump_P, \
+           cooling_pump_P, cooling_tower_P, chiller_Few, chiller_Fcw
 
 
 def air_source_heat_pump_output_name():
@@ -112,10 +134,18 @@ def air_source_heat_pump_output_name():
     COP = ['ashp_COP']
     # EER
     EER = ['ashp_EER']
+    # 单台设备的电功率，单位：W
+    ashp_P = ['air_source_heat_pumps_model.ashp1.P', 'air_source_heat_pumps_model.ashp2.P',
+              'air_source_heat_pumps_model.ashp3.P', 'air_source_heat_pumps_model.ashp4.P']
+    chilled_pump_P = ['air_source_heat_pumps_model.chilled_pump1.P', 'air_source_heat_pumps_model.chilled_pump2.P',
+                      'air_source_heat_pumps_model.chilled_pump3.P', 'air_source_heat_pumps_model.chilled_pump4.P']
+    # 单台空气源热泵冷冻水流量，单位：kg/s
+    ashp_Few = ['air_source_heat_pumps_model.ashp1.m2_flow', 'air_source_heat_pumps_model.ashp2.m2_flow',
+                'air_source_heat_pumps_model.ashp3.m2_flow', 'air_source_heat_pumps_model.ashp4.m2_flow']
     # 总输出
-    air_source_heat_pump_output = Q + P + Few + Te + H_pump + COP + EER
+    air_source_heat_pump_output = Q + P + Few + Te + H_pump + COP + EER + ashp_P + chilled_pump_P + ashp_Few
     # 返回结果
-    return air_source_heat_pump_output, Q, P, Few, Te, H_pump, COP, EER
+    return air_source_heat_pump_output, Q, P, Few, Te, H_pump, COP, EER, ashp_P, chilled_pump_P, ashp_Few
 
 
 def cold_storage_output_name():
@@ -136,10 +166,13 @@ def cold_storage_output_name():
           'storage_Tei_to_user', 'storage_Teo_to_user']
     # 水泵扬程，单位：m
     H_pump = ['storage_H_chilled_pump']
+    # 单台设备的电功率，单位：W
+    storage_pump_P = ['cold_storage_model.storage_pump1.P', 'cold_storage_model.storage_pump2.P',
+                      'cold_storage_model.storage_pump3.P', 'cold_storage_model.storage_pump4.P']
     # 总输出
-    storage_output = Q + P + Few + Te + H_pump
+    storage_output = Q + P + Few + Te + H_pump + storage_pump_P
     # 返回结果
-    return storage_output, Q, P, Few, Te, H_pump
+    return storage_output, Q, P, Few, Te, H_pump, storage_pump_P
 
 
 def tower_chilled_output_name():
@@ -155,10 +188,13 @@ def tower_chilled_output_name():
     Few = ['tower_chilled_Few_total']
     # 水泵扬程，单位：m
     H_pump = ['tower_chilled_H_chilled_pump']
+    # 单台设备的电功率，单位：W
+    chilled_pump_P = ['tower_chilled_model.tower_chilled_pump1.P', 'tower_chilled_model.tower_chilled_pump2.P',
+                      'tower_chilled_model.tower_chilled_pump3.P', 'tower_chilled_model.tower_chilled_pump4.P']
     # 总输出
-    tower_chilled_output = P + Few + H_pump
+    tower_chilled_output = P + Few + H_pump + chilled_pump_P
     # 返回结果
-    return tower_chilled_output, P, Few, H_pump
+    return tower_chilled_output, P, Few, H_pump, chilled_pump_P
 
 
 def user_load_output_name():
