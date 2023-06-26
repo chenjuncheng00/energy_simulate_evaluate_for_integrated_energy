@@ -3,9 +3,11 @@ import numpy as np
 from fmpy import *
 from algorithm_code import *
 from model_fmu_output_name import main_model_output_name
+from model_fmu_input_name import main_model_input_name
 from calculate_energy_storage_value import generate_Q_list, generate_time_name_list
 from initialize_complete_system import initialize_complete_system
 from run_initialize import run_initialize
+from get_fmu_real_data import get_chiller_input_real_data, get_ashp_input_real_data
 
 def run_complete_system(txt_path, file_fmu):
     """
@@ -107,11 +109,13 @@ def run_complete_system(txt_path, file_fmu):
     file_fmu_time = txt_path + "/process_data/fmu_time.txt"
     # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
     file_fmu_state = txt_path + "/process_data/fmu_state.txt"
-    # FMU模型输出名称
-    file_fmu_output_name = txt_path + "/process_data/fmu_output_name.pkl"
+    # FMU模型输出名称，包括所有的输入和输出名称
+    file_fmu_input_output_name = txt_path + "/process_data/fmu_input_output_name.pkl"
     fmu_output_name = main_model_output_name()
-    with open(file_fmu_output_name, 'wb') as f:
-        pickle.dump(fmu_output_name, f)
+    fmu_input_name = main_model_input_name()
+    fmu_input_output_name = fmu_output_name + fmu_input_name
+    with open(file_fmu_input_output_name, 'wb') as f:
+        pickle.dump(fmu_input_output_name, f)
     # 各系统制冷功率最大值
     chiller_Q0_max = 15600
     ashp_Q0_max = 4092
@@ -313,7 +317,7 @@ def run_complete_system(txt_path, file_fmu):
                                      0, chiller_equipment_type_path, n_calculate_hour, n_chiller_user_value,
                                      cfg_path_equipment, cfg_path_public)
 
-            # 第2-2步：用向用户侧供冷功率，空气源热泵优化和控制
+            # 第2-3步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_3 = "第2-3步：用向用户侧供冷功率，空气源热泵优化和控制..."
             print(input_log_2_3)
             write_txt_data(file_fmu_input_log, [input_log_2_3, "\n"], 1)
@@ -334,14 +338,20 @@ def run_complete_system(txt_path, file_fmu):
         time_now = read_txt_data(file_fmu_time)[0]
         n_cal_now = int((time_now - start_time) / (3600 * (1 / n_calculate_hour)))
         simulate_time = start_time + (n_cal_now + 1) * 3600 * (1 / n_calculate_hour) - time_now
-        main_simulate_pause_single([], [], simulate_time, txt_path)
+        result = main_simulate_pause_single([], [], simulate_time, txt_path)
 
         # 第4步：根据用户末端室内的温湿度，修正Teo
         input_log_4 = "第4步：根据用户末端室内的温湿度，修正Teo..."
         print(input_log_4)
         algorithm_Teo_set_user(chiller_equipment_type_path, n_calculate_hour)
         algorithm_Teo_set_user(ashp_equipment_type_path, n_calculate_hour)
+
+        # 第5步：获取FMU模型的实际数据并写入txt文件
+        input_log_5 = "第5步：获取FMU模型的实际数据并写入txt文件..."
+        print(input_log_5)
         print("\n")
+        get_chiller_input_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
+        get_ashp_input_real_data(result, ashp_equipment_type_path, cfg_path_equipment)
 
     # 修改FMU状态
     fmu_state_list = [0, 1, stop_time, output_interval, time_out]
