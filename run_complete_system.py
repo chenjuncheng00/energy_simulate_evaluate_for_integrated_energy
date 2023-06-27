@@ -7,7 +7,8 @@ from model_fmu_input_name import main_model_input_name
 from calculate_energy_storage_value import generate_Q_list, generate_time_name_list
 from initialize_complete_system import initialize_complete_system
 from run_initialize import run_initialize
-from get_fmu_real_data import get_chiller_input_real_data, get_ashp_input_real_data
+from get_fmu_real_data import get_chiller_input_real_data, get_ashp_input_real_data, get_storage_input_real_data, \
+                              get_tower_chilled_input_real_data
 
 def run_complete_system(txt_path, file_fmu):
     """
@@ -23,7 +24,7 @@ def run_complete_system(txt_path, file_fmu):
     chiller_equipment_type_path = ["chiller", txt_path]
     ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
-    # tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
+    tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     # 重置所有内容
     run_initialize(txt_path)
 
@@ -117,8 +118,8 @@ def run_complete_system(txt_path, file_fmu):
     with open(file_fmu_input_output_name, 'wb') as f:
         pickle.dump(fmu_input_output_name, f)
     # 各系统制冷功率最大值
-    chiller_Q0_max = 15600
-    ashp_Q0_max = 4092
+    chiller_Q0_max = 14000
+    ashp_Q0_max = 3500
     Q0_total_in = chiller_Q0_max
     Q0_total_out = chiller_Q0_max + ashp_Q0_max
     # 冷负荷总需求功率
@@ -133,8 +134,8 @@ def run_complete_system(txt_path, file_fmu):
     file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
     file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
     txt_str = "start_time" + "\t" + "pause_time"
-    for i in range(len(fmu_output_name)):
-        txt_str += "\t" + fmu_output_name[i]
+    for i in range(len(fmu_input_output_name)):
+        txt_str += "\t" + fmu_input_output_name[i]
     write_txt_data(file_fmu_result_all, [txt_str])
     write_txt_data(file_fmu_result_last, [txt_str])
     # FMU模型初始化
@@ -352,6 +353,8 @@ def run_complete_system(txt_path, file_fmu):
         print("\n")
         get_chiller_input_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
         get_ashp_input_real_data(result, ashp_equipment_type_path, cfg_path_equipment)
+        get_storage_input_real_data(result, storage_equipment_type_path, cfg_path_equipment)
+        get_tower_chilled_input_real_data(result, tower_chilled_equipment_type_path, cfg_path_equipment)
 
     # 修改FMU状态
     fmu_state_list = [0, 1, stop_time, output_interval, time_out]
