@@ -145,9 +145,10 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
     # 获取模型的输入名称
     chiller_input_name = get_fmu_input_name(chiller_input_type()[0])
     cold_storage_input_name = get_fmu_input_name(cold_storage_input_type()[0])
+    simple_load_input_name = get_fmu_input_name(simple_load_input_type())
     # FMU模型输出名称，包括所有输入输出名称
     fmu_input_output_name = chiller_output_name()[0] + cold_storage_output_name()[0] + simple_load_output_name() + \
-                            chiller_input_name + cold_storage_input_name
+                            chiller_input_name + cold_storage_input_name + simple_load_input_name
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:
         chiller_dict = pickle.load(f_obj)

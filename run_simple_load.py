@@ -3,9 +3,11 @@ import numpy as np
 from fmpy import *
 from algorithm_code import *
 from model_fmu_output_name import chiller_output_name, cold_storage_output_name, simple_load_output_name
-from model_fmu_input_type import simple_load_input_type
+from model_fmu_input_type import chiller_input_type, cold_storage_input_type, simple_load_input_type
+from model_fmu_input_name import get_fmu_input_name
 from initialize_simple_load import initialize_simple_load
 from run_initialize import run_initialize
+from get_fmu_real_data import get_chiller_input_real_data, get_storage_input_real_data
 
 def run_simple_load(txt_path, file_fmu):
     """
@@ -23,7 +25,7 @@ def run_simple_load(txt_path, file_fmu):
     cfg_path_public = "./config/public_config.cfg"
     # 设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
     chiller_equipment_type_path = ["chiller", txt_path]
-    # storage_equipment_type_path = ["energy_storage_equipment", txt_path]
+    storage_equipment_type_path = ["energy_storage_equipment", txt_path]
     # 重置所有内容
     run_initialize(txt_path)
 
@@ -81,6 +83,8 @@ def run_simple_load(txt_path, file_fmu):
     stop_time = 31 * 24 * 3600 - 3600
     output_interval = 10
     time_out = 600
+    # 各系统制冷功率最大值
+    chiller_Q0_max = 14000
     # 模型初始化和实例化
     fmu_unzipdir = extract(file_fmu)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -97,10 +101,15 @@ def run_simple_load(txt_path, file_fmu):
     # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
     file_fmu_state = txt_path + "/process_data/fmu_state.txt"
     # FMU模型输出名称
-    file_fmu_output_name = txt_path + "/process_data/fmu_output_name.pkl"
+    file_fmu_input_output_name = txt_path + "/process_data/fmu_input_output_name.pkl"
     fmu_output_name = chiller_output_name()[0] + cold_storage_output_name()[0] + simple_load_output_name()
-    with open(file_fmu_output_name, 'wb') as f:
-        pickle.dump(fmu_output_name, f)
+    chiller_input_name = get_fmu_input_name(chiller_input_type()[0])
+    cold_storage_input_name = get_fmu_input_name(cold_storage_input_type()[0])
+    simple_load_input_name = get_fmu_input_name(simple_load_input_type())
+    fmu_input_name = chiller_input_name + cold_storage_input_name + simple_load_input_name
+    fmu_input_output_name = fmu_output_name + fmu_input_name
+    with open(file_fmu_input_output_name, 'wb') as f:
+        pickle.dump(fmu_input_output_name, f)
     # 冷负荷总需求功率
     file_Q_user = "./model_data/simulate_result/fmu_Q_user.txt"
     file_Q_user_list = "./model_data/fmu_Q_user_list.txt"
@@ -113,8 +122,8 @@ def run_simple_load(txt_path, file_fmu):
     file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
     file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
     txt_str = "start_time" + "\t" + "pause_time"
-    for i in range(len(fmu_output_name)):
-        txt_str += "\t" + fmu_output_name[i]
+    for i in range(len(fmu_input_output_name)):
+        txt_str += "\t" + fmu_input_output_name[i]
     write_txt_data(file_fmu_result_all, [txt_str])
     write_txt_data(file_fmu_result_last, [txt_str])
     # FMU模型初始化
@@ -127,7 +136,10 @@ def run_simple_load(txt_path, file_fmu):
         Q_user = read_txt_data(file_Q_user)[0]
 
         # 第1步：冷水机优化+控制
-        algorithm_chiller_double(Q_user, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
+        input_log_1 = "第1步：冷水机优化+控制..."
+        print(input_log_1)
+        chiller_Q_total = min(Q_user, chiller_Q0_max)
+        algorithm_chiller_double(chiller_Q_total, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                  chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
                                  chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
                                  n0_chiller1, n0_chiller2, n0_chiller_chilled_pump1, n0_chiller_chilled_pump2,
@@ -136,12 +148,21 @@ def run_simple_load(txt_path, file_fmu):
                                  cfg_path_equipment, cfg_path_public)
 
         # 第2步：获取time，并仿真到指定时间
+        input_log_2 = "第2步：获取time，并仿真到指定时间..."
+        print(input_log_2)
         time_now = read_txt_data(file_fmu_time)[0]
         n_cal_now = int((time_now - start_time) / (3600 * (1 / n_calculate_hour)))
         simulate_time = start_time + (n_cal_now + 1) * 3600 * (1 / n_calculate_hour) - time_now
         input_type_list = simple_load_input_type()
         input_data_list = [Q_user * 1000]
-        main_simulate_pause_single(input_data_list, input_type_list, simulate_time, txt_path)
+        result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time, txt_path)
+
+        # 第3步：获取FMU模型的实际数据并写入txt文件
+        input_log_3 = "第3步：获取FMU模型的实际数据并写入txt文件..."
+        print(input_log_3)
+        print("\n")
+        get_chiller_input_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
+        get_storage_input_real_data(result, storage_equipment_type_path, cfg_path_equipment)
 
     # 修改FMU状态
     fmu_state_list = [0, 1, stop_time, output_interval, time_out]
