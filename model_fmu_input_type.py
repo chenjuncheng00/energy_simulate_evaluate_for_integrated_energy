@@ -22,13 +22,10 @@ def main_model_input_type(load_mode=0):
     # 冷却塔直接供冷模型
     tower_chilled_input = tower_chilled_input_type()
     # 用户负荷模型
-    if load_mode == 0:
-        user_input = user_load_input_type()
-    else:
-        user_input = simple_load_input_type()
+    load_input = load_input_type(load_mode)
     # 模型总输入
     model_input = time_input + environment_input + chiller_input + air_source_heat_pump_input + storage_input + \
-                  tower_chilled_input + user_input
+                  tower_chilled_input + load_input
     # 返回结果
     return model_input
 
@@ -153,6 +150,23 @@ def tower_chilled_input_type():
                     ('tower_chilled_f_chilled_pump3', np.float_), ('tower_chilled_f_chilled_pump4', np.float_)]
     # 返回结果
     return chilled_pump
+
+
+def load_input_type(load_mode):
+    """
+
+    Args:
+        load_mode: [int]，0：user_load；1：simple_load
+
+    Returns:
+
+    """
+    if load_mode == 0:
+        load_input = user_load_input_type()
+    else:
+        load_input = simple_load_input_type()
+    # 返回结果
+    return load_input
 
 
 def user_load_input_type():
