@@ -5,11 +5,11 @@ from algorithm_code import *
 from model_fmu_output_name import chiller_output_name, cold_storage_output_name, simple_load_output_name
 from model_fmu_input_type import chiller_input_type, cold_storage_input_type, simple_load_input_type
 from model_fmu_input_name import get_fmu_input_name
-from initialize_simple_load import initialize_simple_load
+from initialize_simple_system import initialize_simple_system
 from run_initialize import run_initialize
 from get_fmu_real_data import get_chiller_input_real_data, get_storage_input_real_data
 
-def run_simple_load(txt_path, file_fmu):
+def run_simple_system(txt_path, file_fmu):
     """
     冷水机+蓄冷水罐+简单的用户负荷
     搜算优化算法+GPC控制算法
@@ -79,8 +79,8 @@ def run_simple_load(txt_path, file_fmu):
     # file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
     # file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
     # FMU仿真参数
-    start_time = 1 * 24 * 3600
-    stop_time = 31 * 24 * 3600 - 3600
+    start_time = 0
+    stop_time = 141 * 24 * 3600 - 3600
     output_interval = 10
     time_out = 600
     # 各系统制冷功率最大值
@@ -116,8 +116,6 @@ def run_simple_load(txt_path, file_fmu):
     # Q_time_all_list = read_txt_data(file_Q_user_list, column_index=0)
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
     write_txt_data(file_Q_user, [Q_user_all_list[0]])
-    # 每小时计算次数
-    n_simulate = int((stop_time - start_time) / (3600 / n_calculate_hour))
     # 仿真结果
     file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
     file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
@@ -127,11 +125,14 @@ def run_simple_load(txt_path, file_fmu):
     write_txt_data(file_fmu_result_all, [txt_str])
     write_txt_data(file_fmu_result_last, [txt_str])
     # FMU模型初始化
-    initialize_simple_load(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out, txt_path)
+    init_time_total = initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval,
+                                               time_out, txt_path)
+    # 计算总次数
+    n_simulate = int((stop_time - start_time - init_time_total) / (3600 / n_calculate_hour))
 
     for i in range(n_simulate):
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +
-              str(np.round(100 * (i + 1) / n_simulate, 4)) + "%")
+              str(np.round(100 * i / n_simulate, 4)) + "%")
         # 读取Q_user
         Q_user = read_txt_data(file_Q_user)[0]
 
@@ -164,6 +165,9 @@ def run_simple_load(txt_path, file_fmu):
         get_chiller_input_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
         get_storage_input_real_data(result, storage_equipment_type_path, cfg_path_equipment)
 
+    # 第4步：终止FMU模型，最后仿真一次
+    input_log_4 = "第4步：终止FMU模型，最后仿真一次..."
+    print(input_log_4)
     # 修改FMU状态
     fmu_state_list = [0, 1, stop_time, output_interval, time_out]
     write_txt_data(file_fmu_state, fmu_state_list)
@@ -174,4 +178,4 @@ def run_simple_load(txt_path, file_fmu):
 if __name__ == "__main__":
     txt_path = "../optimal_control_algorithm_for_cooling_season"
     file_fmu = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Cvode.fmu"
-    run_simple_load(txt_path, file_fmu)
+    run_simple_system(txt_path, file_fmu)

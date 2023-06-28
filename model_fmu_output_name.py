@@ -19,13 +19,10 @@ def main_model_output_name(load_mode=0):
     # 冷却塔直接供冷模型
     tower_chilled_output = tower_chilled_output_name()[0]
     # 用户侧模型
-    if load_mode == 0:
-        user_output = user_load_output_name()[0]
-    else:
-        user_output = simple_load_output_name()
+    load_output = load_output_name(load_mode)
     # 总输出
     model_output = environment_output + chiller_output + air_source_heat_pump_output + storage_output + \
-                   tower_chilled_output + user_output
+                   tower_chilled_output + load_output
     # 返回结果
     return model_output
 
@@ -195,6 +192,23 @@ def tower_chilled_output_name():
     tower_chilled_output = P + Few + H_pump + chilled_pump_P
     # 返回结果
     return tower_chilled_output, P, Few, H_pump, chilled_pump_P
+
+
+def load_output_name(load_mode):
+    """
+
+    Args:
+        load_mode: [int]，0：user_load；1：simple_load
+
+    Returns:
+
+    """
+    if load_mode == 0:
+        load_output = user_load_output_name()[0]
+    else:
+        load_output = simple_load_output_name()
+    # 返回结果
+    return load_output
 
 
 def user_load_output_name():

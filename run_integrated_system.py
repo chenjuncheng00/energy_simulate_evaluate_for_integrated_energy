@@ -4,18 +4,20 @@ from fmpy import *
 from algorithm_code import *
 from model_fmu_output_name import main_model_output_name
 from model_fmu_input_name import main_model_input_name
+from model_fmu_input_type import load_input_type
 from calculate_energy_storage_value import generate_Q_list, generate_time_name_list
-from initialize_complete_system import initialize_complete_system
+from initialize_integrated_system import initialize_integrated_system
 from run_initialize import run_initialize
 from get_fmu_real_data import get_chiller_input_real_data, get_ashp_input_real_data, get_storage_input_real_data, \
                               get_tower_chilled_input_real_data
 
-def run_complete_system(txt_path, file_fmu):
+def run_integrated_system(txt_path, file_fmu, load_mode):
     """
-    完整系统：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+复杂的用户末端
+    综合系统：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+负荷(简单负荷 OR 复杂负荷)
     Args:
         txt_path: [string]，相对路径
         file_fmu: [string]，FMU模型文件
+        load_mode: [int]，0：user_load；1：simple_load
 
     Returns:
 
@@ -91,8 +93,12 @@ def run_complete_system(txt_path, file_fmu):
     file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
     file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
     # FMU仿真参数
-    start_time = (31 + 28 + 31 + 30) * 24 * 3600
-    stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31) * 24 * 3600 - 3600
+    if load_mode == 0:
+        start_time = (31 + 28 + 31 + 28) * 24 * 3600
+        stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31) * 24 * 3600 - 3600
+    else:
+        start_time = 0
+        stop_time = 141 * 24 * 3600 - 3600
     output_interval = 10
     time_out = 600
     # 模型初始化和实例化
@@ -112,8 +118,8 @@ def run_complete_system(txt_path, file_fmu):
     file_fmu_state = txt_path + "/process_data/fmu_state.txt"
     # FMU模型输出名称，包括所有的输入和输出名称
     file_fmu_input_output_name = txt_path + "/process_data/fmu_input_output_name.pkl"
-    fmu_output_name = main_model_output_name()
-    fmu_input_name = main_model_input_name()
+    fmu_output_name = main_model_output_name(load_mode)
+    fmu_input_name = main_model_input_name(load_mode)
     fmu_input_output_name = fmu_output_name + fmu_input_name
     with open(file_fmu_input_output_name, 'wb') as f:
         pickle.dump(fmu_input_output_name, f)
@@ -128,8 +134,6 @@ def run_complete_system(txt_path, file_fmu):
     Q_time_all_list = read_txt_data(file_Q_user_list, column_index=0)
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
     write_txt_data(file_Q_user, [Q_user_all_list[0]])
-    # 每小时计算次数
-    n_simulate = int((stop_time - start_time) / (3600 / n_calculate_hour))
     # 仿真结果
     file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
     file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
@@ -139,16 +143,19 @@ def run_complete_system(txt_path, file_fmu):
     write_txt_data(file_fmu_result_all, [txt_str])
     write_txt_data(file_fmu_result_last, [txt_str])
     # FMU模型初始化
-    initialize_complete_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out, txt_path)
+    init_time_total = initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop_time,
+                                                   output_interval, time_out, load_mode, txt_path)
     # 逐时用电时间段列表，字符串，长度24
     time_name_list = ["谷", "谷", "谷", "谷", "谷", "谷", "谷", "谷", "平", "平", "峰", "峰", "峰", "平", "平", "峰",
                       "峰", "平", "平", "平", "峰", "峰", "峰", "平"]
     # 冷冻水额定温差
     Ted_set = read_cfg_data(cfg_path_public, "计算目标设定值", "Ted_set", 0)
+    # 计算总次数
+    n_simulate = int((stop_time - start_time - init_time_total) / (3600 / n_calculate_hour))
 
     for i in range(n_simulate):
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +
-              str(np.round(100 * (i + 1) / n_simulate, 4)) + "%")
+              str(np.round(100 * i / n_simulate, 4)) + "%")
         # 读取Q_user
         Q_user = read_txt_data(file_Q_user)[0]
 
@@ -339,13 +346,23 @@ def run_complete_system(txt_path, file_fmu):
         time_now = read_txt_data(file_fmu_time)[0]
         n_cal_now = int((time_now - start_time) / (3600 * (1 / n_calculate_hour)))
         simulate_time = start_time + (n_cal_now + 1) * 3600 * (1 / n_calculate_hour) - time_now
-        result = main_simulate_pause_single([], [], simulate_time, txt_path)
+        if load_mode == 0:
+            input_type_list = []
+            input_data_list = []
+        else:
+            input_type_list = load_input_type(load_mode)
+            input_data_list = [Q_user * 1000]
+        result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time, txt_path)
 
         # 第4步：根据用户末端室内的温湿度，修正Teo
-        input_log_4 = "第4步：根据用户末端室内的温湿度，修正Teo..."
-        print(input_log_4)
-        algorithm_Teo_set_user(chiller_equipment_type_path, n_calculate_hour)
-        algorithm_Teo_set_user(ashp_equipment_type_path, n_calculate_hour)
+        if load_mode == 0:
+            input_log_4 = "第4步：根据用户末端室内的温湿度，修正Teo..."
+            print(input_log_4)
+            algorithm_Teo_set_user(chiller_equipment_type_path, n_calculate_hour)
+            algorithm_Teo_set_user(ashp_equipment_type_path, n_calculate_hour)
+        else:
+            input_log_4 = "第4步：修正Teo，PASS..."
+            print(input_log_4)
 
         # 第5步：获取FMU模型的实际数据并写入txt文件
         input_log_5 = "第5步：获取FMU模型的实际数据并写入txt文件..."
@@ -356,6 +373,9 @@ def run_complete_system(txt_path, file_fmu):
         get_storage_input_real_data(result, storage_equipment_type_path, cfg_path_equipment)
         get_tower_chilled_input_real_data(result, tower_chilled_equipment_type_path, cfg_path_equipment)
 
+    # 第6步：终止FMU模型，最后仿真一次
+    input_log_6 = "第6步：终止FMU模型，最后仿真一次..."
+    print(input_log_6)
     # 修改FMU状态
     fmu_state_list = [0, 1, stop_time, output_interval, time_out]
     write_txt_data(file_fmu_state, fmu_state_list)
@@ -364,6 +384,14 @@ def run_complete_system(txt_path, file_fmu):
 
 
 if __name__ == "__main__":
+    # 相对路径
     txt_path = "../optimal_control_algorithm_for_cooling_season"
-    file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
-    run_complete_system(txt_path, file_fmu)
+    # 负荷模型类型选择：0：user_load；1：simple_load
+    load_mode = 1
+    # 确定FMU模型文件
+    if load_mode == 0:
+        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
+    else:
+        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
+    # 执行程序
+    run_integrated_system(txt_path, file_fmu, load_mode)

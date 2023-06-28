@@ -13,13 +13,9 @@ def main_input_data_default(load_mode=0):
     Returns:
 
     """
-    if load_mode == 0:
-        user_load_input_data = user_load_input_data_default()
-    else:
-        user_load_input_data = simple_load_input_data_default()
     model_input = environment_input_data_default() + chiller_input_data_default() + \
                   air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
-                  tower_chilled_input_data_default() + user_load_input_data
+                  tower_chilled_input_data_default() + load_input_data_default(load_mode)
     return model_input
 
 
@@ -119,6 +115,23 @@ def tower_chilled_input_data_default():
     chilled_pump = [0, 0, 0, 0]
     # 返回结果
     return chilled_pump
+
+
+def load_input_data_default(load_mode):
+    """
+
+    Args:
+        load_mode: [int]，0：user_load；1：simple_load
+
+    Returns:
+
+    """
+    if load_mode == 0:
+        load_input_data = user_load_input_data_default()
+    else:
+        load_input_data = simple_load_input_data_default()
+    # 返回结果
+    return load_input_data
 
 
 def user_load_input_data_default():
