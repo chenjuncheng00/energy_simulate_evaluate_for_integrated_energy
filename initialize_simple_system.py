@@ -5,7 +5,8 @@ from model_fmu_input_type import chiller_input_type, cold_storage_input_type, \
 from model_fmu_input_data_default import chiller_input_data_default, cold_storage_input_data_default, \
                                          simple_load_input_data_default, environment_input_data_default
 
-def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out, txt_path):
+def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out,
+                             tolerance, txt_path):
     """
     初始化简单模型：冷水机+蓄冷水罐+简单负荷
     Args:
@@ -15,6 +16,7 @@ def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_tim
         stop_time: [int]，仿真终止时间
         output_interval: [int]，仿真输出时间间隔
         time_out: [int]，仿真超时时间
+        tolerance: [float]，FMU模型求解相对误差
         txt_path: [string]，相对路径
 
     Returns:
@@ -22,8 +24,8 @@ def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_tim
     """
     print("正在初始化FMU模型......")
     # 第1步：初始化设置
-    # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
-    fmu_state_list = [1, 0, stop_time, output_interval, time_out]
+    # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out, tolerance
+    fmu_state_list = [1, 0, stop_time, output_interval, time_out, tolerance]
     write_txt_data(file_fmu_state, fmu_state_list)
     # 初始化时间
     simulate_time1 = 23 * 3600
@@ -52,7 +54,7 @@ def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_tim
 
     # 第3步：更新初始化设置
     # 修改FMU状态
-    fmu_state_list = [0, 0, stop_time, output_interval, time_out]
+    fmu_state_list = [0, 0, stop_time, output_interval, time_out, tolerance]
     write_txt_data(file_fmu_state, fmu_state_list)
     # 初始化时间
     simulate_time2 = 1 * 3600

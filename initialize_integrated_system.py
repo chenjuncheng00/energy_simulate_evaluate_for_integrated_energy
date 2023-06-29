@@ -5,7 +5,7 @@ from model_fmu_input_data_default import air_source_heat_pump_input_data_default
                                          cold_storage_input_data_default, main_input_data_default
 
 def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval,
-                                 time_out, load_mode, txt_path):
+                                 time_out, tolerance, load_mode, txt_path):
     """
     初始化完整模型：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+负荷(简单负荷 OR 复杂负荷)
     Args:
@@ -15,6 +15,7 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
         stop_time: [int]，仿真终止时间
         output_interval: [int]，仿真输出时间间隔
         time_out: [int]，仿真超时时间
+        tolerance: [float]，FMU模型求解相对误差
         load_mode: [int]，0：user_load；1：simple_load
         txt_path: [string]，相对路径
 
@@ -23,8 +24,8 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     """
     print("正在初始化FMU模型......")
     # 第1步：初始化设置
-    # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
-    fmu_state_list = [1, 0, stop_time, output_interval, time_out]
+    # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out, tolerance
+    fmu_state_list = [1, 0, stop_time, output_interval, time_out, tolerance]
     write_txt_data(file_fmu_state, fmu_state_list)
     # 初始化时间
     simulate_time1 = 24 * 3600
@@ -57,7 +58,7 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
 
     # 第3步：更新初始化设置
     # 修改FMU状态
-    fmu_state_list = [0, 0, stop_time, output_interval, time_out]
+    fmu_state_list = [0, 0, stop_time, output_interval, time_out, tolerance]
     write_txt_data(file_fmu_state, fmu_state_list)
     # 修改时间
     simulate_time2 = 23 * 3600
