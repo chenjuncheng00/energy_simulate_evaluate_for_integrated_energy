@@ -13,9 +13,9 @@ from model_fmu_input_data_default import chiller_input_data_default, cold_storag
 from model_fmu_output_name import chiller_output_name, cold_storage_output_name, simple_load_output_name
 
 def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                  Ts, time_out, np_max, fitpercent_target_list, chiller_object_list, chiller_Y_mode_list,
-                                  chiller_Q_list, EER_mode, chiller_equipment_type_path, cfg_path_equipment,
-                                  cfg_path_public):
+                                  Ts, time_out, tolerance, np_max, fitpercent_target_list, chiller_object_list,
+                                  chiller_Y_mode_list, chiller_Q_list, EER_mode, chiller_equipment_type_path,
+                                  cfg_path_equipment, cfg_path_public):
     """
 
     Args:
@@ -27,6 +27,7 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
         output_interval: [float]，FMU模型输出采样时间，单位：秒
         Ts: [float]，采样时间
         time_out: [float]，仿真超时时间，单位：秒
+        tolerance: [float]，FMU模型求解相对误差
         np_max: [int]，传递函数极点最大值
         fitpercent_target_list: [list]，传递函数辨识得分目标，列表
         chiller_object_list: [list]，需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
@@ -79,22 +80,22 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
     # 冷水机系统动态特性辨识
     identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, file_fmu_time, file_fmu_state,
                               file_fmu_input_output_name, file_fmu_result_all, file_fmu_result_last, file_pkl_chiller,
-                              file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, path_result_EER,
-                              path_result_Tei, path_tf, path_matlab, path_Few_EER_tfdata, path_Fcw_EER_tfdata,
-                              path_Fca_EER_tfdata, path_Teo_EER_tfdata, path_Few_Tei_tfdata, path_Fcw_Tei_tfdata,
-                              path_Fca_Tei_tfdata, path_Teo_Tei_tfdata, np_max, fitpercent_target_list,
-                              chiller_object_list, chiller_Y_mode_list, chiller_Q_list, EER_mode,
-                              chiller_equipment_type_path, cfg_path_equipment, cfg_path_public)
+                              file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, tolerance,
+                              path_result_EER, path_result_Tei, path_tf, path_matlab, path_Few_EER_tfdata,
+                              path_Fcw_EER_tfdata, path_Fca_EER_tfdata, path_Teo_EER_tfdata, path_Few_Tei_tfdata,
+                              path_Fcw_Tei_tfdata, path_Fca_Tei_tfdata, path_Teo_Tei_tfdata, np_max,
+                              fitpercent_target_list, chiller_object_list, chiller_Y_mode_list, chiller_Q_list,
+                              EER_mode, chiller_equipment_type_path, cfg_path_equipment, cfg_path_public)
 
 
 def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, file_fmu_time, file_fmu_state,
                               file_fmu_input_output_name, file_fmu_result_all, file_fmu_result_last, file_pkl_chiller,
-                              file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, path_result_EER,
-                              path_result_Tei, path_tf, path_matlab, path_Few_EER_tfdata, path_Fcw_EER_tfdata,
-                              path_Fca_EER_tfdata, path_Teo_EER_tfdata, path_Few_Tei_tfdata, path_Fcw_Tei_tfdata,
-                              path_Fca_Tei_tfdata, path_Teo_Tei_tfdata, np_max, fitpercent_target_list, object_list,
-                              Y_mode_list, Q_list, EER_mode, chiller_equipment_type_path, cfg_path_equipment,
-                              cfg_path_public):
+                              file_pkl_system, start_time, stop_time, output_interval, Ts, time_out, tolerance,
+                              path_result_EER, path_result_Tei, path_tf, path_matlab, path_Few_EER_tfdata,
+                              path_Fcw_EER_tfdata, path_Fca_EER_tfdata, path_Teo_EER_tfdata, path_Few_Tei_tfdata,
+                              path_Fcw_Tei_tfdata, path_Fca_Tei_tfdata, path_Teo_Tei_tfdata, np_max,
+                              fitpercent_target_list, object_list, Y_mode_list, Q_list, EER_mode,
+                              chiller_equipment_type_path, cfg_path_equipment, cfg_path_public):
     """
 
     Args:
@@ -113,6 +114,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
         output_interval: [float]，FMU模型输出采样时间，单位：秒
         Ts: [float]，采样时间
         time_out: [float]，仿真超时时间，单位：秒
+        tolerance: [float]，FMU模型求解相对误差
         path_result_EER: [string]，储存最终结果文本的文件路径
         path_result_Tei: [string]，储存最终结果文本的文件路径
         path_tf: [string]，需要读取的.txt文件文件所在的文件夹路径
@@ -221,7 +223,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
             fmu_address_list = [unzipdir_address, description_address, instance_address]
             write_txt_data(file_fmu_address, fmu_address_list)
             # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
-            fmu_state_list = [1, 0, stop_time, output_interval, time_out]
+            fmu_state_list = [1, 0, stop_time, output_interval, time_out, tolerance]
             write_txt_data(file_fmu_state, fmu_state_list)
             # 写入start_time
             write_txt_data(file_fmu_time, [start_time])

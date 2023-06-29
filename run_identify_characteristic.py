@@ -87,6 +87,7 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     output_interval = 10
     Ts = 10 * 60  # 采样时间
     time_out = 600
+    tolerance = 0.1
     chiller_equipment_type_path = ["chiller", txt_path]
     cfg_path_equipment = "./config/equipment_config.cfg"
     cfg_path_public = "./config/public_config.cfg"
@@ -103,9 +104,9 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     # 系统辨识得分的目标
     fitpercent_target_list = [95, 90, 85, 80, 75, 70]
     main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                  Ts, time_out, np_max, fitpercent_target_list, chiller_object_list, chiller_Y_mode_list,
-                                  chiller_Q_list, EER_mode, chiller_equipment_type_path, cfg_path_equipment,
-                                  cfg_path_public)
+                                  Ts, time_out, tolerance, np_max, fitpercent_target_list, chiller_object_list,
+                                  chiller_Y_mode_list, chiller_Q_list, EER_mode, chiller_equipment_type_path,
+                                  cfg_path_equipment, cfg_path_public)
 
 
 if __name__ == "__main__":

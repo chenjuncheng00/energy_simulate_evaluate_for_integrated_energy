@@ -101,6 +101,7 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
         stop_time = 141 * 24 * 3600 - 3600
     output_interval = 10
     time_out = 600
+    tolerance = 0.1
     # 模型初始化和实例化
     fmu_unzipdir = extract(file_fmu)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -144,7 +145,7 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
     write_txt_data(file_fmu_result_last, [txt_str])
     # FMU模型初始化
     init_time_total = initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop_time,
-                                                   output_interval, time_out, load_mode, txt_path)
+                                                   output_interval, time_out, tolerance, load_mode, txt_path)
     # 逐时用电时间段列表，字符串，长度24
     time_name_list = ["谷", "谷", "谷", "谷", "谷", "谷", "谷", "谷", "平", "平", "峰", "峰", "峰", "平", "平", "峰",
                       "峰", "平", "平", "平", "峰", "峰", "峰", "平"]
@@ -377,7 +378,7 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
     input_log_6 = "第6步：终止FMU模型，最后仿真一次..."
     print(input_log_6)
     # 修改FMU状态
-    fmu_state_list = [0, 1, stop_time, output_interval, time_out]
+    fmu_state_list = [0, 1, stop_time, output_interval, time_out, tolerance]
     write_txt_data(file_fmu_state, fmu_state_list)
     # 最后仿真一次
     main_simulate_pause_single([], [], 3600, txt_path)

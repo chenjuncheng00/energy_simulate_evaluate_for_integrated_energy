@@ -83,6 +83,7 @@ def run_simple_system(txt_path, file_fmu):
     stop_time = 141 * 24 * 3600 - 3600
     output_interval = 10
     time_out = 600
+    tolerance = 0.1
     # 各系统制冷功率最大值
     chiller_Q0_max = 14000
     # 模型初始化和实例化
@@ -126,7 +127,7 @@ def run_simple_system(txt_path, file_fmu):
     write_txt_data(file_fmu_result_last, [txt_str])
     # FMU模型初始化
     init_time_total = initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval,
-                                               time_out, txt_path)
+                                               time_out, tolerance, txt_path)
     # 计算总次数
     n_simulate = int((stop_time - start_time - init_time_total) / (3600 / n_calculate_hour))
 
@@ -169,7 +170,7 @@ def run_simple_system(txt_path, file_fmu):
     input_log_4 = "第4步：终止FMU模型，最后仿真一次..."
     print(input_log_4)
     # 修改FMU状态
-    fmu_state_list = [0, 1, stop_time, output_interval, time_out]
+    fmu_state_list = [0, 1, stop_time, output_interval, time_out, tolerance]
     write_txt_data(file_fmu_state, fmu_state_list)
     # 最后仿真一次
     main_simulate_pause_single([], [], 3600, txt_path)
