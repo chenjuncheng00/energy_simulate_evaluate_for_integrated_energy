@@ -81,9 +81,9 @@ def run_simple_system(txt_path, file_fmu):
     # FMU仿真参数
     start_time = 0
     stop_time = 141 * 24 * 3600 - 3600
-    output_interval = 10
+    output_interval = 30
     time_out = 600
-    tolerance = 0.1
+    tolerance = 0.01
     # 各系统制冷功率最大值
     chiller_Q0_max = 14000
     # 模型初始化和实例化
@@ -178,5 +178,5 @@ def run_simple_system(txt_path, file_fmu):
 
 if __name__ == "__main__":
     txt_path = "../optimal_control_algorithm_for_cooling_season"
-    file_fmu = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Cvode.fmu"
+    file_fmu = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Sdirk34hw.fmu"
     run_simple_system(txt_path, file_fmu)

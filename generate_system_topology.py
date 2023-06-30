@@ -162,5 +162,5 @@ def generate_system_topology(cfg_path_equipment, file_raw_pickle):
 
 if __name__ == "__main__":
     cfg_path_equipment = './config/equipment_config.cfg'
-    file_raw_pickle = "./model_data/raw_topology_index.pickle"
+    file_raw_pickle = "./model_data/file_equipment/raw_topology_index.pkl"
     generate_system_topology(cfg_path_equipment, file_raw_pickle)

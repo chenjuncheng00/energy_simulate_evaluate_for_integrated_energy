@@ -99,9 +99,9 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
     else:
         start_time = 0
         stop_time = 141 * 24 * 3600 - 3600
-    output_interval = 10
+    output_interval = 30
     time_out = 600
-    tolerance = 0.1
+    tolerance = 0.01
     # 模型初始化和实例化
     fmu_unzipdir = extract(file_fmu)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -391,8 +391,8 @@ if __name__ == "__main__":
     load_mode = 1
     # 确定FMU模型文件
     if load_mode == 0:
-        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
+        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
     else:
-        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
+        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
     # 执行程序
     run_integrated_system(txt_path, file_fmu, load_mode)
