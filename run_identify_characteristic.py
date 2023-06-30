@@ -84,10 +84,10 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     fmu_description = read_model_description(fmu_unzipdir)
     start_time = 0
     stop_time = start_time + 30 * 3600
-    output_interval = 10
+    output_interval = 30
     Ts = 10 * 60  # 采样时间
     time_out = 600
-    tolerance = 0.1
+    tolerance = 0.01
     chiller_equipment_type_path = ["chiller", txt_path]
     cfg_path_equipment = "./config/equipment_config.cfg"
     cfg_path_public = "./config/public_config.cfg"
@@ -111,13 +111,13 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
 
 if __name__ == "__main__":
     # # 水力特性模型辨识
-    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
+    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
     # run_identify_hydraulic_characteristic(fmu_path)
     # # 设备性能模型辨识
-    # fmu_path = "./model_data/file_fmu/system_characteristic_Cvode.fmu"
+    # fmu_path = "./model_data/file_fmu/system_characteristic_Sdirk34hw.fmu"
     # run_equipment_characteristic(fmu_path)
     # 系统动态特性辨识
     path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
-    fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Cvode.fmu"
+    fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Sdirk34hw.fmu"
     txt_path = "../optimal_control_algorithm_for_cooling_season"
     run_identify_system_dynamics(fmu_path, path_matlab, txt_path)
