@@ -16,7 +16,7 @@ def run_identify_hydraulic_characteristic(fmu_path):
     stop_time = start_time + 2 * 3600
     output_interval = 60
     time_out = 600
-    tolerance = 0.01
+    tolerance = 0.05
     n_cal_f_pump = 5
     pump_f0_cal = True
     cfg_path_equipment = "./config/equipment_config.cfg"
@@ -55,7 +55,7 @@ def run_equipment_characteristic(fmu_path):
     stop_time = start_time + 2 * 3600
     output_interval = 60
     time_out = 600
-    tolerance = 0.01
+    tolerance = 0.05
     cfg_path_equipment = "./config/equipment_config.cfg"
     chiller_big_cop_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/chiller_big_cop.txt"
     chiller_small_cop_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/chiller_small_cop.txt"
@@ -90,7 +90,7 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     output_interval = 30
     Ts = 10 * 60  # 采样时间
     time_out = 600
-    tolerance = 0.01
+    tolerance = 0.1
     chiller_equipment_type_path = ["chiller", txt_path]
     cfg_path_equipment = "./config/equipment_config.cfg"
     cfg_path_public = "./config/public_config.cfg"
@@ -101,7 +101,8 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     # 模型输出模式：EER/Tei
     chiller_Y_mode_list = ["EER", "Tei"]
     # 辨识的冷负荷列表，单位：kW
-    chiller_Q_list = [13000, 11000, 9000, 7000, 5000, 3000]
+    chiller_Q_list = [14000, 13500, 13000, 12500, 12000, 11500, 11000, 10500, 10000, 9500, 9000, 8500, 8000,
+                      7500, 7000, 6500, 6000, 5500, 5000, 4500, 4000, 3500, 3000, 2500, 2000]
     # 传递函数极点的最大数
     np_max = 5
     # 系统辨识得分的目标
@@ -121,6 +122,6 @@ if __name__ == "__main__":
     # run_equipment_characteristic(fmu_path)
     # 系统动态特性辨识
     path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
-    fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Sdirk34hw.fmu"
+    fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Dassl.fmu"
     txt_path = "../optimal_control_algorithm_for_cooling_season"
     run_identify_system_dynamics(fmu_path, path_matlab, txt_path)

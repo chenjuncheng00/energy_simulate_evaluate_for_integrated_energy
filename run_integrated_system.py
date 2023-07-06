@@ -101,7 +101,7 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
         stop_time = 141 * 24 * 3600 - 3600
     output_interval = 30
     time_out = 600
-    tolerance = 0.01
+    tolerance = 0.05
     # 模型初始化和实例化
     fmu_unzipdir = extract(file_fmu)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -300,9 +300,20 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
                                            ashp_chilled_pump, None, ashp_equipment_type_path, n_calculate_hour,
                                            0, cfg_path_equipment, cfg_path_public)
         else:
-            # 第2-1步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程
-            input_log_2_1 = "第2-1步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程..."
+            # 第2-1步：Q_out_ese=0，蓄冷水罐控制，目的是关闭蓄冷水罐及其系统
+            input_log_2_1 = "第2-1步：Q_out_ese=0，蓄冷水罐控制，目的是关闭蓄冷水罐及其系统..."
             print(input_log_2_1)
+            write_txt_data(file_fmu_input_log, [input_log_2_1, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_1, "\n"], 1)
+            algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
+                                               energy_storage_equipment, chilled_pump_to_user, chilled_pump_in_storage,
+                                               None, None, 0, 0, 0, n_chilled_value_in_storage, n_chilled_value_to_user,
+                                               storage_equipment_type_path, n_calculate_hour, cfg_path_equipment,
+                                               cfg_path_public)
+
+            # 第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程
+            input_log_2_2 = "第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程..."
+            print(input_log_2_2)
             chiller_Q_user = min(Q_user, chiller_Q0_max)
             ans_chiller2 = optimization_system_universal(chiller_Q_user, H_chiller_chilled_pump, 0,
                                                          H_chiller_cooling_pump, chiller_list,
@@ -313,11 +324,11 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
                                                          cfg_path_public)
             chiller_user_chilled_pump_H = ans_chiller2[4]
 
-            # 第2-2步：用向用户侧供冷供冷，冷水机优化和控制
-            input_log_2_2 = "第2-2步：用向用户侧供冷供冷，冷水机优化和控制..."
-            print(input_log_2_2)
-            write_txt_data(file_fmu_input_log, [input_log_2_2, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_2, "\n"], 1)
+            # 第2-3步：用向用户侧供冷供冷，冷水机优化和控制
+            input_log_2_3 = "第2-3步：用向用户侧供冷供冷，冷水机优化和控制..."
+            print(input_log_2_3)
+            write_txt_data(file_fmu_input_log, [input_log_2_3, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_3, "\n"], 1)
             algorithm_chiller_double(chiller_Q_user, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                      chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
                                      chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
@@ -326,11 +337,11 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
                                      0, chiller_equipment_type_path, n_calculate_hour, n_chiller_user_value,
                                      cfg_path_equipment, cfg_path_public)
 
-            # 第2-3步：用向用户侧供冷功率，空气源热泵优化和控制
-            input_log_2_3 = "第2-3步：用向用户侧供冷功率，空气源热泵优化和控制..."
-            print(input_log_2_3)
-            write_txt_data(file_fmu_input_log, [input_log_2_3, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_3, "\n"], 1)
+            # 第2-4步：用向用户侧供冷功率，空气源热泵优化和控制
+            input_log_2_4 = "第2-4步：用向用户侧供冷功率，空气源热泵优化和控制..."
+            print(input_log_2_4)
+            write_txt_data(file_fmu_input_log, [input_log_2_4, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_2_4, "\n"], 1)
             ashp_Q_user = min(Q_total - chiller_Q_user, ashp_Q0_max)
             H_ashp_chilled_pump = 0.65 * chiller_user_chilled_pump_H
             algorithm_air_source_heat_pump(ashp_Q_user, H_ashp_chilled_pump, 0, air_source_heat_pump,
@@ -388,7 +399,7 @@ if __name__ == "__main__":
     # 相对路径
     txt_path = "../optimal_control_algorithm_for_cooling_season"
     # 负荷模型类型选择：0：user_load；1：simple_load
-    load_mode = 1
+    load_mode = 0
     # 确定FMU模型文件
     if load_mode == 0:
         file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
