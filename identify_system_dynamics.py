@@ -148,9 +148,11 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
     chiller_input_name = get_fmu_input_name(chiller_input_type()[0])
     cold_storage_input_name = get_fmu_input_name(cold_storage_input_type()[0])
     simple_load_input_name = get_fmu_input_name(simple_load_input_type())
+    environment_input_name = get_fmu_input_name(environment_input_type()[0])
     # FMU模型输出名称，包括所有输入输出名称
     fmu_input_output_name = chiller_output_name()[0] + cold_storage_output_name()[0] + simple_load_output_name() + \
-                            chiller_input_name + cold_storage_input_name + simple_load_input_name
+                            chiller_input_name + cold_storage_input_name + simple_load_input_name + \
+                            environment_input_name
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:
         chiller_dict = pickle.load(f_obj)
@@ -237,7 +239,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
             main_simulate_pause_single(input_data_list, input_type_list, simulate_time0, txt_path, add_input=False)
             # 第2步：更新初始化设置
             # 修改FMU状态
-            fmu_state_list = [0, 0, stop_time, output_interval, time_out]
+            fmu_state_list = [0, 0, stop_time, output_interval, time_out, tolerance]
             write_txt_data(file_fmu_state, fmu_state_list)
             # 第3步：优化一次冷水机计算，不进行控制，用于获取阀门开启比例
             print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
@@ -263,7 +265,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
             # 第5步：系统仿真15小时，确保系统稳定，并获取数据
             print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在持续仿真，确保系统稳定!")
             # 修改采样时间
-            fmu_state_list = [0, 0, stop_time, Ts, time_out]
+            fmu_state_list = [0, 0, stop_time, Ts, time_out, tolerance]
             write_txt_data(file_fmu_state, fmu_state_list)
             # 模型输入名称和类型
             input_type_list = simple_load_input_type()
@@ -462,7 +464,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
             # 第9步：终止FMU模型
             print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在终止FMU模型！")
             # 修改FMU状态
-            fmu_state_list = [0, 1, stop_time, output_interval, time_out]
+            fmu_state_list = [0, 1, stop_time, output_interval, time_out, tolerance]
             write_txt_data(file_fmu_state, fmu_state_list)
             # 最后仿真一次
             main_simulate_pause_single([], [], simulate_time3, txt_path)

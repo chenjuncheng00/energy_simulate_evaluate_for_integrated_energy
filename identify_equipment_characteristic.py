@@ -2,7 +2,7 @@ import time, traceback, numpy as np
 from algorithm_code import *
 
 def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                           time_out, cfg_path_equipment, chiller_big_cop_result_txt_path,
+                                           time_out, tolerance, cfg_path_equipment, chiller_big_cop_result_txt_path,
                                            chiller_small_cop_result_txt_path, ashp_cop_result_txt_path,
                                            cooling_tower_approach_result_txt_path):
     """
@@ -15,6 +15,7 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
         stop_time: [float]，仿真结束时间，单位：秒
         output_interval: [float]，FMU模型输出采样时间，单位：秒
         time_out: [float]，仿真超时时间，单位：秒
+        tolerance: [float]，FMU模型求解相对误差
         cfg_path_equipment: [string]，设备信息参数cfg文件路径
         chiller_big_cop_result_txt_path: [string]，大冷水机COP特性辨识结果，txt文件路径
         chiller_small_cop_result_txt_path: [string]，小冷水机COP特性辨识结果，txt文件路径
@@ -123,25 +124,25 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
 
     # 大冷水机，COP
     identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1_Fcw_list, chiller1_Q_list, time_data,
-                             fmu_unzipdir, fmu_description, start_time, stop_time, time_out, model_input_type,
-                             model_output_name, output_interval, chiller_big_cop_result_txt_path)
+                             fmu_unzipdir, fmu_description, start_time, stop_time, time_out, tolerance,
+                             model_input_type, model_output_name, output_interval, chiller_big_cop_result_txt_path)
     # 小冷水机，COP
     identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chiller2_Fcw_list, chiller2_Q_list, time_data,
-                               fmu_unzipdir, fmu_description, start_time, stop_time, time_out, model_input_type,
-                               model_output_name, output_interval, chiller_small_cop_result_txt_path)
+                               fmu_unzipdir, fmu_description, start_time, stop_time, time_out, tolerance,
+                               model_input_type, model_output_name, output_interval, chiller_small_cop_result_txt_path)
     # 空气源热泵，COP
     identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp_Q_list, time_data, fmu_unzipdir,
-                      fmu_description, start_time, stop_time, time_out, model_input_type, model_output_name,
+                      fmu_description, start_time, stop_time, time_out, tolerance, model_input_type, model_output_name,
                       output_interval, ashp_cop_result_txt_path)
     # 冷却塔，逼近度
     identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_tower_list, cooling_tower_Tin_list,
                                     time_data, fmu_unzipdir, fmu_description, start_time, stop_time, time_out,
-                                    model_input_type, model_output_name, output_interval,
+                                    tolerance, model_input_type, model_output_name, output_interval,
                                     cooling_tower_approach_result_txt_path)
 
 
 def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1_Fcw_list, chiller1_Q_list, time_data,
-                             fmu_unzipdir, fmu_description, start_time, stop_time, time_out,  model_input_type,
+                             fmu_unzipdir, fmu_description, start_time, stop_time, time_out, tolerance, model_input_type,
                              model_output_name, output_interval,  chiller_big_cop_result_txt_path):
     """
     大冷水机COP特性辨识
@@ -158,6 +159,7 @@ def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
         time_out: [float]，仿真超时时间，单位：秒
+        tolerance: [float]，FMU模型求解相对误差
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -205,7 +207,7 @@ def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1
                             time1 = time.time()
                             result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
                                                      model_input_data, model_input_type, model_output_name,
-                                                     output_interval, time_out, False, False)
+                                                     output_interval, time_out, tolerance, False, False)
                             # 获取仿真结果
                             P_chiller = result['P_chiller_big'][-1] # W
                             Teo_real = result['Teo_chiller_big'][-1] # K
@@ -247,8 +249,8 @@ def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1
 
 
 def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chiller2_Fcw_list, chiller2_Q_list, time_data,
-                               fmu_unzipdir, fmu_description, start_time, stop_time, time_out,  model_input_type,
-                               model_output_name, output_interval,  chiller_small_cop_result_txt_path):
+                               fmu_unzipdir, fmu_description, start_time, stop_time, time_out, tolerance,
+                               model_input_type, model_output_name, output_interval, chiller_small_cop_result_txt_path):
     """
     小冷水机COP特性辨识
 
@@ -264,6 +266,7 @@ def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chille
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
         time_out: [float]，仿真超时时间，单位：秒
+        tolerance: [float]，FMU模型求解相对误差
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -311,7 +314,7 @@ def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chille
                             time1 = time.time()
                             result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
                                                      model_input_data, model_input_type, model_output_name,
-                                                     output_interval, time_out, False, False)
+                                                     output_interval, time_out, tolerance, False, False)
                             # 获取仿真结果
                             P_chiller = result['P_chiller_small'][-1]  # W
                             Teo_real = result['Teo_chiller_small'][-1]  # K
@@ -353,7 +356,7 @@ def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chille
 
 
 def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp_Q_list, time_data, fmu_unzipdir,
-                      fmu_description, start_time, stop_time, time_out,  model_input_type, model_output_name,
+                      fmu_description, start_time, stop_time, time_out, tolerance, model_input_type, model_output_name,
                       output_interval,  ashp_cop_result_txt_path):
     """
     空气源热泵COP特性辨识
@@ -370,6 +373,7 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
         time_out: [float]，仿真超时时间，单位：秒
+        tolerance: [float]，FMU模型求解相对误差
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -417,7 +421,7 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
                             time1 = time.time()
                             result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
                                                      model_input_data, model_input_type, model_output_name,
-                                                     output_interval, time_out, False, False)
+                                                     output_interval, time_out, tolerance, False, False)
                             # 获取仿真结果
                             P_ashp = result['P_ashp'][-1]  # W
                             Teo_real = result['Teo_ashp'][-1]  # K
@@ -460,7 +464,7 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
 
 def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_tower_list, cooling_tower_Tin_list,
                                     time_data, fmu_unzipdir, fmu_description, start_time, stop_time, time_out,
-                                    model_input_type, model_output_name, output_interval,
+                                    tolerance, model_input_type, model_output_name, output_interval,
                                     cooling_tower_approach_result_txt_path):
     """
     冷却塔逼近度辨识
@@ -476,6 +480,7 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
         start_time: [float]，仿真开始时间，单位：秒
         stop_time: [float]，仿真结束时间，单位：秒
         time_out: [float]，仿真超时时间，单位：秒
+        tolerance: [float]，FMU模型求解相对误差
         model_input_type: [list]，模型输入名称和数据类型
         model_output_name: [list]，模型输出名称
         output_interval: [float]，FMU模型输出采样时间，单位：秒
@@ -515,7 +520,7 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
                         time1 = time.time()
                         result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
                                                  model_input_data, model_input_type, model_output_name,
-                                                 output_interval, time_out, False, False)
+                                                 output_interval, time_out, tolerance, False, False)
                         # 获取仿真结果
                         tower_Tout = result['tower_Tout'][-1]
                         Tcd = Tin - tower_Tout
