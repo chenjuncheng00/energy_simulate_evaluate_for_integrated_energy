@@ -16,6 +16,7 @@ def run_identify_hydraulic_characteristic(fmu_path):
     stop_time = start_time + 2 * 3600
     output_interval = 60
     time_out = 600
+    tolerance = 0.01
     n_cal_f_pump = 5
     pump_f0_cal = True
     cfg_path_equipment = "./config/equipment_config.cfg"
@@ -33,11 +34,12 @@ def run_identify_hydraulic_characteristic(fmu_path):
     fmu_description = read_model_description(fmu_unzipdir)
     # 水力特性辨识
     main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                           time_out, n_cal_f_pump, cfg_path_equipment, chiller_chilled_result_txt_path,
-                                           chiller_cooling_result_txt_path, ashp_chilled_result_txt_path,
-                                           storage_from_chiller_result_txt_path, storage_to_user_result_txt_path,
-                                           chiller_user_storage_result_txt_path, tower_chilled_result_txt_path,
-                                           tower_cooling_chilled_result_txt_path, full_open_result_txt_path, pump_f0_cal)
+                                           time_out, tolerance, n_cal_f_pump, cfg_path_equipment,
+                                           chiller_chilled_result_txt_path, chiller_cooling_result_txt_path,
+                                           ashp_chilled_result_txt_path, storage_from_chiller_result_txt_path,
+                                           storage_to_user_result_txt_path, chiller_user_storage_result_txt_path,
+                                           tower_chilled_result_txt_path, tower_cooling_chilled_result_txt_path,
+                                           full_open_result_txt_path, pump_f0_cal)
 
 
 def run_equipment_characteristic(fmu_path):
@@ -53,6 +55,7 @@ def run_equipment_characteristic(fmu_path):
     stop_time = start_time + 2 * 3600
     output_interval = 60
     time_out = 600
+    tolerance = 0.01
     cfg_path_equipment = "./config/equipment_config.cfg"
     chiller_big_cop_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/chiller_big_cop.txt"
     chiller_small_cop_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/chiller_small_cop.txt"
@@ -63,7 +66,7 @@ def run_equipment_characteristic(fmu_path):
     fmu_description = read_model_description(fmu_unzipdir)
     # 设备特性辨识
     main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                           time_out, cfg_path_equipment, chiller_big_cop_result_txt_path,
+                                           time_out, tolerance, cfg_path_equipment, chiller_big_cop_result_txt_path,
                                            chiller_small_cop_result_txt_path, ashp_cop_result_txt_path,
                                            cooling_tower_approach_result_txt_path)
 
@@ -100,7 +103,7 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     # 辨识的冷负荷列表，单位：kW
     chiller_Q_list = [13000, 11000, 9000, 7000, 5000, 3000]
     # 传递函数极点的最大数
-    np_max = 3
+    np_max = 5
     # 系统辨识得分的目标
     fitpercent_target_list = [95, 90, 85, 80, 75, 70]
     main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
