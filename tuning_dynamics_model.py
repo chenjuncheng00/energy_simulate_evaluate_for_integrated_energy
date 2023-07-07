@@ -48,8 +48,6 @@ def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limi
     for i in range(n_output):
         q_min_list.append(q_min)
         q_max_list.append(q_max)
-    # 储存最终结果
-    txt_list = []
     # 开始参数整定
     for i in range(len(model_list)):
         tf_list = model_list[i]
@@ -59,12 +57,12 @@ def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limi
         txt_tuning = single_model_gpc_tuning(L, Ts, Np, Nc, tf_list, yr_list, yr_0_list, u_0_list, du_limit_list,
                                              u_limit_list, k1, k2, r_min_list, r_max_list, q_min_list, q_max_list,
                                              i + 1, fit_target)
-        txt_list.append(txt_tuning)
+        txt_list = [txt_tuning]
         time_end = time.time()
         time_cost = np.round(time_end - time_start, 2)
         print('计算用时(秒)：' + str(time_cost))
         # 结果写入txt
-    write_txt_data(path_result_smgpc, txt_list)
+        write_txt_data(path_result_smgpc, txt_list, write_model=1)
 
 
 def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list,
@@ -109,8 +107,6 @@ def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u
     for i in range(n_output):
         S_min_list.append(S_min)
         S_max_list.append(S_max)
-    # 储存最终结果
-    txt_list = []
     # 开始参数整定
     for i in range(len(model_list)):
         plant_list = model_list[i]
@@ -118,16 +114,16 @@ def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u
         txt_tuning = multi_model_gpc_tuning(L, Ts, Np_list, Nc_list, V, plant_list, model_list, r_list, q_list,
                                             yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, k1, k2,
                                             S_min_list, S_max_list, fit_target, file_path_init, i + 1)[1]
-        txt_list.append(txt_tuning)
+        txt_list = [txt_tuning]
         time_end = time.time()
         time_cost = np.round(time_end - time_start, 2)
         print('计算用时(秒)：' + str(time_cost))
-    # 结果写入txt
-    write_txt_data(path_result_mmgpc, txt_list)
+        # 结果写入txt
+        write_txt_data(path_result_mmgpc, txt_list, write_model=1)
 
 
 if __name__ == "__main__":
-    L = 10 * 3600
+    L = 20 * 3600
     Ts = 10 * 60
     # 仿真次数
     n = int(L / Ts)
@@ -160,8 +156,11 @@ if __name__ == "__main__":
     # 设置优化目标
     fit_target = 2
     # 储存结果的文件路径
-    path_result_smgpc = "./model_data/file_txt/result_system_dynamics/result_tuning_smgpc.txt"
-    path_result_mmgpc = "./model_data/file_txt/result_system_dynamics/result_tuning_mmgpc.txt"
+    path_result_root = "./model_data/file_txt/result_system_dynamics"
+    path_result_smgpc = path_result_root + "/result_tuning_smgpc.txt"
+    path_result_mmgpc = path_result_root + "/result_tuning_mmgpc.txt"
+    # 情况txt内容
+    clear_all_txt_data(path_result_root)
     # 将初始化的控制器参数数据保存下来的路径
     file_path_init = './model_data/GPC_data'
     # smgpc整定
