@@ -42,11 +42,6 @@ def model_fmu_dynamics():
     q1_1 = 6575.59
     q2_1 = 10000.0
     q1_list = [q1_1, q2_1]
-    s1_1 = 1000
-    s2_1 = 1000
-    s1_EER_list = [s1_1]
-    s1_Tei_list = [s2_1]
-    s1_list = [s1_1, s2_1]
 
     # EER模型: Q=11000kW
     tf11_2 = (-0.937 * s ** 2 - 0.000606 * s - 2.874 * 10 ** (-8)) / (s ** 2 + 0.0002834 * s + 1.526 * 10 ** (-7))
@@ -74,11 +69,6 @@ def model_fmu_dynamics():
     q1_2 = 645.27
     q2_2 = 389.58
     q2_list = [q1_2, q2_2]
-    s1_2 = 1000
-    s2_2 = 1000
-    s2_EER_list = [s1_2]
-    s2_Tei_list = [s2_2]
-    s2_list = [s1_2, s2_2]
 
     # EER模型: Q=9000kW
     tf11_3 = (-1.015 * s ** 2 - 0.000329 * s - 6.155 * 10 ** (-8)) / \
@@ -109,11 +99,6 @@ def model_fmu_dynamics():
     q1_3 = 1000.0
     q2_3 = 365.9
     q3_list = [q1_3, q2_3]
-    s1_3 = 1000
-    s2_3 = 1000
-    s3_EER_list = [s1_3]
-    s3_Tei_list = [s2_3]
-    s3_list = [s1_3, s2_3]
 
     # EER模型: Q=7500kW
     tf11_4 = (-0.903 * s ** 3 + 0.0002535 * s ** 2 - 6.69 * 10 ** (-7) * s + 6.655 * 10 ** (-11)) / \
@@ -142,11 +127,6 @@ def model_fmu_dynamics():
     q1_4 = 2824.57
     q2_4 = 1500.37
     q4_list = [q1_4, q2_4]
-    s1_4 = 1000
-    s2_4 = 1000
-    s4_EER_list = [s1_4]
-    s4_Tei_list = [s2_4]
-    s4_list = [s1_4, s2_4]
 
     # EER模型: Q=5500kW
     tf11_5 = (-1.23 * s ** 3 + 2.084 * 10 ** (-6) * s ** 2 - 1.703 * 10 ** (-7) * s + 5.995 * 10 ** (-12)) / \
@@ -181,11 +161,6 @@ def model_fmu_dynamics():
     q1_5 = 78365.77
     q2_5 = 38308.36
     q5_list = [q1_5, q2_5]
-    s1_5 = 1000
-    s2_5 = 1000
-    s5_EER_list = [s1_5]
-    s5_Tei_list = [s2_5]
-    s5_list = [s1_5, s2_5]
 
     # EER模型: Q=3500kW
     tf11_6 = (-1.6 * s ** 4 - 0.0002104 * s ** 3 - 2.906 * 10 ** (-7) * s ** 2 - 3.945 * 10 ** (-11) * s -
@@ -219,11 +194,6 @@ def model_fmu_dynamics():
     q1_6 = 57.87
     q2_6 = 10000.0
     q6_list = [q1_6, q2_6]
-    s1_6 = 1000
-    s2_6 = 1000
-    s6_EER_list = [s1_6]
-    s6_Tei_list = [s2_6]
-    s6_list = [s1_6, s2_6]
 
     # 模型列表
     Np_list = [Np, Np, Np, Np, Np, Np]
@@ -233,12 +203,17 @@ def model_fmu_dynamics():
     model_list = [tf1_list, tf2_list, tf3_list, tf4_list, tf5_list, tf6_list]
     r_list = [r1_list, r2_list, r3_list, r4_list, r5_list, r6_list]
     q_list = [q1_list, q2_list, q3_list, q4_list, q5_list, q6_list]
-    s_EER_list = [s1_EER_list, s2_EER_list, s3_EER_list, s4_EER_list, s5_EER_list, s6_EER_list]
-    s_Tei_list = [s1_Tei_list, s2_Tei_list, s3_Tei_list, s4_Tei_list, s5_Tei_list, s6_Tei_list]
-    s_list = [s1_list, s2_list, s3_list, s4_list, s5_list, s6_list]
+    # 模型列表全部反转，需要按照制冷负荷从小到大排序
+    model_EER_list = list(reversed(model_EER_list))
+    model_Tei_list = list(reversed(model_Tei_list))
+    model_list = list(reversed(model_list))
+    r_list = list(reversed(r_list))
+    q_list = list(reversed(q_list))
+    # 每个模型对应的制冷功率Q的列表
+    Q_model_list = [3500, 5500, 7500, 9000, 11000, 13000]
 
     # 返回结果
-    return model_list, model_EER_list, model_Tei_list, Np_list, Nc_list, r_list, q_list, s_list, s_EER_list, s_Tei_list
+    return model_list, model_EER_list, model_Tei_list, Np_list, Nc_list, r_list, q_list, Q_model_list
 
 
 def plant_fmu_dynamics():
@@ -522,6 +497,8 @@ def plant_fmu_dynamics():
     plant_Tei_list = [tf1_Tei_list, tf2_Tei_list, tf3_Tei_list, tf4_Tei_list, tf5_Tei_list,
                       tf6_Tei_list, tf7_Tei_list, tf8_Tei_list, tf9_Tei_list, tf10_Tei_list]
     plant_list = [tf1_list, tf2_list, tf3_list, tf4_list, tf5_list, tf6_list, tf7_list, tf8_list, tf9_list, tf10_list]
+    # 每个模型对应的制冷功率Q的列表
+    Q_plant_list = [14000, 13500, 12500, 12000, 11500, 10500, 10000, 9500, 6000, 5000]
 
     # 返回结果
-    return plant_list, plant_EER_list, plant_Tei_list
+    return plant_list, plant_EER_list, plant_Tei_list, Q_plant_list
