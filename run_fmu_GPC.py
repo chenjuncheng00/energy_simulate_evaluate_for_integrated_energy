@@ -52,14 +52,17 @@ if __name__ == "__main__":
     #       q_list[model_index], yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, True)
 
     # mmgpc
-    plant_index = 7
-    s_list = [1, 1000]
+    plant_index = 4
+    # MMGPC的计算模式，bayes或者switch
     mmgpc_mode = "switch"
+    # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
+    ms_mode = 1
+    # 多模型权值系数的递推计算收敛系数
+    s_list = [1, 1000]
     # V: 一个非常小的正实数，保证所有子控制器将来可用
     V = 0.0001
     # 计算隶属度函数
-    Q_switch = (Q_model_list[1] - Q_model_list[0]) / 4
-    ms_list = calculate_membership(Q_plant_list[plant_index], Q_switch, Q_model_list)
+    ms_list = calculate_membership(Q_plant_list[plant_index], Q_model_list, ms_mode)
     # 将初始化的控制器参数数据保存下来的路径
     file_path_init = './model_data/GPC_data'
     save_data_init = False
