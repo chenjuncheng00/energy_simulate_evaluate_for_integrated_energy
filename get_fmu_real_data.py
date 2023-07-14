@@ -34,12 +34,12 @@ def get_chiller_input_real_data(simulate_result, equipment_type_path, cfg_path_e
     tower_chilled_value_input_name_list = get_fmu_input_name(chiller_input_type()[9])
     user_value_input_name_list = get_fmu_input_name(chiller_input_type()[10])
     # output_name
-    chiller_P_output_name_list = chiller_output_name()[12]
-    chilled_pump_P_output_name_list = chiller_output_name()[13]
-    cooling_pump_P_output_name_list = chiller_output_name()[14]
-    cooling_tower_P_output_name_list = chiller_output_name()[15]
-    chiller_Few_output_name_list = chiller_output_name()[16]
-    chiller_Fcw_output_name_list = chiller_output_name()[17]
+    chiller_P_output_name_list = chiller_output_name()[13]
+    chilled_pump_P_output_name_list = chiller_output_name()[14]
+    cooling_pump_P_output_name_list = chiller_output_name()[15]
+    cooling_tower_P_output_name_list = chiller_output_name()[16]
+    chiller_Few_output_name_list = chiller_output_name()[17]
+    chiller_Fcw_output_name_list = chiller_output_name()[18]
     # 开关量，开关量，开关量，开关量，开关量
     # 空调主机
     for i in range(len(chiller_input_name_list)):

@@ -66,6 +66,8 @@ def chiller_output_name():
     Few = ['chiller_Few_total', 'chiller_Few_big', 'chiller_Few_small', 'chiller_Few_chilled_pump_small']
     # 冷却水流量，单位：t/h
     Fcw = ['chiller_Fcw_total', 'chiller_Fcw_big', 'chiller_Fcw_small', 'chiller_Fcw_cooling_pump_small']
+    # 冷却塔风机频率，单位：Hz
+    Fca = ['chiller_Fca_total', 'chiller_Fca_big', 'chiller_Fca_small']
     # 冷冻水温度，单位：℃
     Te = ['chiller_Ted', 'chiller_Ted_big', 'chiller_Ted_small',
           'chiller_Tei', 'chiller_Tei_big', 'chiller_Tei_small',
@@ -103,11 +105,11 @@ def chiller_output_name():
                    'chillers_model.chiller_big3.m1_flow', 'chillers_model.chiller_big4.m1_flow',
                    'chillers_model.chiller_small1.m1_flow', 'chillers_model.chiller_small2.m1_flow']
     # 总输出
-    chiller_output = Q + Qct + P + Few + Fcw + Te + Tc + T_approach + H_pump + COP + EER + \
+    chiller_output = Q + Qct + P + Few + Fcw + Fca + Te + Tc + T_approach + H_pump + COP + EER + \
                      chiller_P + chilled_pump_P + cooling_pump_P + cooling_tower_P + chiller_Few + chiller_Fcw
     # 返回结果
-    return chiller_output, Q, Qct, P, Few, Fcw, Te, Tc, T_approach, H_pump, COP, EER, chiller_P, chilled_pump_P, \
-           cooling_pump_P, cooling_tower_P, chiller_Few, chiller_Fcw
+    return chiller_output, Q, Qct, P, Few, Fcw, Fca, Te, Tc, T_approach, H_pump, COP, EER, chiller_P, \
+           chilled_pump_P, cooling_pump_P, cooling_tower_P, chiller_Few, chiller_Fcw
 
 
 def air_source_heat_pump_output_name():
