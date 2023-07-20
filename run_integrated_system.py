@@ -101,7 +101,7 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
         stop_time = 141 * 24 * 3600 - 3600
     output_interval = 30
     time_out = 600
-    tolerance = 0.05
+    tolerance = 0.01
     # 模型初始化和实例化
     fmu_unzipdir = extract(file_fmu)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -366,24 +366,26 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
             input_data_list = [Q_user * 1000]
         result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time, txt_path)
 
-        # 第4步：根据用户末端室内的温湿度，修正Teo
-        if load_mode == 0:
-            input_log_4 = "第4步：根据用户末端室内的温湿度，修正Teo..."
-            print(input_log_4)
-            algorithm_Teo_set_user(chiller_equipment_type_path, n_calculate_hour)
-            algorithm_Teo_set_user(ashp_equipment_type_path, n_calculate_hour)
-        else:
-            input_log_4 = "第4步：修正Teo，PASS..."
-            print(input_log_4)
-
-        # 第5步：获取FMU模型的实际数据并写入txt文件
-        input_log_5 = "第5步：获取FMU模型的实际数据并写入txt文件..."
-        print(input_log_5)
+        # 第4步：获取FMU模型的实际数据并写入txt文件
+        input_log_4 = "第4步：获取FMU模型的实际数据并写入txt文件..."
+        print(input_log_4)
         print("\n")
         get_chiller_input_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
         get_ashp_input_real_data(result, ashp_equipment_type_path, cfg_path_equipment)
         get_storage_input_real_data(result, storage_equipment_type_path, cfg_path_equipment)
         get_tower_chilled_input_real_data(result, tower_chilled_equipment_type_path, cfg_path_equipment)
+
+        # 第5步：根据用户末端室内的温湿度，修正Teo
+        if load_mode == 0:
+            input_log_5 = "第5步：根据用户末端室内的温湿度，修正Teo..."
+            print(input_log_5)
+            write_txt_data(file_fmu_input_log, [input_log_5, "\n"], 1)
+            write_txt_data(file_fmu_input_feedback_log, [input_log_5, "\n"], 1)
+            algorithm_Teo_set_user(chiller_equipment_type_path, n_calculate_hour)
+            algorithm_Teo_set_user(ashp_equipment_type_path, n_calculate_hour)
+        else:
+            input_log_5 = "第5步：修正Teo，PASS..."
+            print(input_log_5)
 
     # 第6步：终止FMU模型，最后仿真一次
     input_log_6 = "第6步：终止FMU模型，最后仿真一次..."

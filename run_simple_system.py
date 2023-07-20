@@ -77,6 +77,9 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     with open(file_pkl_system, "rb") as f_obj:
         system_dict = pickle.load(f_obj)
     n_calculate_hour = system_dict["n_calculate_hour"]
+    # 日志文件
+    file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
+    file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
 
     # MMGPC的计算模式，bayes或者switch
     mmgpc_mode = "switch"
@@ -116,7 +119,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     stop_time = start_time + (simulate_time1 + L + 2 * 3600) * n_simulate + simulate_time2
     output_interval = 30
     time_out = 600
-    tolerance = 0.05
+    tolerance = 0.01
     # 各系统制冷功率最大值
     chiller_Q0_max = 14000
     # 模型初始化和实例化
@@ -141,8 +144,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     cold_storage_input_name = get_fmu_input_name(cold_storage_input_type()[0])
     simple_load_input_name = get_fmu_input_name(simple_load_input_type())
     environment_input_name = get_fmu_input_name(environment_input_type()[0])
-    fmu_input_name = chiller_input_name + cold_storage_input_name + simple_load_input_name
-    fmu_input_output_name = fmu_output_name + fmu_input_name + environment_input_name
+    fmu_input_name = chiller_input_name + cold_storage_input_name + simple_load_input_name + environment_input_name
+    fmu_input_output_name = fmu_output_name + fmu_input_name
     with open(file_fmu_input_output_name, 'wb') as f:
         pickle.dump(fmu_input_output_name, f)
     # 冷负荷总需求功率
@@ -172,6 +175,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
         # 第1步：冷水机优化+控制
         input_log_1 = "第1步：冷水机优化+控制..."
         print(input_log_1)
+        write_txt_data(file_fmu_input_log, [input_log_1, "\n"], 1)
+        write_txt_data(file_fmu_input_feedback_log, [input_log_1, "\n"], 1)
         chiller_Q_total = min(Q_user, chiller_Q0_max)
         algorithm_chiller_double(chiller_Q_total, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                  chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
@@ -184,6 +189,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
         # 第2步：持续仿真，使得系统稳定下来
         input_log_2 = "第2步：持续仿真，使得系统稳定下来..."
         print(input_log_2)
+        write_txt_data(file_fmu_input_log, [input_log_2, "\n"], 1)
+        write_txt_data(file_fmu_input_feedback_log, [input_log_2, "\n"], 1)
         input_type_list = simple_load_input_type()
         input_data_list = [Q_user * 1000]
         result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
@@ -199,6 +206,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
         input_log_4 = "第4步：MMGPC对EER和Tei进行控制..."
         print(input_log_4)
         print("\n")
+        write_txt_data(file_fmu_input_log, [input_log_4, "\n"], 1)
+        write_txt_data(file_fmu_input_feedback_log, [input_log_4, "\n"], 1)
         Teo0 = result['chiller_Teo'][-1]
         Few0 = result['chiller_Few_total'][-1]
         Fcw0 = result['chiller_Fcw_total'][-1]
@@ -207,7 +216,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
         EER0 = result['chiller_EER'][-1]
         Tei0 = result['chiller_Tei'][-1]
         yr_0_list = [EER0, Tei0]
-        yrk_list = [EER0 + 0.2, Tei0 + 0.3]
+        yrk_list = [EER0 + 0.5, Tei0 + 1]
         # 获取冷却塔开启数量
         ans_chiller_open_status_txt_path = get_station_equipment_open_status_txt_path(chiller_equipment_type_path[0],
                                                                                       txt_path)
@@ -216,7 +225,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
         n_open_chiller_cooling_tower = int(sum(chiller_cooling_tower_open_status_list))
         # 控制量限制
         du_limit_list = [1, 0.1 * Few0, 0.1 * Fcw0, 50]
-        u_limit_list = [[6, 15], [0.5 * Few0, 1.5 * Few0], [0.5 * Fcw0, 1.5 * Fcw0],
+        u_limit_list = [[5, 15], [0.5 * Few0, 1.5 * Few0], [0.5 * Fcw0, 1.5 * Fcw0],
                         [n_open_chiller_cooling_tower * chiller_cooling_tower.fmin,
                          n_open_chiller_cooling_tower * chiller_cooling_tower.fmax]]
         # MMGPC
@@ -224,8 +233,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
                            u_0_list, du_limit_list, u_limit_list, L, Ts, file_path_init, H_chiller_chilled_pump,
                            0, H_chiller_cooling_pump, chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                            n_chiller_list, n_chiller_chilled_pump_list, [], n_chiller_cooling_pump_list,
-                           n_chiller_cooling_tower_list, chiller_equipment_type_path, n_calculate_hour,
-                           cfg_path_equipment, cfg_path_public, mmgpc_plot_set)
+                           n_chiller_cooling_tower_list, chiller_equipment_type_path, cfg_path_equipment,
+                           cfg_path_public, mmgpc_plot_set)
 
     # 第5步：终止FMU模型，最后仿真一次
     input_log_5 = "第5步：终止FMU模型，最后仿真一次..."
@@ -240,5 +249,5 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
 if __name__ == "__main__":
     txt_path = "../optimal_control_algorithm_for_cooling_season"
     file_fmu = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Cvode.fmu"
-    Q_total_list = [9000]
+    Q_total_list = [13000, 11000, 9000]
     run_simple_system(Q_total_list, txt_path, file_fmu)
