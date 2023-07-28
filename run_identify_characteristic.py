@@ -16,7 +16,7 @@ def run_identify_hydraulic_characteristic(fmu_path):
     stop_time = start_time + 2 * 3600
     output_interval = 60
     time_out = 600
-    tolerance = 0.05
+    tolerance = 0.0001
     n_cal_f_pump = 5
     pump_f0_cal = True
     cfg_path_equipment = "./config/equipment_config.cfg"
@@ -55,7 +55,7 @@ def run_equipment_characteristic(fmu_path):
     stop_time = start_time + 2 * 3600
     output_interval = 60
     time_out = 600
-    tolerance = 0.05
+    tolerance = 0.0001
     cfg_path_equipment = "./config/equipment_config.cfg"
     chiller_big_cop_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/chiller_big_cop.txt"
     chiller_small_cop_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/chiller_small_cop.txt"
@@ -90,7 +90,7 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     output_interval = 30
     Ts = 10 * 60  # 采样时间
     time_out = 600
-    tolerance = 0.1
+    tolerance = 0.0001
     chiller_equipment_type_path = ["chiller", txt_path]
     cfg_path_equipment = "./config/equipment_config.cfg"
     cfg_path_public = "./config/public_config.cfg"
@@ -114,14 +114,14 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
 
 
 if __name__ == "__main__":
-    # # 水力特性模型辨识
-    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
-    # run_identify_hydraulic_characteristic(fmu_path)
+    # 水力特性模型辨识
+    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
+    run_identify_hydraulic_characteristic(fmu_path)
     # # 设备性能模型辨识
     # fmu_path = "./model_data/file_fmu/system_characteristic_Sdirk34hw.fmu"
     # run_equipment_characteristic(fmu_path)
-    # 系统动态特性辨识
-    path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
-    fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Dassl.fmu"
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
-    run_identify_system_dynamics(fmu_path, path_matlab, txt_path)
+    # # 系统动态特性辨识
+    # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
+    # fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Dassl.fmu"
+    # txt_path = "../optimal_control_algorithm_for_cooling_season"
+    # run_identify_system_dynamics(fmu_path, path_matlab, txt_path)

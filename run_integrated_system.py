@@ -101,7 +101,7 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
         stop_time = 141 * 24 * 3600 - 3600
     output_interval = 30
     time_out = 600
-    tolerance = 0.01
+    tolerance = 0.0001
     # 模型初始化和实例化
     fmu_unzipdir = extract(file_fmu)
     fmu_description = read_model_description(fmu_unzipdir)

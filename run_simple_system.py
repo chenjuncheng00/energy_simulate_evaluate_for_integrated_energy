@@ -119,7 +119,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     stop_time = start_time + (simulate_time1 + L + 2 * 3600) * n_simulate + simulate_time2
     output_interval = 30
     time_out = 600
-    tolerance = 0.01
+    tolerance = 0.0001
     # 各系统制冷功率最大值
     chiller_Q0_max = 14000
     # 模型初始化和实例化
