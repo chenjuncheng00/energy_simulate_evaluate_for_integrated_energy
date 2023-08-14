@@ -4,7 +4,8 @@ from GPC_tuning import *
 from algorithm_code import *
 from model_fmu_dynamics import model_fmu_dynamics
 
-def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, fit_target):
+def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, y_gpc_list,
+                 fit_target):
     """
 
     Args:
@@ -16,6 +17,7 @@ def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limi
         u_0_list: [list]，控制量的初始值，列表
         du_limit_list: [list]，控制量变化率的限制范围，列表
         u_limit_list: [list]，控制量的限制范围，列表
+        y_gpc_list: [list]，控制器输出目标的名称列表
         fit_target: [int]，设置优化目标：0：综合考虑每次求解的y和yr的误差以及du的情况；1：仅考虑y的终值和yr的误差
 
     Returns:
@@ -23,9 +25,16 @@ def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limi
     """
     # 系统动态模型
     ans_model = model_fmu_dynamics()
-    model_list = ans_model[0]
-    Np_list = ans_model[3]
-    Nc_list = ans_model[4]
+    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+        model_list = ans_model[1]
+    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+        model_list = ans_model[2]
+    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+        model_list = ans_model[3]
+    else:
+        model_list = []
+    Np_list = ans_model[4]
+    Nc_list = ans_model[5]
     # 寻优y权重
     k1 = 1
     # 寻优du权重
@@ -66,7 +75,7 @@ def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limi
 
 
 def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list,
-                 u_limit_list, fit_target):
+                 u_limit_list, y_gpc_list, fit_target):
     """
 
     Args:
@@ -79,6 +88,7 @@ def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u
         u_0_list: [list]，控制量的初始值，列表
         du_limit_list: [list]，控制量变化率的限制范围，列表
         u_limit_list: [list]，控制量的限制范围，列表
+        y_gpc_list: [list]，控制器输出目标的名称列表
         fit_target: [int]，设置优化目标：0：综合考虑每次求解的y和yr的误差以及du的情况；1：仅考虑y的终值和yr的误差
 
     Returns:
@@ -86,11 +96,28 @@ def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u
     """
     # 系统动态模型
     ans_model = model_fmu_dynamics()
-    model_list = ans_model[0]
-    Np_list = ans_model[3]
-    Nc_list = ans_model[4]
-    r_list = ans_model[5]
-    q_list = ans_model[6]
+    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+        model_list = ans_model[1]
+    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+        model_list = ans_model[2]
+    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+        model_list = ans_model[3]
+    else:
+        model_list = []
+    Np_list = ans_model[4]
+    Nc_list = ans_model[5]
+    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+        r_list = ans_model[6]
+        q_list = ans_model[7]
+    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+        r_list = ans_model[8]
+        q_list = ans_model[9]
+    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+        r_list = ans_model[10]
+        q_list = ans_model[11]
+    else:
+        r_list = []
+        q_list = []
     # V: 一个非常小的正实数，保证所有子控制器将来可用
     V = 0.0001
     # 寻优y权重
@@ -123,6 +150,9 @@ def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u
 
 
 if __name__ == "__main__":
+    # 控制器目标
+    y_gpc_list = ['EER', 'Tei']
+    # 仿真时长和采样周期，单位：秒
     L = 20 * 3600
     Ts = 10 * 60
     # 仿真次数
@@ -131,7 +161,14 @@ if __name__ == "__main__":
     # EER, Tei
     EER0 = 4.5
     Tei0 = 14
-    yr_0_list = [EER0, Tei0]
+    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+        yr_0_list = [EER0, Tei0]
+    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+        yr_0_list = [EER0]
+    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+        yr_0_list = [EER0]
+    else:
+        yr_0_list = []
     # 控制指令u初始值
     # Teo, Few, Fcw, Fca
     Teo0 = 8
@@ -149,7 +186,14 @@ if __name__ == "__main__":
         else:
             yr_EER_list.append(EER0 + 0.4)
             yr_Tei_list.append(Tei0 + 0.5)
-    yr_list = [yr_EER_list, yr_Tei_list]
+    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+        yr_list = [yr_EER_list, yr_Tei_list]
+    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+        yr_list = [yr_EER_list]
+    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+        yr_list = [yr_Tei_list]
+    else:
+        yr_list = []
     # 控制量限制
     du_limit_list = [1, 300, 300, 100]
     u_limit_list = [[6, 15], [350, 3500], [450, 4200], [30, 300]]
@@ -164,7 +208,8 @@ if __name__ == "__main__":
     # 将初始化的控制器参数数据保存下来的路径
     file_path_init = './model_data/GPC_data'
     # smgpc整定
-    # tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, fit_target)
-    # mmgpc整定
-    tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list,
-                 u_limit_list, fit_target)
+    tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, y_gpc_list,
+                 fit_target)
+    # # mmgpc整定
+    # tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list,
+    #              u_limit_list, y_gpc_list, fit_target)
