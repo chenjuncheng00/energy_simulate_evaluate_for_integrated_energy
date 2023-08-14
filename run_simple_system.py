@@ -81,12 +81,21 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
     file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
 
+    # 控制器目标
+    y_gpc_list = ['EER', 'Tei']
     # MMGPC的计算模式，bayes或者switch
     mmgpc_mode = "switch"
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
     ms_mode = 1
     # 多模型权值系数的递推计算收敛系数
-    s_list = [1, 1000]
+    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+        s_list = [1, 1000]
+    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+        s_list = [1]
+    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+        s_list = [1000]
+    else:
+        s_list = []
     # V: 一个非常小的正实数，保证所有子控制器将来可用
     V = 0.0001
     # 将初始化的控制器参数数据保存下来的路径
@@ -94,15 +103,23 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     # MMGPC是否绘图
     mmgpc_plot_set = True
     # MMGPC控制时长
-    L = 15 * 3600
+    L = 20 * 3600
     Ts = 10 * 60
 
     # MMGPC内置系统动态模型
     ans_model = model_fmu_dynamics()
-    model_list = ans_model[0]
-    Np_list = ans_model[3]
-    Nc_list = ans_model[4]
-    Q_model_list = ans_model[7]
+    Q_model_list = ans_model[0]
+    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+        model_list = ans_model[1]
+    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+        model_list = ans_model[2]
+    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+        model_list = ans_model[3]
+    else:
+        model_list = []
+    Np_list = ans_model[4]
+    Nc_list = ans_model[5]
+
     file_Q_model_list = file_path_init + "/Q_model_list.txt"
     write_txt_data(file_Q_model_list, Q_model_list)
 
@@ -215,8 +232,18 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
         u_0_list = [Teo0, Few0, Fcw0, Fca0]
         EER0 = result['chiller_EER'][-1]
         Tei0 = result['chiller_Tei'][-1]
-        yr_0_list = [EER0, Tei0]
-        yrk_list = [EER0 + 0.5, Tei0 + 1]
+        if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+            yr_0_list = [EER0, Tei0]
+            yrk_list = [EER0 + 0.5, Tei0 + 1]
+        elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+            yr_0_list = [EER0]
+            yrk_list = [EER0 + 0.5]
+        elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+            yr_0_list = [Tei0]
+            yrk_list = [Tei0 + 1]
+        else:
+            yr_0_list = []
+            yrk_list = []
         # 获取冷却塔开启数量
         ans_chiller_open_status_txt_path = get_station_equipment_open_status_txt_path(chiller_equipment_type_path[0],
                                                                                       txt_path)
