@@ -189,11 +189,11 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
 
     # 仿真各个阶段的时间，单位：秒
     simulate_time0 = 2 * 3600  # 初始化FMU
-    simulate_time1 = 16 * 3600  # 系统稳定
-    simulate_time2 = 8 * 3600  # 阶跃响应实验
+    simulate_time1 = 24 * 3600  # 系统稳定
+    simulate_time2 = 12 * 3600  # 阶跃响应实验
     simulate_time3 = 2 * 3600  # 终止FMU
     # 最后要保存的
-    n_data_save1 = 2 * 3600 / Ts
+    n_data_save1 = 4 * 3600 / Ts
     n_data_save2 = simulate_time2 / Ts
     # plot的图编号
     index_figure = 1

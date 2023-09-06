@@ -86,7 +86,7 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     fmu_unzipdir = extract(fmu_path)
     fmu_description = read_model_description(fmu_unzipdir)
     start_time = 0
-    stop_time = start_time + 30 * 3600
+    stop_time = start_time + 48 * 3600
     output_interval = 30
     Ts = 10 * 60  # 采样时间
     time_out = 600
@@ -104,7 +104,7 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     chiller_Q_list = [14000, 13500, 13000, 12500, 12000, 11500, 11000, 10500, 10000, 9500, 9000, 8500, 8000,
                       7500, 7000, 6500, 6000, 5500, 5000, 4500, 4000, 3500, 3000, 2500, 2000]
     # 传递函数极点的最大数
-    np_max = 5
+    np_max = 3
     # 系统辨识得分的目标
     fitpercent_target_list = [95, 90, 85, 80, 75, 70]
     main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
@@ -114,12 +114,12 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
 
 
 if __name__ == "__main__":
-    # 水力特性模型辨识
-    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
-    run_identify_hydraulic_characteristic(fmu_path)
-    # # 设备性能模型辨识
-    # fmu_path = "./model_data/file_fmu/system_characteristic_Sdirk34hw.fmu"
-    # run_equipment_characteristic(fmu_path)
+    # # 水力特性模型辨识
+    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
+    # run_identify_hydraulic_characteristic(fmu_path)
+    # 设备性能模型辨识
+    fmu_path = "./model_data/file_fmu/system_characteristic_Cvode.fmu"
+    run_equipment_characteristic(fmu_path)
     # # 系统动态特性辨识
     # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
     # fmu_path = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Dassl.fmu"

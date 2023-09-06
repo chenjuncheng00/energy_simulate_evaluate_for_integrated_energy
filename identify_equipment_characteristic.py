@@ -57,7 +57,7 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
     # 湿球温度辨识范围，单位转换为：K
     Two_min = 10
     Two_max = 40
-    Two_step = 3
+    Two_step = 2
     n_cal_Two = int((Two_max - Two_min) / Two_step)
     Two_list = []
     for i in range(n_cal_Two + 1):
@@ -101,24 +101,25 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
         chiller2_Q_list.append(chiller2_Q0 * tmp_ratio)
         ashp_Q_list.append(air_source_heat_pump_Q0 * tmp_ratio)
 
-    # 冷却塔风机转速辨识范围
-    f_tower_min = 0.2
-    f_tower_max = 1
-    f_tower_step = 0.2
-    n_cal_f_tower = int((f_tower_max - f_tower_min) / f_tower_step)
-    f_cooling_tower_list = []
-    for i in range(n_cal_f_tower + 1):
-        f_cooling_tower_list.append(f_tower_min + i * f_tower_step)
+    # 冷却塔逼近度辨识范围
+    approach_set_min = 1
+    approach_set_max = 10
+    approach_step = 1
+    n_cal_approach_tower = int((approach_set_max - approach_set_min) / approach_step)
+    approach_set_tower_list = []
+    for i in range(n_cal_approach_tower + 1):
+        approach_set_tower_list.append(approach_set_min + i * approach_step)
 
     # FMU模型输入名称和数据类型
     model_input_type = [('time', np.float_), ('Teo_set', np.float_), ('Tei', np.float_), ('chiller_Tci', np.float_),
                         ('turn_chiller_big', np.bool_), ('chiller_big_Few', np.float_), ('chiller_big_Fcw', np.float_),
-                        ('turn_chiller_small', np.bool_), ('chiller_small_Few', np.float_), ('chiller_small_Fcw', np.float_),
-                        ('turn_ashp', np.bool_), ('ashp_Tci', np.float_), ('ashp_Few', np.float_), ('ashp_Fca', np.float_),
-                        ('Two', np.float_), ('f_tower', np.float_), ('tower_Tin', np.float_), ('tower_Fcw', np.float_)]
-    model_output_name = ['P_chiller_big', 'Teo_chiller_big', 'Tco_chiller_big',
-                         'P_chiller_small', 'Teo_chiller_small', 'Tco_chiller_small',
-                         'P_ashp', 'Teo_ashp', 'Tco_ashp', 'tower_Tout', 'RH_air_in', 'RH_air_out']
+                        ('turn_chiller_small', np.bool_), ('chiller_small_Few', np.float_),
+                        ('chiller_small_Fcw', np.float_), ('turn_ashp', np.bool_), ('ashp_Tci', np.float_),
+                        ('ashp_Few', np.float_), ('ashp_Fca', np.float_), ('Two', np.float_), ('tower_Tin', np.float_),
+                        ('tower_Fcw', np.float_), ('approach_set', np.float_)]
+    model_output_name = ['P_chiller_big', 'Teo_chiller_big', 'Tco_chiller_big', 'P_chiller_small', 'Teo_chiller_small',
+                         'Tco_chiller_small', 'P_ashp', 'Teo_ashp', 'Tco_ashp', 'tower_Tout', 'f_tower', 'RH_air_in',
+                         'RH_air_out']
     # 仿真开始时间
     time_data = [start_time]
 
@@ -135,7 +136,7 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
                       fmu_description, start_time, stop_time, time_out, tolerance, model_input_type, model_output_name,
                       output_interval, ashp_cop_result_txt_path)
     # 冷却塔，逼近度
-    identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_tower_list, cooling_tower_Tin_list,
+    identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, cooling_tower_Tin_list, approach_set_tower_list,
                                     time_data, fmu_unzipdir, fmu_description, start_time, stop_time, time_out,
                                     tolerance, model_input_type, model_output_name, output_interval,
                                     cooling_tower_approach_result_txt_path)
@@ -179,7 +180,7 @@ def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1
     # input_data不变的默认值
     chiller_small_data = [False, 0, 0]
     ashp_data = [False, 20 + 273.15, 0, 0]
-    tower_data = [25 + 273.15, 0, 20 + 273.15, 0]
+    tower_data = [25 + 273.15, 20 + 273.15, 0, 3]
     for i in range(len(Teo_set_list)):
         for j in range(len(Tci_list)):
             for k in range(len(chiller1_Few_list)):
@@ -286,7 +287,7 @@ def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chille
     # input_data不变的默认值
     chiller_big_data = [False, 0, 0]
     ashp_data = [False, 20 + 273.15, 0, 0]
-    tower_data = [25 + 273.15, 0, 20 + 273.15, 0]
+    tower_data = [25 + 273.15, 20 + 273.15, 0, 3]
     for i in range(len(Teo_set_list)):
         for j in range(len(Tci_list)):
             for k in range(len(chiller2_Few_list)):
@@ -393,7 +394,7 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
     # input_data不变的默认值
     chiller_big_data = [20 + 273.15, False, 0, 0]
     chiller_small_data = [False, 0, 0]
-    tower_data = [25 + 273.15, 0, 20 + 273.15, 0]
+    tower_data = [25 + 273.15, 20 + 273.15, 0, 3]
     for i in range(len(Teo_set_list)):
         for j in range(len(Tci_list)):
             for k in range(len(ashp_Few_list)):
@@ -462,7 +463,7 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
     write_txt_data(ashp_cop_result_txt_path, ashp_cop_result_list)
 
 
-def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_tower_list, cooling_tower_Tin_list,
+def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, cooling_tower_Tin_list, approach_set_tower_list,
                                     time_data, fmu_unzipdir, fmu_description, start_time, stop_time, time_out,
                                     tolerance, model_input_type, model_output_name, output_interval,
                                     cooling_tower_approach_result_txt_path):
@@ -472,7 +473,6 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
     Args:
         Two_list: [list]，室外环境湿球温度辨识列表
         cooling_tower_Fcw_list: [list]，冷却塔冷却水流量辨识列表
-        f_cooling_tower_list: [list]，冷却塔风机转速比辨识列表
         cooling_tower_Tin_list: [list]，冷却塔入口水温度辨识列表
         time_data: [list]，模型输入数据，时间
         fmu_unzipdir: [string]，FMU模型解压后的路径
@@ -502,19 +502,18 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
     ashp_data = [False, 20 + 273.15, 0, 0]
     for i in range(len(Two_list)):
         for j in range(len(cooling_tower_Fcw_list)):
-            for k in range(len(f_cooling_tower_list)):
-                for l in range(len(cooling_tower_Tin_list)):
+            for k in range(len(cooling_tower_Tin_list)):
+                for l in range(len(approach_set_tower_list)):
                     Two = Two_list[i]
                     Fcw = cooling_tower_Fcw_list[j]
-                    f = f_cooling_tower_list[k]
-                    Tin = cooling_tower_Tin_list[l]
+                    Tin = cooling_tower_Tin_list[k]
+                    approach_set = approach_set_tower_list[l]
                     if Tin - Two <= 1:
                         continue
                     model_input_data = time_data + chiller_T_data + chiller_big_data + chiller_small_data + \
-                                       ashp_data + [Two, f, Tin, Fcw]
+                                       ashp_data + [Two, Tin, Fcw, approach_set]
                     print("正在进行 冷却塔模型 出水温度逼近度特性辨识：" + "室外湿球温度实际值：" + str(Two - 273.15) +
-                          "，冷却水流量实际值" + str(np.round(Fcw * 3.6, 2)) + "，冷却塔风机转速比实际值" +
-                          str(np.round(f, 2)) + "，冷却塔入口温度实际值" + str(Tin - 273.15))
+                          "，冷却水流量实际值" + str(np.round(Fcw * 3.6, 2)) + "，冷却塔入口温度实际值" + str(Tin - 273.15))
                     # FMU仿真
                     try:
                         time1 = time.time()
@@ -525,10 +524,11 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
                         tower_Tout = result['tower_Tout'][-1]
                         Tcd = Tin - tower_Tout
                         approach = tower_Tout - Two
+                        f = result['f_tower'][-1]
                         # 仿真结果生成txt
-                        if Tcd > 0.1 and approach > 0.1 and approach <= 5:
+                        if Tcd > 0.1 and approach_set - 0.5 < approach <= approach_set + 0.5 and f > 0.2 and f <= 1.1:
                             tmp_txt = str(Two - 273.15) + "\t" + str(np.round(Fcw * 3.6, 2)) + "\t" + \
-                                      str(np.round(f, 2)) + "\t" + str(np.round(Tin - 273.15, 2)) + "\t" + \
+                                      str(np.round(f, 4)) + "\t" + str(np.round(Tin - 273.15, 2)) + "\t" + \
                                       str(np.round(tower_Tout - 273.15, 2)) + "\t" + \
                                       str(np.round(Tcd, 2)) + "\t" + str(np.round(approach, 2))
                             cooling_tower_approach_result_list.append(tmp_txt)
@@ -541,8 +541,8 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, f_cooling_
                         print("本次仿真计算用时(秒)：" + str(time_cost) + "\n")
                     except:
                         print("FMU仿真失败：" + "室外湿球温度实际值：" + str(Two - 273.15) +
-                              "，冷却水流量实际值" + str(np.round(Fcw * 3.6, 2)) + "，冷却塔风机转速比实际值" +
-                              str(np.round(f, 2)) + "，冷却塔入口温度实际值" + str(Tin - 273.15))
+                              "，冷却水流量实际值" + str(np.round(Fcw * 3.6, 2)) +
+                              "，冷却塔入口温度实际值" + str(Tin - 273.15))
                         print(traceback.format_exc() + "\n")
                         pass
     # 结果写入txt
