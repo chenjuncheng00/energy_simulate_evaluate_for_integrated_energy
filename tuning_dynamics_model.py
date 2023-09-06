@@ -4,12 +4,13 @@ from GPC_tuning import *
 from algorithm_code import *
 from model_fmu_dynamics import model_fmu_dynamics
 
-def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, y_gpc_list,
-                 fit_target):
+def tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
+                 y_gpc_list, fit_target):
     """
 
     Args:
         path_result_smgpc: [string]，储存最终结果文本的文件路径
+        model_info: [list]，模型信息
         L: [int]，仿真时间，单位：秒
         Ts: [int]，采样周期，单位：秒
         yr_list: [list]，输出目标值，列表
@@ -24,17 +25,16 @@ def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limi
 
     """
     # 系统动态模型
-    ans_model = model_fmu_dynamics()
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
-        model_list = ans_model[1]
+        model_list = model_info[1]
     elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
-        model_list = ans_model[2]
+        model_list = model_info[2]
     elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
-        model_list = ans_model[3]
+        model_list = model_info[3]
     else:
         model_list = []
-    Np_list = ans_model[4]
-    Nc_list = ans_model[5]
+    Np_list = model_info[4]
+    Nc_list = model_info[5]
     # 寻优y权重
     k1 = 1
     # 寻优du权重
@@ -74,12 +74,13 @@ def tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limi
         write_txt_data(path_result_smgpc, txt_list, write_model=1)
 
 
-def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list,
+def tuning_mmgpc(path_result_mmgpc, model_info, file_path_init, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list,
                  u_limit_list, y_gpc_list, fit_target):
     """
 
     Args:
         path_result_mmgpc: [string]，储存最终结果文本的文件路径
+        model_info: [list]，模型信息
         file_path_init: [string]，将初始化的控制器参数数据保存下来的路径
         L: [int]，仿真时间，单位：秒
         Ts: [int]，采样周期，单位：秒
@@ -95,26 +96,25 @@ def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u
 
     """
     # 系统动态模型
-    ans_model = model_fmu_dynamics()
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
-        model_list = ans_model[1]
+        model_list = model_info[1]
     elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
-        model_list = ans_model[2]
+        model_list = model_info[2]
     elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
-        model_list = ans_model[3]
+        model_list = model_info[3]
     else:
         model_list = []
-    Np_list = ans_model[4]
-    Nc_list = ans_model[5]
+    Np_list = model_info[4]
+    Nc_list = model_info[5]
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
-        r_list = ans_model[6]
-        q_list = ans_model[7]
+        r_list = model_info[6]
+        q_list = model_info[7]
     elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
-        r_list = ans_model[8]
-        q_list = ans_model[9]
+        r_list = model_info[8]
+        q_list = model_info[9]
     elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
-        r_list = ans_model[10]
-        q_list = ans_model[11]
+        r_list = model_info[10]
+        q_list = model_info[11]
     else:
         r_list = []
         q_list = []
@@ -150,6 +150,8 @@ def tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u
 
 
 if __name__ == "__main__":
+    # 系统模型
+    model_info = model_fmu_dynamics()
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
     # 仿真时长和采样周期，单位：秒
@@ -208,8 +210,8 @@ if __name__ == "__main__":
     # 将初始化的控制器参数数据保存下来的路径
     file_path_init = './model_data/GPC_data'
     # smgpc整定
-    tuning_smgpc(path_result_smgpc, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, y_gpc_list,
-                 fit_target)
-    # # mmgpc整定
-    # tuning_mmgpc(path_result_mmgpc, file_path_init, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list,
-    #              u_limit_list, y_gpc_list, fit_target)
+    tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
+                 y_gpc_list, fit_target)
+    # mmgpc整定
+    tuning_mmgpc(path_result_mmgpc, model_info, file_path_init, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list,
+                 u_limit_list, y_gpc_list, fit_target)

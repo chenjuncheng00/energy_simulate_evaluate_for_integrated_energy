@@ -83,8 +83,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
 
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
-    # MMGPC的计算模式，bayes或者switch
-    mmgpc_mode = "switch"
+    # MMGPC的计算模式，bayes、ms、itae
+    mmgpc_mode = "itae"
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
     ms_mode = 1
     # 多模型权值系数的递推计算收敛系数
