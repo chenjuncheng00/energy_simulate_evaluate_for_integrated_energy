@@ -6,29 +6,29 @@ if __name__ == "__main__":
     simulate_mode = 'mmgpc'
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
+    # MMGPC的计算模式，bayes、ms、itae
+    mmgpc_mode = "bayes"
+    # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
+    ms_mode = 0
 
     # MMGPC内置模型编号
     model_index = 2
     # 用于测试的被控对象模型编号
-    plant_index = 2
+    plant_index = 1
 
     # 仿真时长和采样周期，单位：秒
-    L = 20 * 3600
+    L = 24 * 3600
     Ts = 10 * 60
     # 仿真次数
     n = int(L / Ts)
 
-    # MMGPC的计算模式，bayes、ms、itae
-    mmgpc_mode = "itae"
-    # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
-    ms_mode = 0
     # V: 一个非常小的正实数，保证所有子控制器将来可用
     V = 0.0001
     # 多模型权值系数
     s_EER = 1
-    s_Tei = 10
+    s_Tei = 100
     # MMGPC设置
-    save_data_init = False
+    save_data_init = True
     plot_set = True
     model_plot_set = False
 
@@ -112,7 +112,7 @@ if __name__ == "__main__":
 
     # mmgpc仿真参数设置
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data'
+    file_path_init = './model_data/GPC_data/simple_system'
     # 多模型权值系数的递推计算收敛系数
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
         s_list = [s_EER, s_Tei]
