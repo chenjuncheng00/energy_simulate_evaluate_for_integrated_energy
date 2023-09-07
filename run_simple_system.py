@@ -84,26 +84,28 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
     # MMGPC的计算模式，bayes、ms、itae
-    mmgpc_mode = "itae"
+    mmgpc_mode = "bayes"
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
-    ms_mode = 1
+    ms_mode = 0
     # 多模型权值系数的递推计算收敛系数
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
-        s_list = [1, 1000]
+        s_list = [1, 100]
     elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
         s_list = [1]
     elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
-        s_list = [1000]
+        s_list = [100]
     else:
         s_list = []
     # V: 一个非常小的正实数，保证所有子控制器将来可用
     V = 0.0001
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data'
+    file_path_init = './model_data/GPC_data/simple_system'
     # MMGPC是否绘图
     mmgpc_plot_set = True
+    # 是否将MMGPC各个内置模型的计算结果画图
+    model_plot_set = False
     # MMGPC控制时长
-    L = 20 * 3600
+    L = 24 * 3600
     Ts = 10 * 60
 
     # MMGPC内置系统动态模型
@@ -261,7 +263,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
                            0, H_chiller_cooling_pump, chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                            n_chiller_list, n_chiller_chilled_pump_list, [], n_chiller_cooling_pump_list,
                            n_chiller_cooling_tower_list, chiller_equipment_type_path, cfg_path_equipment,
-                           cfg_path_public, mmgpc_plot_set)
+                           cfg_path_public, mmgpc_plot_set, model_plot_set)
 
     # 第5步：终止FMU模型，最后仿真一次
     input_log_5 = "第5步：终止FMU模型，最后仿真一次..."
@@ -276,5 +278,5 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
 if __name__ == "__main__":
     txt_path = "../optimal_control_algorithm_for_cooling_season"
     file_fmu = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Cvode.fmu"
-    Q_total_list = [13000, 11000, 9000]
+    Q_total_list = [12000]
     run_simple_system(Q_total_list, txt_path, file_fmu)
