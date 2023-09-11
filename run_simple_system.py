@@ -105,8 +105,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     # 是否将MMGPC各个内置模型的计算结果画图
     model_plot_set = False
     # MMGPC控制时长
-    L = 24 * 3600
-    Ts = 10 * 60
+    L = 36 * 3600
+    Ts = 30 * 60
 
     # MMGPC内置系统动态模型
     ans_model = model_fmu_dynamics()
