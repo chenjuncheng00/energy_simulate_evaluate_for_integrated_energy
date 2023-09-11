@@ -155,8 +155,8 @@ if __name__ == "__main__":
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
     # 仿真时长和采样周期，单位：秒
-    L = 20 * 3600
-    Ts = 10 * 60
+    L = 36 * 3600
+    Ts = 30 * 60
     # 仿真次数
     n = int(L / Ts)
     # 输出目标值yr的初始值
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     # 情况txt内容
     clear_all_txt_data(path_result_root)
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data'
+    file_path_init = './model_data/GPC_data/simple_system'
     # smgpc整定
     tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
                  y_gpc_list, fit_target)
