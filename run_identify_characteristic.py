@@ -88,7 +88,7 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     start_time = 0
     stop_time = start_time + 48 * 3600
     output_interval = 30
-    Ts = 30 * 60  # 采样时间
+    Ts = 10 * 60  # 采样时间
     time_out = 600
     tolerance = 0.0001
     chiller_equipment_type_path = ["chiller", txt_path]
