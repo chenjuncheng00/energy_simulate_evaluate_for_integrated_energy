@@ -12,13 +12,13 @@ if __name__ == "__main__":
     ms_mode = 0
 
     # MMGPC内置模型编号
-    model_index = 3
+    model_index = 6
     # 用于测试的被控对象模型编号
-    plant_index = 3
+    plant_index = 2
 
     # 仿真时长和采样周期，单位：秒
     L = 24 * 3600
-    Ts = 30 * 60
+    Ts = 10 * 60
     # 仿真次数
     n = int(L / Ts)
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     V = 0.0001
     # 多模型权值系数
     s_EER = 1
-    s_Tei = 1000
+    s_Tei = 100
     # MMGPC设置
     save_data_init = False
     plot_set = True

@@ -105,8 +105,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     # 是否将MMGPC各个内置模型的计算结果画图
     model_plot_set = False
     # MMGPC控制时长
-    L = 36 * 3600
-    Ts = 30 * 60
+    L = 24 * 3600
+    Ts = 10 * 60
 
     # MMGPC内置系统动态模型
     ans_model = model_fmu_dynamics()
@@ -278,5 +278,5 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
 if __name__ == "__main__":
     txt_path = "../optimal_control_algorithm_for_cooling_season"
     file_fmu = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Cvode.fmu"
-    Q_total_list = [12000]
+    Q_total_list = [11000]
     run_simple_system(Q_total_list, txt_path, file_fmu)
