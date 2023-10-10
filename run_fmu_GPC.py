@@ -1,5 +1,5 @@
 from GPC_universal import *
-from model_fmu_dynamics import model_fmu_dynamics, plant_fmu_dynamics
+from model_fmu_dynamics import model_fmu_dynamics
 
 if __name__ == "__main__":
     # 仿真类型：smgpc、mmgpc
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     ms_mode = 0
 
     # MMGPC内置模型编号
-    model_index = 6
+    model_index = 5
     # 用于测试的被控对象模型编号
     plant_index = 2
 
@@ -26,9 +26,9 @@ if __name__ == "__main__":
     V = 0.0001
     # 多模型权值系数
     s_EER = 1
-    s_Tei = 100
+    s_Tei = 10000
     # MMGPC设置
-    save_data_init = False
+    save_data_init = True
     plot_set = True
     model_plot_set = False
 
@@ -86,29 +86,15 @@ if __name__ == "__main__":
         model_list = []
     Np_list = ans_model[4]
     Nc_list = ans_model[5]
+    r_list = ans_model[6]
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
-        r_list = ans_model[6]
         q_list = ans_model[7]
     elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
-        r_list = ans_model[8]
+        q_list = ans_model[8]
+    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
         q_list = ans_model[9]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
-        r_list = ans_model[10]
-        q_list = ans_model[11]
     else:
-        r_list = []
         q_list = []
-    # 用于测试的plant_model
-    ans_plant = plant_fmu_dynamics()
-    Q_plant_list = ans_plant[0]
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
-        plant_list = ans_plant[1]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
-        plant_list = ans_plant[2]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
-        plant_list = ans_plant[3]
-    else:
-        plant_list = []
 
     # mmgpc仿真参数设置
     # 将初始化的控制器参数数据保存下来的路径
@@ -124,7 +110,7 @@ if __name__ == "__main__":
         s_list = []
     # 计算隶属度函数
     if mmgpc_mode == "ms" and simulate_mode == 'mmgpc':
-        ms_list = calculate_membership(Q_plant_list[plant_index], Q_model_list, ms_mode)
+        ms_list = calculate_membership(Q_model_list[plant_index], Q_model_list, ms_mode)
     else:
         ms_list = []
 
@@ -134,7 +120,6 @@ if __name__ == "__main__":
         smgpc(L, Ts, Np_list[model_index], Nc_list[model_index], model_list[model_index], r_list[model_index],
               q_list[model_index], yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, True)
     elif simulate_mode == 'mmgpc':
-        mmgpc(L, Ts, Np_list, Nc_list, s_list, V, plant_list[plant_index], model_list, r_list, q_list, yr_list,
+        mmgpc(L, Ts, Np_list, Nc_list, s_list, V, model_list[plant_index], model_list, r_list, q_list, yr_list,
               yr_0_list, u_0_list, du_limit_list, u_limit_list, file_path_init, save_data_init, ms_list, mmgpc_mode,
               plot_set, model_plot_set)
-
