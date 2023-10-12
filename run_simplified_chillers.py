@@ -208,7 +208,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
     # MMGPC的计算模式，bayes、ms、itae
-    mmgpc_mode = "itae"
+    mmgpc_mode = "ms"
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
     ms_mode = 0
     # 是否将MMGPC各个内置模型的计算结果画图
@@ -592,12 +592,6 @@ def identify_dynamics_simplified_chillers(Q_total_list, txt_path, file_fmu):
     # FMU模型仿真时间：仿真开始的时间(start_time)
     file_fmu_time = txt_path + "/process_data/fmu_time.txt"
 
-    # 辨识输入的初始值列表，各个列表长度要相等
-    Teo_init_list = [6, 7, 8, 9]
-    Few_inti_list = [50, 45, 40, 35]
-    Fcw_inti_list = [50, 45, 40, 35]
-    Fca_inti_list = [50, 45, 40, 35]
-    n_sim_points = len(Teo_init_list)
     # 需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
     object_list = ["Teo", "Few", "Fcw", "Fca"]
     # 模型输出模式：EER/Tei
@@ -638,219 +632,203 @@ def identify_dynamics_simplified_chillers(Q_total_list, txt_path, file_fmu):
     n_data_save2 = simulate_time2 / Ts
     # plot的图编号
     index_figure = 1
-    # 输出的辨识结果编号
-    index_txt = 1
-    # 遍历所有的初始状态点
-    for m in range(n_sim_points):
-        Teo_set_init = Teo_init_list[m]
-        Few_set_init = Few_inti_list[m]
-        Fcw_set_init = Fcw_inti_list[m]
-        Fca_set_init = Fca_inti_list[m]
-        set_points_initialize = [Teo_set_init, Few_set_init, Fcw_set_init, Fca_set_init]
-        # 遍历所有制冷功率
-        for i in range(len(Q_total_list)):
-            # 获取制冷功率，单位：kW
-            Q_input = Q_total_list[i]
-            # 遍历所有需要辨识的项目类型
-            for j in range(len(object_list)):
-                tf_obj = object_list[j]
-                # 第1步:初始化FMU模型
-                print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + '，模型初始输入参数：' +
-                      str(set_points_initialize) + "，正在初始化FMU模型!")
-                # 初始化FMU模型
-                fmu_instance = instantiate_fmu(unzipdir=fmu_unzipdir, model_description=fmu_description)
-                instance_address = id(fmu_instance)
-                fmu_address_list = [unzipdir_address, description_address, instance_address]
-                write_txt_data(file_fmu_address, fmu_address_list)
-                input_data_initialize = [start_time, 27.1, 0, True] + set_points_initialize
-                initialize_simplified_chillers(file_fmu_time, file_fmu_state, input_data_initialize, start_time,
-                                               stop_time, simulate_time0, Ts, time_out, tolerance, txt_path)
+    # 遍历所有制冷功率
+    for i in range(len(Q_total_list)):
+        # 获取制冷功率，单位：kW
+        Q_input = Q_total_list[i]
+        # 遍历所有需要辨识的项目类型
+        for j in range(len(object_list)):
+            tf_obj = object_list[j]
+            # 第1步:初始化FMU模型
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在初始化FMU模型!")
+            # 初始化FMU模型
+            fmu_instance = instantiate_fmu(unzipdir=fmu_unzipdir, model_description=fmu_description)
+            instance_address = id(fmu_instance)
+            fmu_address_list = [unzipdir_address, description_address, instance_address]
+            write_txt_data(file_fmu_address, fmu_address_list)
+            input_data_initialize = [start_time, 27.1, 0, True, 8, 50, 50, 50]
+            initialize_simplified_chillers(file_fmu_time, file_fmu_state, input_data_initialize, start_time,
+                                           stop_time, simulate_time0, Ts, time_out, tolerance, txt_path)
 
-                # 第2步:给定冷负荷，并使得系统稳定
-                input_data_list = [Q_input * 1000]
-                input_type_list = [('Q_set', np.float_)]
-                result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
-                Teo0 = list(result["chiller_Teo_set"])
-                Few0 = list(result["Few"])
-                Fcw0 = list(result["Fcw"])
-                Fca0 = list(result['chiller_f_cooling_tower1'])
-                Tei0 = list(result["Tei"])
-                Q0 = list(result["Q_total"])
-                P0 = list(result["P_total"])
-                EER0 = []
-                for k in range(len(Q0)):
-                    EER0.append(Q0[k] / P0[k])
-                # 第3步:系统阶跃响应试验
-                if tf_obj == "Teo":
-                    input_data_list = [Teo_set_init + 1]
-                    input_type_list = [('chiller_Teo_set', np.float_)]
-                elif tf_obj == "Few":
-                    input_data_list = [Few_set_init - 5]
-                    input_type_list = [('chiller_f_chilled_pump1', np.float_)]
-                elif tf_obj == "Fcw":
-                    input_data_list = [Fcw_set_init - 5]
-                    input_type_list = [('chiller_f_cooling_pump1', np.float_)]
-                elif tf_obj == "Fca":
-                    input_data_list = [Fca_set_init - 5]
-                    input_type_list = [('chiller_f_cooling_tower1', np.float_)]
-                else:
-                    input_data_list = []
-                    input_type_list = []
-                result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time2, txt_path)
-                Teo1 = list(result["chiller_Teo_set"])
-                Few1 = list(result["Few"])
-                Fcw1 = list(result["Fcw"])
-                Fca1 = list(result['chiller_f_cooling_tower1'])
-                Tei1 = list(result["Tei"])
-                Q1 = list(result["Q_total"])
-                P1 = list(result["P_total"])
-                EER1 = []
-                for k in range(len(Q1)):
-                    EER1.append(Q1[k] / P1[k])
-                # 第4步：确定传递函数辨识的输入X和输出Y
-                Teo_list = Teo0 + Teo1
-                Few_list = Few0 + Few1
-                Fcw_list = Fcw0 + Fcw1
-                Fca_list = Fca0 + Fca1
-                EER_list = EER0 + EER1
-                Tei_list = Tei0 + Tei1
-                if tf_obj == "Teo":
-                    start_index0 = int(len(Teo0) - n_data_save1)
-                    X0_list = Teo0[start_index0:]
-                    X0 = sum(X0_list) / len(X0_list)
-                    start_index1 = int(len(Teo_list) - (n_data_save1 + n_data_save2))
-                    X_list = Teo_list[start_index1:]
-                    for k in range(len(X_list)):
-                        X_list[k] -= X0
-                elif tf_obj == "Few":
-                    start_index0 = int(len(Few0) - n_data_save1)
-                    X0_list = Few0[start_index0:]
-                    X0 = sum(X0_list) / len(X0_list)
-                    start_index1 = int(len(Few_list) - (n_data_save1 + n_data_save2))
-                    X_list = Few_list[start_index1:]
-                    for k in range(len(X_list)):
-                        X_list[k] -= X0
-                elif tf_obj == "Fcw":
-                    start_index0 = int(len(Fcw0) - n_data_save1)
-                    X0_list = Fcw0[start_index0:]
-                    X0 = sum(X0_list) / len(X0_list)
-                    start_index1 = int(len(Fcw_list) - (n_data_save1 + n_data_save2))
-                    X_list = Fcw_list[start_index1:]
-                    for k in range(len(X_list)):
-                        X_list[k] -= X0
-                elif tf_obj == "Fca":
-                    start_index0 = int(len(Fca0) - n_data_save1)
-                    X0_list = Fca0[start_index0:]
-                    X0 = sum(X0_list) / len(X0_list)
-                    start_index1 = int(len(Fca_list) - (n_data_save1 + n_data_save2))
-                    X_list = Fca_list[start_index1:]
-                    for k in range(len(X_list)):
-                        X_list[k] -= X0
-                else:
-                    X_list = None
-                    start_index1 = None
-                # 绘图
-                plt.figure(index_figure).set_size_inches(24, 8)
-                plt.title("Q_input(kW):" + str(Q_input) + "; " + tf_obj)
-                plt.plot(X_list, linewidth=3)
-                index_figure += 1
-                # 模型输出Y
-                for k in range(len(Y_mode_list)):
-                    Y_mode = Y_mode_list[k]
-                    if Y_mode == "EER":
-                        start_index0 = int(len(EER0) - n_data_save1)
-                        Y0_list = EER0[start_index0:]
-                        Y0 = sum(Y0_list) / len(Y0_list)
-                        start_index1 = int(len(EER_list) - (n_data_save1 + n_data_save2))
-                        Y_list = EER_list[start_index1:]
-                        for l in range(len(Y_list)):
-                            Y_list[l] -= Y0
-                        # 绘图
-                        plt.figure(index_figure).set_size_inches(24, 8)
-                        plt.title("Q_input(kW):" + str(Q_input) + "; " + "EER: " + tf_obj)
-                        plt.plot(Y_list, linewidth=3)
-                        index_figure += 1
-                    elif Y_mode == "Tei":
-                        start_index0 = int(len(Tei0) - n_data_save1)
-                        Y0_list = Tei0[start_index0:]
-                        Y0 = sum(Y0_list) / len(Y0_list)
-                        start_index1 = int(len(Tei_list) - (n_data_save1 + n_data_save2))
-                        Y_list = Tei_list[start_index1:]
-                        # 如果是Fcw或者Fca，则Y_list全部改成0
-                        for l in range(len(Y_list)):
-                            if tf_obj == "Fcw" or tf_obj == "Fca":
-                                Y_list[l] = 0
-                            else:
-                                Y_list[l] -= Y0
-                        # 绘图
-                        plt.figure(index_figure).set_size_inches(24, 8)
-                        plt.title("Q_input(kW):" + str(Q_input) + "; " + "Tei: " + tf_obj)
-                        plt.plot(Y_list, linewidth=3)
-                        index_figure += 1
-                    else:
-                        Y_list = None
-                    # 拼接数据，写入txt
-                    tf_data_txt_list = []
-                    for l in range(len(X_list)):
-                        tmp = str(X_list[l]) + "\t" + str(Y_list[l])
-                        tf_data_txt_list.append(tmp)
-                    if tf_obj == "Teo" and Y_mode == "EER":
-                        write_txt_data(path_Teo_EER_tfdata, tf_data_txt_list)
-                    elif tf_obj == "Few" and Y_mode == "EER":
-                        write_txt_data(path_Few_EER_tfdata, tf_data_txt_list)
-                    elif tf_obj == "Fcw" and Y_mode == "EER":
-                        write_txt_data(path_Fcw_EER_tfdata, tf_data_txt_list)
-                    elif tf_obj == "Fca" and Y_mode == "EER":
-                        write_txt_data(path_Fca_EER_tfdata, tf_data_txt_list)
-                    elif tf_obj == "Teo" and Y_mode == "Tei":
-                        write_txt_data(path_Teo_Tei_tfdata, tf_data_txt_list)
-                    elif tf_obj == "Few" and Y_mode == "Tei":
-                        write_txt_data(path_Few_Tei_tfdata, tf_data_txt_list)
-                    elif tf_obj == "Fcw" and Y_mode == "Tei":
-                        write_txt_data(path_Fcw_Tei_tfdata, tf_data_txt_list)
-                    elif tf_obj == "Fca" and Y_mode == "Tei":
-                        write_txt_data(path_Fca_Tei_tfdata, tf_data_txt_list)
-                # 绘图
-                plt.show()
-                # 第5步：终止FMU模型
-                print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + '，模型初始输入参数：' +
-                      str(set_points_initialize) + "，正在终止FMU模型！")
-                # 修改FMU状态
-                fmu_state_list = [0, 1, stop_time, Ts, time_out, tolerance]
-                write_txt_data(file_fmu_state, fmu_state_list)
-                # 最后仿真一次
-                main_simulate_pause_single([], [], simulate_time3, txt_path)
-
-            # 第6步：辨识传递函数
-            print("制冷功率(kW)：" + str(round(Q_input, 2)) + '，模型初始输入参数：' + str(set_points_initialize) +
-                  "，所有的传递函数辨识数据生成完成！")
-            for j in range(len(Y_mode_list)):
-                Y_mode = Y_mode_list[j]
-                print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输出：" + Y_mode + '，模型初始输入参数：' +
-                      str(set_points_initialize) + "，正在进行传递函数辨识!")
-                info_txt = ("Q=" + str(round(Q_input, 2)) + "kW" + '，冷冻水出水温度：' + str(Teo_set_init) +
-                            '，冷冻水泵频率：' + str(Few_set_init) + '，冷却水泵频率：' + str(Fcw_set_init) +
-                            '，冷却塔频率：' + str(Fca_set_init))
-                # 传递函数系统辨识
-                ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, object_list, np_max,
-                                                    fitpercent_target_list, index_txt, Y_mode, True)
-                tf_txt = "# " + Y_mode + "模型: " + info_txt + "\n"
-                tf_txt += ans_tf
-                tf_txt_list = [tf_txt]
-                # 将结果写入txt文件
+            # 第2步:给定冷负荷，并使得系统稳定
+            input_data_list = [Q_input * 1000]
+            input_type_list = [('Q_set', np.float_)]
+            result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
+            Teo0 = list(result["chiller_Teo_set"])
+            Few0 = list(result["Few"])
+            Fcw0 = list(result["Fcw"])
+            Fca0 = list(result['chiller_f_cooling_tower1'])
+            Tei0 = list(result["Tei"])
+            Q0 = list(result["Q_total"])
+            P0 = list(result["P_total"])
+            EER0 = []
+            for k in range(len(Q0)):
+                EER0.append(Q0[k] / P0[k])
+            # 第3步:系统阶跃响应试验
+            if tf_obj == "Teo":
+                input_data_list = [9]
+                input_type_list = [('chiller_Teo_set', np.float_)]
+            elif tf_obj == "Few":
+                input_data_list = [40]
+                input_type_list = [('chiller_f_chilled_pump1', np.float_)]
+            elif tf_obj == "Fcw":
+                input_data_list = [40]
+                input_type_list = [('chiller_f_cooling_pump1', np.float_)]
+            elif tf_obj == "Fca":
+                input_data_list = [40]
+                input_type_list = [('chiller_f_cooling_tower1', np.float_)]
+            else:
+                input_data_list = []
+                input_type_list = []
+            result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time2, txt_path)
+            Teo1 = list(result["chiller_Teo_set"])
+            Few1 = list(result["Few"])
+            Fcw1 = list(result["Fcw"])
+            Fca1 = list(result['chiller_f_cooling_tower1'])
+            Tei1 = list(result["Tei"])
+            Q1 = list(result["Q_total"])
+            P1 = list(result["P_total"])
+            EER1 = []
+            for k in range(len(Q1)):
+                EER1.append(Q1[k] / P1[k])
+            # 第4步：确定传递函数辨识的输入X和输出Y
+            Teo_list = Teo0 + Teo1
+            Few_list = Few0 + Few1
+            Fcw_list = Fcw0 + Fcw1
+            Fca_list = Fca0 + Fca1
+            EER_list = EER0 + EER1
+            Tei_list = Tei0 + Tei1
+            if tf_obj == "Teo":
+                start_index0 = int(len(Teo0) - n_data_save1)
+                X0_list = Teo0[start_index0:]
+                X0 = sum(X0_list) / len(X0_list)
+                start_index1 = int(len(Teo_list) - (n_data_save1 + n_data_save2))
+                X_list = Teo_list[start_index1:]
+                for k in range(len(X_list)):
+                    X_list[k] -= X0
+            elif tf_obj == "Few":
+                start_index0 = int(len(Few0) - n_data_save1)
+                X0_list = Few0[start_index0:]
+                X0 = sum(X0_list) / len(X0_list)
+                start_index1 = int(len(Few_list) - (n_data_save1 + n_data_save2))
+                X_list = Few_list[start_index1:]
+                for k in range(len(X_list)):
+                    X_list[k] -= X0
+            elif tf_obj == "Fcw":
+                start_index0 = int(len(Fcw0) - n_data_save1)
+                X0_list = Fcw0[start_index0:]
+                X0 = sum(X0_list) / len(X0_list)
+                start_index1 = int(len(Fcw_list) - (n_data_save1 + n_data_save2))
+                X_list = Fcw_list[start_index1:]
+                for k in range(len(X_list)):
+                    X_list[k] -= X0
+            elif tf_obj == "Fca":
+                start_index0 = int(len(Fca0) - n_data_save1)
+                X0_list = Fca0[start_index0:]
+                X0 = sum(X0_list) / len(X0_list)
+                start_index1 = int(len(Fca_list) - (n_data_save1 + n_data_save2))
+                X_list = Fca_list[start_index1:]
+                for k in range(len(X_list)):
+                    X_list[k] -= X0
+            else:
+                X_list = None
+                start_index1 = None
+            # 绘图
+            plt.figure(index_figure).set_size_inches(24, 8)
+            plt.title("Q_input(kW):" + str(Q_input) + "; " + tf_obj)
+            plt.plot(X_list, linewidth=3)
+            index_figure += 1
+            # 模型输出Y
+            for k in range(len(Y_mode_list)):
+                Y_mode = Y_mode_list[k]
                 if Y_mode == "EER":
-                    path_result = path_result_EER
+                    start_index0 = int(len(EER0) - n_data_save1)
+                    Y0_list = EER0[start_index0:]
+                    Y0 = sum(Y0_list) / len(Y0_list)
+                    start_index1 = int(len(EER_list) - (n_data_save1 + n_data_save2))
+                    Y_list = EER_list[start_index1:]
+                    for l in range(len(Y_list)):
+                        Y_list[l] -= Y0
+                    # 绘图
+                    plt.figure(index_figure).set_size_inches(24, 8)
+                    plt.title("Q_input(kW):" + str(Q_input) + "; " + "EER: " + tf_obj)
+                    plt.plot(Y_list, linewidth=3)
+                    index_figure += 1
                 elif Y_mode == "Tei":
-                    path_result = path_result_Tei
+                    start_index0 = int(len(Tei0) - n_data_save1)
+                    Y0_list = Tei0[start_index0:]
+                    Y0 = sum(Y0_list) / len(Y0_list)
+                    start_index1 = int(len(Tei_list) - (n_data_save1 + n_data_save2))
+                    Y_list = Tei_list[start_index1:]
+                    # 如果是Fcw或者Fca，则Y_list全部改成0
+                    for l in range(len(Y_list)):
+                        if tf_obj == "Fcw" or tf_obj == "Fca":
+                            Y_list[l] = 0
+                        else:
+                            Y_list[l] -= Y0
+                    # 绘图
+                    plt.figure(index_figure).set_size_inches(24, 8)
+                    plt.title("Q_input(kW):" + str(Q_input) + "; " + "Tei: " + tf_obj)
+                    plt.plot(Y_list, linewidth=3)
+                    index_figure += 1
                 else:
-                    path_result = None
-                # 记录结果
-                write_txt_data(path_result, tf_txt_list, write_model=1)
-                # 结束循环
-                print_txt = "传递函数辨识完成, 辨识的模型类型为：" + Y_mode + "；工况点序号为：" + \
-                            str(index_txt) + ", " + info_txt + "\n"
-                print(print_txt)
-                index_txt += 1
+                    Y_list = None
+                # 拼接数据，写入txt
+                tf_data_txt_list = []
+                for l in range(len(X_list)):
+                    tmp = str(X_list[l]) + "\t" + str(Y_list[l])
+                    tf_data_txt_list.append(tmp)
+                if tf_obj == "Teo" and Y_mode == "EER":
+                    write_txt_data(path_Teo_EER_tfdata, tf_data_txt_list)
+                elif tf_obj == "Few" and Y_mode == "EER":
+                    write_txt_data(path_Few_EER_tfdata, tf_data_txt_list)
+                elif tf_obj == "Fcw" and Y_mode == "EER":
+                    write_txt_data(path_Fcw_EER_tfdata, tf_data_txt_list)
+                elif tf_obj == "Fca" and Y_mode == "EER":
+                    write_txt_data(path_Fca_EER_tfdata, tf_data_txt_list)
+                elif tf_obj == "Teo" and Y_mode == "Tei":
+                    write_txt_data(path_Teo_Tei_tfdata, tf_data_txt_list)
+                elif tf_obj == "Few" and Y_mode == "Tei":
+                    write_txt_data(path_Few_Tei_tfdata, tf_data_txt_list)
+                elif tf_obj == "Fcw" and Y_mode == "Tei":
+                    write_txt_data(path_Fcw_Tei_tfdata, tf_data_txt_list)
+                elif tf_obj == "Fca" and Y_mode == "Tei":
+                    write_txt_data(path_Fca_Tei_tfdata, tf_data_txt_list)
+            # 绘图
+            plt.show()
+            # 第5步：终止FMU模型
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在终止FMU模型！")
+            # 修改FMU状态
+            fmu_state_list = [0, 1, stop_time, Ts, time_out, tolerance]
+            write_txt_data(file_fmu_state, fmu_state_list)
+            # 最后仿真一次
+            main_simulate_pause_single([], [], simulate_time3, txt_path)
+
+        # 第6步：辨识传递函数
+        print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，所有的传递函数辨识数据生成完成！")
+        for j in range(len(Y_mode_list)):
+            Y_mode = Y_mode_list[j]
+            print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输出：" + Y_mode + "，正在进行传递函数辨识!")
+            info_txt = ("Q=" + str(round(Q_input, 2)) + "kW")
+            # 传递函数系统辨识
+            ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, object_list, np_max,
+                                                fitpercent_target_list, i + 1, Y_mode, True)
+            tf_txt = "# " + Y_mode + "模型: " + info_txt + "\n"
+            tf_txt += ans_tf
+            tf_txt_list = [tf_txt]
+            # 将结果写入txt文件
+            if Y_mode == "EER":
+                path_result = path_result_EER
+            elif Y_mode == "Tei":
+                path_result = path_result_Tei
+            else:
+                path_result = None
+            # 记录结果
+            write_txt_data(path_result, tf_txt_list, write_model=1)
+            # 结束循环
+            print_txt = "传递函数辨识完成, 辨识的模型类型为：" + Y_mode + "；工况点序号为：" + \
+                        str(i + 1) + ", " + info_txt + "\n"
+            print(print_txt)
 
 
 def initialize_simplified_chillers(file_fmu_time, file_fmu_state, input_data_initialize, start_time, stop_time,
@@ -874,7 +852,6 @@ def initialize_simplified_chillers(file_fmu_time, file_fmu_state, input_data_ini
     """
 
     # 模型默认输入
-    # fmu_input_data_default = [start_time, 27.1, 0, True, 8, 50, 50, 50]
     fmu_input_type = model_input_type()
     # FMU模型初始化
     # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out, tolerance
@@ -978,7 +955,7 @@ if __name__ == "__main__":
     # Q_total_list = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800,
     #                 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400]
     # Q_total_list = [700, 1400, 1900, 2300, 2500, 2700, 2900]
-    Q_total_list = [1900]
+    Q_total_list = [2200]
     Q_index = 0
     run_simplified_chillers(Q_total_list, Q_index, txt_path, file_fmu, run_mode)
     # # GPC控制器运行
