@@ -3,6 +3,7 @@ import pickle
 import matplotlib.pyplot as plt
 from fmpy import *
 from GPC_universal import *
+from PID_control import *
 from algorithm_code import *
 from air_conditioner_dynamic import *
 from model_fmu_input_name import get_fmu_input_name
@@ -214,9 +215,12 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     # 是否将MMGPC各个内置模型的计算结果画图
     model_plot_set = False
 
+    # PID控制器，针对Fcw-EER
+    pid = PID(10, -10, 0)
+    L_PID = 2 * 3600
+
     # FMU仿真参数
     start_time = 0
-    stop_time = 14 * 3600
     time_out = 600
     tolerance = 0.00001
     # 采样时间
@@ -225,7 +229,9 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     simulate_time0 = 4 * 3600
     simulate_time1 = 4 * 3600
     # GPC仿真时间
-    L = stop_time - simulate_time0 - simulate_time1
+    L_GPC = 2 * 3600
+    # 仿真终止时间
+    stop_time = simulate_time0 + simulate_time1 + L_GPC + L_PID
 
     # V: 一个非常小的正实数，保证所有子控制器将来可用
     V = 0.0001
@@ -458,7 +464,9 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     # 仿真时间列表
     time_list = []
     # 仿真次数
-    n = int(L / Ts)
+    n_gpc = int(L_GPC / Ts)
+    n_pid = int(L_PID / Ts)
+    n = n_gpc + n_pid
     for k in range(n):
         # 数据加入总列表
         for l in range(n_input):
@@ -468,37 +476,52 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
             y_list[l].append(yk_list[l])
             yr_list[l].append(yrk_list[l])
         time_list.append(Ts * (k + 1))
-        # mmgpc的yrk_list实际上是k+1时刻的EER和Tei目标值
-        # 计算k时刻MMGPC的结果
-        if mmgpc_mode == "bayes":
-            mmgpc_bayes(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
-                        y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
-                        uk_model_list, Np_list, Nc_list, s_list, V, model_list, yrk_list, yk_list, uk_list, duk_list,
-                        du_limit_list, u_limit_list, pk_list, wk_list, True)
-        elif mmgpc_mode == "ms":
-            mmgpc_ms(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
-                     y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
-                     uk_model_list, Np_list, Nc_list, model_list, yrk_list, yk_list, uk_list, duk_list, du_limit_list,
-                     u_limit_list, ms_list)
-        elif mmgpc_mode == "itae":
-            # time_k = time_list[-1]
-            time_k = k
-            mmgpc_itae(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
-                       y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
-                       uk_model_list, Np_list, Nc_list, model_list, yrk_list, yk_list, uk_list, duk_list, du_limit_list,
-                       u_limit_list, Jk_list, time_k, True)
 
-        # 将MMGPC的控制量输入到实际被控对象
-        # mmgpc的uk_list实际上是k时刻的Teo、Few、Fcw、Fca计算实际值
-        Teo = uk_list[0]
-        Few = uk_list[1]
-        Fcw = uk_list[2]
-        Fca = uk_list[3]
+        if k <= n_gpc:
+            # mmgpc的yrk_list实际上是k+1时刻的EER和Tei目标值
+            # 计算k时刻MMGPC的结果
+            if mmgpc_mode == "bayes":
+                mmgpc_bayes(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
+                            y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
+                            uk_model_list, Np_list, Nc_list, s_list, V, model_list, yrk_list, yk_list, uk_list, duk_list,
+                            du_limit_list, u_limit_list, pk_list, wk_list, True)
+            elif mmgpc_mode == "ms":
+                mmgpc_ms(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
+                         y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
+                         uk_model_list, Np_list, Nc_list, model_list, yrk_list, yk_list, uk_list, duk_list, du_limit_list,
+                         u_limit_list, ms_list)
+            elif mmgpc_mode == "itae":
+                # time_k = time_list[-1]
+                time_k = k
+                mmgpc_itae(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
+                           y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
+                           uk_model_list, Np_list, Nc_list, model_list, yrk_list, yk_list, uk_list, duk_list, du_limit_list,
+                           u_limit_list, Jk_list, time_k, True)
 
-        # 写入控制命令
-        input_type_list = [('chiller_Teo_set', np.float_), ('chiller_f_chilled_pump1', np.float_),
-                           ('chiller_f_cooling_pump1', np.float_), ('chiller_f_cooling_tower1', np.float_)]
-        input_data_list = [Teo, Few, Fcw, Fca]
+            # 将MMGPC的控制量输入到实际被控对象
+            # mmgpc的uk_list实际上是k时刻的Teo、Few、Fcw、Fca计算实际值
+            Teo = uk_list[0]
+            Few = uk_list[1]
+            Fcw = uk_list[2]
+            Fca = uk_list[3]
+            # 写入控制命令
+            input_type_list = [('chiller_Teo_set', np.float_), ('chiller_f_chilled_pump1', np.float_),
+                               ('chiller_f_cooling_pump1', np.float_), ('chiller_f_cooling_tower1', np.float_)]
+            input_data_list = [Teo, Few, Fcw, Fca]
+        else:
+            pid.setValue = yrk_list[0]
+            curValue = yk_list[0]
+            outPID = pid.pidIncrease(curValue)
+            Fcw = uk_list[2] + outPID
+            if Fcw > u_limit_list[2][1]:
+                Fcw = u_limit_list[2][1]
+            elif Fcw < u_limit_list[2][0]:
+                Fcw = u_limit_list[2][0]
+            duk_list[2] = Fcw - uk_list[2]
+            input_type_list = [('chiller_f_cooling_pump1', np.float_)]
+            input_data_list = [Fcw]
+            uk_list[2] = Fcw
+
         result = main_simulate_pause_single(input_data_list, input_type_list, Ts, txt_path)
         # 获取输出的yk
         Tei = list(result["Tei"])[-1]
