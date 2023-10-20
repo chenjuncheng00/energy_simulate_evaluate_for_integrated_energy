@@ -1,9 +1,9 @@
+import copy
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 from fmpy import *
 from GPC_universal import *
-from PID_control import *
 from algorithm_code import *
 from air_conditioner_dynamic import *
 from model_fmu_input_name import get_fmu_input_name
@@ -215,10 +215,6 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     # 是否将MMGPC各个内置模型的计算结果画图
     model_plot_set = False
 
-    # PID控制器，针对Fcw-EER
-    pid = PID(10, -10, 0)
-    L_PID = 2 * 3600
-
     # FMU仿真参数
     start_time = 0
     time_out = 600
@@ -229,9 +225,9 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     simulate_time0 = 4 * 3600
     simulate_time1 = 4 * 3600
     # GPC仿真时间
-    L_GPC = 2 * 3600
+    L = 4 * 3600
     # 仿真终止时间
-    stop_time = simulate_time0 + simulate_time1 + L_GPC + L_PID
+    stop_time = simulate_time0 + simulate_time1 + L
 
     # V: 一个非常小的正实数，保证所有子控制器将来可用
     V = 0.0001
@@ -289,6 +285,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     else:
         yr_0_list = []
         yrk_list = []
+    yr0_correction_list = copy.deepcopy(yrk_list)
 
     ans_model = model_dynamics_simplified_chillers()
     # MMGPC内置模型的制冷功率列表
@@ -319,6 +316,15 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     # 确定模型的输入输出数量
     n_output = len(model_list[0])
     n_input = len(model_list[0][0])
+
+    # 反馈校正
+    kc_list = [0.4, 0.2]  # 比例增益系数
+    n_smooth_list = [40, 10]  # 数据滑动平均连续采样的数据个数
+    init_correction = feedback_correction_initialize(n_output, yr0_correction_list)
+    e_correction_list = init_correction[0]
+    dyr_correction_list = init_correction[1]
+    yr_correction_list = init_correction[2]
+
     # ms方法需要ms_list参数
     # 计算隶属度函数
     if mmgpc_mode == "ms":
@@ -464,9 +470,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     # 仿真时间列表
     time_list = []
     # 仿真次数
-    n_gpc = int(L_GPC / Ts)
-    n_pid = int(L_PID / Ts)
-    n = n_gpc + n_pid
+    n = int(L / Ts)
     for k in range(n):
         # 数据加入总列表
         for l in range(n_input):
@@ -474,53 +478,40 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
             du_list[l].append(duk_list[l])
         for l in range(n_output):
             y_list[l].append(yk_list[l])
-            yr_list[l].append(yrk_list[l])
+            yr_list[l].append(yr0_correction_list[l])
+            yr_correction_list[l].append(yrk_list[l])
         time_list.append(Ts * (k + 1))
 
-        if k <= n_gpc:
-            # mmgpc的yrk_list实际上是k+1时刻的EER和Tei目标值
-            # 计算k时刻MMGPC的结果
-            if mmgpc_mode == "bayes":
-                mmgpc_bayes(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
-                            y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
-                            uk_model_list, Np_list, Nc_list, s_list, V, model_list, yrk_list, yk_list, uk_list, duk_list,
-                            du_limit_list, u_limit_list, pk_list, wk_list, True)
-            elif mmgpc_mode == "ms":
-                mmgpc_ms(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
-                         y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
-                         uk_model_list, Np_list, Nc_list, model_list, yrk_list, yk_list, uk_list, duk_list, du_limit_list,
-                         u_limit_list, ms_list)
-            elif mmgpc_mode == "itae":
-                # time_k = time_list[-1]
-                time_k = k
-                mmgpc_itae(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
-                           y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
-                           uk_model_list, Np_list, Nc_list, model_list, yrk_list, yk_list, uk_list, duk_list, du_limit_list,
-                           u_limit_list, Jk_list, time_k, True)
+        # mmgpc的yrk_list实际上是k+1时刻的EER和Tei目标值
+        # 计算k时刻MMGPC的结果
+        if mmgpc_mode == "bayes":
+            mmgpc_bayes(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
+                        y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
+                        uk_model_list, Np_list, Nc_list, s_list, V, model_list, yrk_list, yk_list, uk_list, duk_list,
+                        du_limit_list, u_limit_list, pk_list, wk_list, True)
+        elif mmgpc_mode == "ms":
+            mmgpc_ms(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
+                     y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
+                     uk_model_list, Np_list, Nc_list, model_list, yrk_list, yk_list, uk_list, duk_list, du_limit_list,
+                     u_limit_list, ms_list)
+        elif mmgpc_mode == "itae":
+            # time_k = time_list[-1]
+            time_k = k
+            mmgpc_itae(F1_list, F2_list, G_list, R_list, Q_list, B_list, C_list, len_A_list, len_B_list, len_B_max_list,
+                       y_model_list, du_model_list, u_model_list, yrk_model_Np_list, yk_model_list, duk_model_list,
+                       uk_model_list, Np_list, Nc_list, model_list, yrk_list, yk_list, uk_list, duk_list, du_limit_list,
+                       u_limit_list, Jk_list, time_k, True)
 
-            # 将MMGPC的控制量输入到实际被控对象
-            # mmgpc的uk_list实际上是k时刻的Teo、Few、Fcw、Fca计算实际值
-            Teo = uk_list[0]
-            Few = uk_list[1]
-            Fcw = uk_list[2]
-            Fca = uk_list[3]
-            # 写入控制命令
-            input_type_list = [('chiller_Teo_set', np.float_), ('chiller_f_chilled_pump1', np.float_),
-                               ('chiller_f_cooling_pump1', np.float_), ('chiller_f_cooling_tower1', np.float_)]
-            input_data_list = [Teo, Few, Fcw, Fca]
-        else:
-            pid.setValue = yrk_list[0]
-            curValue = yk_list[0]
-            outPID = pid.pidIncrease(curValue)
-            Fcw = uk_list[2] + outPID
-            if Fcw > u_limit_list[2][1]:
-                Fcw = u_limit_list[2][1]
-            elif Fcw < u_limit_list[2][0]:
-                Fcw = u_limit_list[2][0]
-            duk_list[2] = Fcw - uk_list[2]
-            input_type_list = [('chiller_f_cooling_pump1', np.float_)]
-            input_data_list = [Fcw]
-            uk_list[2] = Fcw
+        # 将MMGPC的控制量输入到实际被控对象
+        # mmgpc的uk_list实际上是k时刻的Teo、Few、Fcw、Fca计算实际值
+        Teo = uk_list[0]
+        Few = uk_list[1]
+        Fcw = uk_list[2]
+        Fca = uk_list[3]
+        # 写入控制命令
+        input_type_list = [('chiller_Teo_set', np.float_), ('chiller_f_chilled_pump1', np.float_),
+                           ('chiller_f_cooling_pump1', np.float_), ('chiller_f_cooling_tower1', np.float_)]
+        input_data_list = [Teo, Few, Fcw, Fca]
 
         result = main_simulate_pause_single(input_data_list, input_type_list, Ts, txt_path)
         # 获取输出的yk
@@ -536,6 +527,9 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
             yk_list = [Tei]
         else:
             yk_list = []
+        # GPC控制器反馈校正
+        feedback_correction_kc(n_output, n_smooth_list, kc_list, yr0_correction_list, yr_correction_list, yrk_list,
+                               yk_list, e_correction_list, dyr_correction_list)
 
     # GPC计算结果画图
     # plt画线颜色列表
@@ -551,6 +545,8 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
         plt.ylabel("y_" + str(i + 1))
         plt.plot(time_list[:n], y_list[i][:n], color='skyblue', label='y', linewidth=3)
         plt.plot(time_list[:n], yr_list[i][:n], color='red', label='yr', linewidth=3)
+        plt.plot(time_list[:n], yr_correction_list[i][:n], color='green', label='yr_correction',
+                 linewidth=3, linestyle='dotted')
         if model_plot_set == True:
             for j in range(n_model):
                 plt.plot(time_list[:n], y_model_list[j][i][:n], color=color_list[j],
@@ -978,7 +974,7 @@ if __name__ == "__main__":
     # Q_total_list = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800,
     #                 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400]
     # Q_total_list = [700, 1400, 1900, 2300, 2500, 2700, 2900]
-    Q_total_list = [2200]
+    Q_total_list = [1700]
     Q_index = 0
     run_simplified_chillers(Q_total_list, Q_index, txt_path, file_fmu, run_mode)
     # # GPC控制器运行
