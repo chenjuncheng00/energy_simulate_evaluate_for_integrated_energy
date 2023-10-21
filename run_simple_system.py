@@ -84,7 +84,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
     # MMGPC的计算模式，bayes、ms、itae
-    mmgpc_mode = "bayes"
+    mmgpc_mode = "ms"
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
     ms_mode = 0
     # 多模型权值系数的递推计算收敛系数
@@ -131,11 +131,12 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     # 计算总次数
     n_simulate = len(Q_total_list)
     # 模型仿真时间
+    simulate_initialize = 23 * 3600
     simulate_time1 = 8 * 3600
     simulate_time2 = 1 * 3600
     # FMU仿真参数
     start_time = 0
-    stop_time = start_time + (simulate_time1 + L + 2 * 3600) * n_simulate + simulate_time2
+    stop_time = start_time + simulate_initialize + (simulate_time1 + L + 2 * 3600) * n_simulate + simulate_time2
     output_interval = 30
     time_out = 600
     tolerance = 0.0001
@@ -182,8 +183,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     write_txt_data(file_fmu_result_all, [txt_str])
     write_txt_data(file_fmu_result_last, [txt_str])
     # FMU模型初始化
-    initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out,
-                             tolerance, txt_path)
+    initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
+                             output_interval, time_out, tolerance, txt_path)
     # 仿真计算
     for i in range(n_simulate):
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +
@@ -227,7 +228,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
         print("\n")
         write_txt_data(file_fmu_input_log, [input_log_4, "\n"], 1)
         write_txt_data(file_fmu_input_feedback_log, [input_log_4, "\n"], 1)
-        Teo0 = result['chiller_Teo'][-1]
+        Teo0 = result['chiller_Teo_set'][-1]
         Few0 = result['chiller_Few_total'][-1]
         Fcw0 = result['chiller_Fcw_total'][-1]
         Fca0 = result['chiller_Fca_total'][-1]
