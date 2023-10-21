@@ -5,8 +5,8 @@ from model_fmu_input_type import chiller_input_type, cold_storage_input_type, \
 from model_fmu_input_data_default import chiller_input_data_default, cold_storage_input_data_default, \
                                          simple_load_input_data_default, environment_input_data_default
 
-def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out,
-                             tolerance, txt_path):
+def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
+                             output_interval, time_out, tolerance, txt_path):
     """
     初始化简单模型：冷水机+蓄冷水罐+简单负荷
     Args:
@@ -14,6 +14,7 @@ def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_tim
         file_fmu_state: [string]，储存FMU模型状态的文件路径
         start_time: [int]，仿真开始时间
         stop_time: [int]，仿真终止时间
+        simulate_initialize: [int]，初始化仿真时间
         output_interval: [int]，仿真输出时间间隔
         time_out: [int]，仿真超时时间
         tolerance: [float]，FMU模型求解相对误差
@@ -28,8 +29,7 @@ def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_tim
     fmu_state_list = [1, 0, stop_time, output_interval, time_out, tolerance]
     write_txt_data(file_fmu_state, fmu_state_list)
     # 初始化时间
-    simulate_time1 = 23 * 3600
-    t1_initialize = start_time + simulate_time1
+    t1_initialize = start_time + simulate_initialize
     write_txt_data(file_fmu_time, [start_time])
 
     # 第2步：将管道内的水全部冷却下来
@@ -50,7 +50,7 @@ def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_tim
     input_data_list = [start_time] + environment_input_data_default() + chiller_input_data + \
                       cold_storage_input_data_default() + simple_load_input_data_default()
     # FMU仿真
-    main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path, add_input=False)
+    main_simulate_pause_single(input_data_list, input_type_list, simulate_initialize, txt_path, add_input=False)
 
     # 第3步：更新初始化设置
     # 修改FMU状态
@@ -73,6 +73,6 @@ def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_tim
     print("\n")
 
     # 第5步：初始化总用时
-    init_time_total = simulate_time1 + simulate_time2
+    init_time_total = simulate_initialize + simulate_time2
     # 返回结果
     return init_time_total

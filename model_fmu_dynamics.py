@@ -30,14 +30,6 @@ def model_fmu_dynamics():
     tf1_Tei_list = [[tf21_1, tf22_1, tf23_1, tf24_1]]
     tf1_list = [tf1_EER_list[0], tf1_Tei_list[0]]
     # 8000kW权值列表
-    # only EER
-    r1_EER_1 = 1
-    r2_EER_1 = 1
-    r3_EER_1 = 1
-    r4_EER_1 = 1
-    r1_EER_list = [r1_EER_1, r2_EER_1, r3_EER_1, r4_EER_1]
-    q1_EER_1 = 1
-    q1_EER_list = [q1_EER_1]
     # EER + Tei
     r1_1 = 45
     r2_1 = 0.01
@@ -64,14 +56,6 @@ def model_fmu_dynamics():
     tf2_Tei_list = [[tf21_2, tf22_2, tf23_2, tf24_2]]
     tf2_list = [tf2_EER_list[0], tf2_Tei_list[0]]
     # 9000kW权值列表
-    # only EER
-    r1_EER_2 = 1
-    r2_EER_2 = 1
-    r3_EER_2 = 1
-    r4_EER_2 = 1
-    r2_EER_list = [r1_EER_2, r2_EER_2, r3_EER_2, r4_EER_2]
-    q1_EER_2 = 1
-    q2_EER_list = [q1_EER_2]
     # EER + Tei
     r1_2 = 45
     r2_2 = 0.01
@@ -99,14 +83,6 @@ def model_fmu_dynamics():
     tf3_Tei_list = [[tf21_3, tf22_3, tf23_3, tf24_3]]
     tf3_list = [tf3_EER_list[0], tf3_Tei_list[0]]
     # 9500kW权值列表
-    # only EER
-    r1_EER_3 = 1
-    r2_EER_3 = 1
-    r3_EER_3 = 1
-    r4_EER_3 = 1
-    r3_EER_list = [r1_EER_3, r2_EER_3, r3_EER_3, r4_EER_3]
-    q1_EER_3 = 1
-    q3_EER_list = [q1_EER_3]
     # EER + Tei
     r1_3 = 45
     r2_3 = 0.01
@@ -134,14 +110,6 @@ def model_fmu_dynamics():
     tf4_Tei_list = [[tf21_4, tf22_4, tf23_4, tf24_4]]
     tf4_list = [tf4_EER_list[0], tf4_Tei_list[0]]
     # 10000kW权值列表
-    # only EER
-    r1_EER_4 = 1
-    r2_EER_4 = 1
-    r3_EER_4 = 1
-    r4_EER_4 = 1
-    r4_EER_list = [r1_EER_4, r2_EER_4, r3_EER_4, r4_EER_4]
-    q1_EER_4 = 1
-    q4_EER_list = [q1_EER_4]
     # EER + Tei
     r1_4 = 45
     r2_4 = 0.01
@@ -169,14 +137,6 @@ def model_fmu_dynamics():
     tf5_Tei_list = [[tf21_5, tf22_5, tf23_5, tf24_5]]
     tf5_list = [tf5_EER_list[0], tf5_Tei_list[0]]
     # 10500kW权值列表
-    # only EER
-    r1_EER_5 = 1
-    r2_EER_5 = 1
-    r3_EER_5 = 1
-    r4_EER_5 = 1
-    r5_EER_list = [r1_EER_5, r2_EER_5, r3_EER_5, r4_EER_5]
-    q1_EER_5 = 1
-    q5_EER_list = [q1_EER_5]
     # EER + Tei
     r1_5 = 45
     r2_5 = 0.01
@@ -204,14 +164,6 @@ def model_fmu_dynamics():
     tf6_Tei_list = [[tf21_6, tf22_6, tf23_6, tf24_6]]
     tf6_list = [tf6_EER_list[0], tf6_Tei_list[0]]
     # 11000kW权值列表
-    # only EER
-    r1_EER_6 = 1
-    r2_EER_6 = 1
-    r3_EER_6 = 1
-    r4_EER_6 = 1
-    r6_EER_list = [r1_EER_6, r2_EER_6, r3_EER_6, r4_EER_6]
-    q1_EER_6 = 1
-    q6_EER_list = [q1_EER_6]
     # EER + Tei
     r1_6 = 100
     r2_6 = 0.01
