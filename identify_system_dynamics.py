@@ -6,7 +6,6 @@ from fmpy import *
 from air_conditioner_dynamic import *
 from algorithm_code import *
 from run_initialize import run_initialize
-from model_fmu_input_name import get_fmu_input_name
 from model_fmu_input_type import chiller_input_type, cold_storage_input_type, simple_load_input_type, \
                                  environment_input_type
 from model_fmu_input_data_default import chiller_input_data_default, cold_storage_input_data_default, \

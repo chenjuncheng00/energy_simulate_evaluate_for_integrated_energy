@@ -1,3 +1,4 @@
+from algorithm_code import *
 from model_fmu_input_type import chiller_input_type, air_source_heat_pump_input_type, cold_storage_input_type, \
                                  tower_chilled_input_type, user_load_input_type, simple_load_input_type, \
                                  environment_input_type
@@ -31,23 +32,3 @@ def main_model_input_name(load_mode=0):
                   tower_chilled_input + user_input + environment_input
     # 返回结果
     return model_input
-
-
-def get_fmu_input_name(input_type_list):
-    """
-    根据input_type_list，得到input_name_list
-    Args:
-        input_type_list: [list]，模型的输入类型和名称
-
-    Returns:
-
-    """
-    input_name_list = []
-    for i in range(len(input_type_list)):
-        tmp_input_list = list(input_type_list[i])
-        for j in range(len(tmp_input_list)):
-            tmp_name = tmp_input_list[j]
-            if isinstance(tmp_name, str):
-                input_name_list.append(tmp_name)
-    # 返回结果
-    return input_name_list

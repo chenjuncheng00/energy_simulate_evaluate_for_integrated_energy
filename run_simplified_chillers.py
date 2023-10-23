@@ -6,7 +6,6 @@ from fmpy import *
 from GPC_universal import *
 from algorithm_code import *
 from air_conditioner_dynamic import *
-from model_fmu_input_name import get_fmu_input_name
 from tuning_dynamics_model import tuning_mmgpc, tuning_smgpc
 from model_simplified_chillers import (model_input_type, model_dynamics_simplified_chillers,
                                        plant_dynamics_simplified_chillers)
@@ -545,9 +544,9 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
         plt.ylabel("y_" + str(i + 1))
         plt.plot(time_list[:n], y_list[i][:n], color='skyblue', label='y', linewidth=3)
         plt.plot(time_list[:n], yr_list[i][:n], color='red', label='yr', linewidth=3)
-        plt.plot(time_list[:n], yr_correction_list[i][:n], color='green', label='yr_correction',
-                 linewidth=3, linestyle='dotted')
         if model_plot_set == True:
+            plt.plot(time_list[:n], yr_correction_list[i][:n], color='blueviolet', label='yr_correction',
+                     linewidth=3, linestyle='dashed')
             for j in range(n_model):
                 plt.plot(time_list[:n], y_model_list[j][i][:n], color=color_list[j],
                          label='y_model_' + str(j + 1), linewidth=3, linestyle='dotted')

@@ -5,7 +5,6 @@ from algorithm_code import *
 from model_fmu_output_name import chiller_output_name, cold_storage_output_name, simple_load_output_name
 from model_fmu_input_type import chiller_input_type, cold_storage_input_type, simple_load_input_type, \
                                  environment_input_type
-from model_fmu_input_name import get_fmu_input_name
 from model_fmu_dynamics import model_fmu_dynamics
 from initialize_simple_system import initialize_simple_system
 from run_initialize import run_initialize
@@ -136,7 +135,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     simulate_time2 = 1 * 3600
     # FMU仿真参数
     start_time = 0
-    stop_time = start_time + simulate_initialize + (simulate_time1 + L + 2 * 3600) * n_simulate + simulate_time2
+    stop_time = start_time + simulate_initialize + (simulate_time1 + 3 * L) * n_simulate + simulate_time2
     output_interval = 30
     time_out = 600
     tolerance = 0.0001
@@ -237,13 +236,13 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
         Tei0 = result['chiller_Tei'][-1]
         if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
             yr_0_list = [EER0, Tei0]
-            yrk_list = [EER0 + 0.5, Tei0 + 1]
+            yrk_list = [EER0 + 0.3, Tei0 + 0.5]
         elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
             yr_0_list = [EER0]
-            yrk_list = [EER0 + 0.5]
+            yrk_list = [EER0 + 0.3]
         elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
             yr_0_list = [Tei0]
-            yrk_list = [Tei0 + 1]
+            yrk_list = [Tei0 + 0.5]
         else:
             yr_0_list = []
             yrk_list = []

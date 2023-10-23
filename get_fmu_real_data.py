@@ -1,10 +1,9 @@
 import numpy as np
-from model_fmu_input_name import get_fmu_input_name
+from algorithm_code import *
 from model_fmu_input_type import chiller_input_type, air_source_heat_pump_input_type, cold_storage_input_type, \
                                  tower_chilled_input_type
 from model_fmu_output_name import chiller_output_name, air_source_heat_pump_output_name, cold_storage_output_name, \
                                   tower_chilled_output_name
-from algorithm_code import *
 
 def get_chiller_input_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
     """
