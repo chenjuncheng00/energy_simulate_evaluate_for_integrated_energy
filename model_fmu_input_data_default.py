@@ -13,22 +13,28 @@ def main_input_data_default(load_mode=0):
     Returns:
 
     """
-    model_input = environment_input_data_default() + chiller_input_data_default() + \
+    model_input = environment_input_data_default(load_mode) + chiller_input_data_default() + \
                   air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
                   tower_chilled_input_data_default() + load_input_data_default(load_mode)
     return model_input
 
 
-def environment_input_data_default():
+def environment_input_data_default(load_mode):
     """
     环境温湿度输入，名称和数据类型
+    Args:
+        load_mode: [int]，0：user_load；1：simple_load
 
     Returns:
 
     """
     Tdo = [35]
     Two = [27]
-    environment_input = Tdo + Two
+    if load_mode == 0:
+        environment_input = Tdo + Two
+    else:
+        # simple_load没有天气数据
+        environment_input = []
     # 返回结果
     return environment_input
 

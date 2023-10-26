@@ -12,7 +12,7 @@ def main_model_input_type(load_mode=0):
     # 仿真时间
     time_input = [('time', np.float_)]
     # 环境参数模型
-    environment_input = environment_input_type()[0]
+    environment_input = environment_input_type(load_mode)[0]
     # 冷水机模型
     chiller_input = chiller_input_type()[0]
     # 空气源热泵模型
@@ -30,16 +30,22 @@ def main_model_input_type(load_mode=0):
     return model_input
 
 
-def environment_input_type():
+def environment_input_type(load_mode):
     """
     环境温湿度输入，名称和数据类型
+    Args:
+        load_mode: [int]，0：user_load；1：simple_load
 
     Returns:
 
     """
     Tdo = [('Tdo', np.float_)]
     Two = [('Two', np.float_)]
-    environment_input = Tdo + Two
+    if load_mode == 0:
+        environment_input = Tdo + Two
+    else:
+        # simple_load没有天气数据
+        environment_input = []
     # 返回结果
     return environment_input, Tdo, Two
 

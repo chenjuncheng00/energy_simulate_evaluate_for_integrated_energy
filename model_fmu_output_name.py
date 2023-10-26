@@ -9,7 +9,7 @@ def main_model_output_name(load_mode=0):
 
     """
     # 环境参数
-    environment_output = environment_output_name()[0]
+    environment_output = environment_output_name(load_mode)[0]
     # 冷水机模型
     chiller_output = chiller_output_name()[0]
     # 空气源热泵模型
@@ -27,9 +27,11 @@ def main_model_output_name(load_mode=0):
     return model_output
 
 
-def environment_output_name():
+def environment_output_name(load_mode):
     """
     环境温湿度输出，名称
+    Args:
+        load_mode: [int]，0：user_load；1：simple_load
 
     Returns:
 
@@ -41,7 +43,11 @@ def environment_output_name():
     # 室外相对湿度，单位：1
     Hro = ['weather_data.relHum']
     # 总输出
-    environment_output = Tdo + Two + Hro
+    if load_mode == 0:
+        environment_output = Tdo + Two + Hro
+    else:
+        # simple_load没有天气数据
+        environment_output = []
     # 返回结果
     return environment_output, Tdo, Two, Hro
 

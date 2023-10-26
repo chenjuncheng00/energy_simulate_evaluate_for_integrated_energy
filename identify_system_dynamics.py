@@ -1,4 +1,3 @@
-import numpy as np
 import traceback
 import pickle
 import matplotlib.pyplot as plt
@@ -6,15 +5,15 @@ from fmpy import *
 from air_conditioner_dynamic import *
 from algorithm_code import *
 from run_initialize import run_initialize
-from model_fmu_input_type import chiller_input_type, cold_storage_input_type, simple_load_input_type, \
-                                 environment_input_type
-from model_fmu_input_data_default import chiller_input_data_default, cold_storage_input_data_default, \
-                                         simple_load_input_data_default, environment_input_data_default
-from model_fmu_output_name import chiller_output_name, cold_storage_output_name, simple_load_output_name
+from model_fmu_output_name import main_model_output_name
+from model_fmu_input_name import main_model_input_name
+from model_fmu_input_type import (main_model_input_type, chiller_input_type, cold_storage_input_type,
+                                  air_source_heat_pump_input_type, load_input_type)
+from model_fmu_input_data_default import main_input_data_default
 
 def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                  Ts, time_out, tolerance, np_max, fitpercent_target_list, chiller_object_list,
-                                  chiller_Y_mode_list, chiller_Q_list, EER_mode, chiller_equipment_type_path,
+                                  Ts, time_out, tolerance, np_max, fitpercent_target_list, EER_mode, chiller_object_list,
+                                  chiller_Y_mode_list, chiller_Q_list, chiller_equipment_type_path,
                                   cfg_path_equipment, cfg_path_public):
     """
 
@@ -30,10 +29,10 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
         tolerance: [float]，FMU模型求解相对误差
         np_max: [int]，传递函数极点最大值
         fitpercent_target_list: [list]，传递函数辨识得分目标，列表
+        EER_mode: [int]，EER数据获取模型，0：直接读取FMU数据；1：保持Q不变，自行计算
         chiller_object_list: [list]，需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
         chiller_Y_mode_list: [list]，模型输出模式：EER/Tei
         chiller_Q_list: [list]，模型辨识指定的制冷功率，列表，单位：kW
-        EER_mode: [int]，EER数据获取模型，0：直接读取FMU数据；1：保持Q不变，自行计算
         chiller_equipment_type_path: [string]，[list]，设备类型名称，相对路径
         cfg_path_equipment:[string]，设备信息参数cfg文件路径
         cfg_path_public:[string]，公用参数cfg文件路径
@@ -144,15 +143,11 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
     equipment_type = chiller_equipment_type_path[0]
     # 相对路径
     txt_path = chiller_equipment_type_path[1]
-    # 获取模型的输入名称
-    chiller_input_name = get_fmu_input_name(chiller_input_type()[0])
-    cold_storage_input_name = get_fmu_input_name(cold_storage_input_type()[0])
-    simple_load_input_name = get_fmu_input_name(simple_load_input_type())
-    environment_input_name = get_fmu_input_name(environment_input_type()[0])
     # FMU模型输出名称，包括所有输入输出名称
-    fmu_input_output_name = chiller_output_name()[0] + cold_storage_output_name()[0] + simple_load_output_name() + \
-                            chiller_input_name + cold_storage_input_name + simple_load_input_name + \
-                            environment_input_name
+    load_mode = 1  # 0：user_load；1：simple_load
+    fmu_output_name = main_model_output_name(load_mode)
+    fmu_input_name = main_model_input_name(load_mode)
+    fmu_input_output_name = fmu_output_name + fmu_input_name
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:
         chiller_dict = pickle.load(f_obj)
@@ -231,11 +226,9 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 # 写入start_time
                 write_txt_data(file_fmu_time, [start_time])
                 # 模型输入名称和类型
-                input_type_list = [('time', np.float_)] + environment_input_type()[0] + chiller_input_type()[0] + \
-                                  cold_storage_input_type()[0] + simple_load_input_type()
+                input_type_list = main_model_input_type(load_mode)
                 # 模型输入数据
-                input_data_list = [start_time] + environment_input_data_default() + chiller_input_data_default() + \
-                                  cold_storage_input_data_default() + simple_load_input_data_default()
+                input_data_list = [start_time] + main_input_data_default(load_mode)
                 # FMU仿真
                 main_simulate_pause_single(input_data_list, input_type_list, simulate_time0, txt_path, add_input=False)
                 # 第2步：更新初始化设置
@@ -264,13 +257,13 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                                          0, 0, n0_chiller_cooling_pump1, n0_chiller_cooling_pump2,
                                          n0_chiller_cooling_tower, 0, chiller_equipment_type_path, n_calculate_hour,
                                          n_chiller_user_value, cfg_path_equipment, cfg_path_public)
-                # 第5步：系统仿真15小时，确保系统稳定，并获取数据
+                # 第5步：系统仿真24小时，确保系统稳定，并获取数据
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在持续仿真，确保系统稳定!")
                 # 修改采样时间
                 fmu_state_list = [0, 0, stop_time, Ts, time_out, tolerance]
                 write_txt_data(file_fmu_state, fmu_state_list)
                 # 模型输入名称和类型
-                input_type_list = simple_load_input_type()
+                input_type_list = load_input_type(load_mode)
                 # 模型输入数据
                 input_data_list = [Q_input * 1000]
                 result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)

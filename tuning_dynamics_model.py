@@ -2,7 +2,7 @@ import time
 import numpy as np
 from GPC_tuning import *
 from algorithm_code import *
-from model_fmu_dynamics import model_fmu_dynamics
+from model_fmu_dynamics import model_dynamics_complex_chillers
 
 def tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
                  y_gpc_list, fit_target):
@@ -151,7 +151,7 @@ def tuning_mmgpc(path_result_mmgpc, model_info, file_path_init, L, Ts, yr_list, 
 
 if __name__ == "__main__":
     # 系统模型
-    model_info = model_fmu_dynamics()
+    model_info = model_dynamics_complex_chillers()
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
     # 仿真时长和采样周期，单位：秒

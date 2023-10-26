@@ -1,5 +1,5 @@
 """
-用于测试的simplified_chillers_model.fmu的相关内容
+用于测试的simplified_chiller_model.fmu的相关内容
 """
 import numpy as np
 from control.matlab import *
@@ -16,7 +16,7 @@ def model_input_type():
     return fmu_input_type
 
 
-def model_dynamics_simplified_chillers():
+def model_dynamics_simplified_chiller():
     """
 
     Returns:
@@ -215,7 +215,7 @@ def model_dynamics_simplified_chillers():
             q_EER_list, q_Tei_list)
 
 
-def plant_dynamics_simplified_chillers():
+def plant_dynamics_simplified_chiller():
     """
     模型采样周期：60秒
 
