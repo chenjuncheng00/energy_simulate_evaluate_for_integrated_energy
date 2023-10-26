@@ -1,5 +1,5 @@
 from GPC_universal import *
-from model_fmu_dynamics import model_fmu_dynamics
+from model_fmu_dynamics import model_dynamics_complex_chillers
 
 if __name__ == "__main__":
     # 仿真类型：smgpc、mmgpc
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     u_limit_list = [[6, 15], [350, 3500], [450, 4200], [30, 300]]
 
     # MMGPC内置系统动态模型
-    ans_model = model_fmu_dynamics()
+    ans_model = model_dynamics_complex_chillers()
     Q_model_list = ans_model[0]
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
         model_list = ans_model[1]

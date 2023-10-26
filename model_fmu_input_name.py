@@ -26,7 +26,7 @@ def main_model_input_name(load_mode=0):
     else:
         user_input = get_fmu_input_name(simple_load_input_type())
     # 环境参数
-    environment_input = get_fmu_input_name(environment_input_type()[0])
+    environment_input = get_fmu_input_name(environment_input_type(load_mode)[0])
     # 模型总输入
     model_input = chiller_input + air_source_heat_pump_input + storage_input + \
                   tower_chilled_input + user_input + environment_input

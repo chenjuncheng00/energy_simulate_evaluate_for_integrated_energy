@@ -1,8 +1,9 @@
 from control.matlab import *
 
-def model_fmu_dynamics():
+def model_dynamics_complex_chillers():
     """
     系统动态特性模型:GPC控制器内置的模型
+    仅冷水机模型，4大2小的复杂系统
     Returns:
 
     """

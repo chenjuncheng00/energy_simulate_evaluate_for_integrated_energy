@@ -5,8 +5,8 @@ from algorithm_code import *
 from model_fmu_output_name import chiller_output_name, cold_storage_output_name, simple_load_output_name
 from model_fmu_input_type import chiller_input_type, cold_storage_input_type, simple_load_input_type, \
                                  environment_input_type
-from model_fmu_dynamics import model_fmu_dynamics
-from initialize_simple_system import initialize_simple_system
+from model_fmu_dynamics import model_dynamics_complex_chillers
+from initialize_complex_chillers import initialize_complex_chillers
 from run_initialize import run_initialize
 from get_fmu_real_data import get_chiller_input_real_data, get_storage_input_real_data
 
@@ -108,7 +108,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     Ts = 10 * 60
 
     # MMGPC内置系统动态模型
-    ans_model = model_fmu_dynamics()
+    ans_model = model_dynamics_complex_chillers()
     Q_model_list = ans_model[0]
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
         model_list = ans_model[1]
@@ -182,8 +182,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     write_txt_data(file_fmu_result_all, [txt_str])
     write_txt_data(file_fmu_result_last, [txt_str])
     # FMU模型初始化
-    initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
-                             output_interval, time_out, tolerance, txt_path)
+    initialize_complex_chillers(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
+                                output_interval, time_out, tolerance, txt_path)
     # 仿真计算
     for i in range(n_simulate):
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +

@@ -7,10 +7,10 @@ from GPC_universal import *
 from algorithm_code import *
 from air_conditioner_dynamic import *
 from tuning_dynamics_model import tuning_mmgpc, tuning_smgpc
-from model_simplified_chillers import (model_input_type, model_dynamics_simplified_chillers,
-                                       plant_dynamics_simplified_chillers)
+from model_simplified_chiller import (model_input_type, model_dynamics_simplified_chiller,
+                                      plant_dynamics_simplified_chiller)
 
-def run_GPC_simplified_chillers():
+def run_GPC_simplified_chiller():
     """
 
     Returns:
@@ -87,7 +87,7 @@ def run_GPC_simplified_chillers():
     u_limit_list = [[5, 15], [30, 50], [30, 50], [15, 50]]
 
     # MMGPC内置系统动态模型
-    ans_model = model_dynamics_simplified_chillers()
+    ans_model = model_dynamics_simplified_chiller()
     Q_model_list = ans_model[0]
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
         model_list = ans_model[1]
@@ -110,7 +110,7 @@ def run_GPC_simplified_chillers():
         q_list = []
 
     # 用于测试的plant_model
-    ans_plant = plant_dynamics_simplified_chillers()
+    ans_plant = plant_dynamics_simplified_chiller()
     Q_plant_list = ans_plant[0]
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
         plant_list = ans_plant[1]
@@ -123,7 +123,7 @@ def run_GPC_simplified_chillers():
 
     # mmgpc仿真参数设置
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data/simplified_chillers'
+    file_path_init = './model_data/GPC_data/simplified_chiller'
     # 多模型权值系数的递推计算收敛系数
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
         s_list = [s_EER, s_Tei]
@@ -150,7 +150,7 @@ def run_GPC_simplified_chillers():
               plot_set, model_plot_set)
 
 
-def run_simplified_chillers(Q_total_list, Q_index, txt_path, file_fmu, run_mode):
+def run_simplified_chiller(Q_total_list, Q_index, txt_path, file_fmu, run_mode):
     """
     简化的冷水机模型，用于测试系统动态特性和GPC算法
     Args:
@@ -189,7 +189,7 @@ def run_simplified_chillers(Q_total_list, Q_index, txt_path, file_fmu, run_mode)
 
     # 系统动态特性辨识
     if run_mode == "identify":
-        identify_dynamics_simplified_chillers(Q_total_list, txt_path, file_fmu)
+        identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu)
     elif run_mode == "simulate":
         simulate_dynamics_control(Q_total_list[Q_index], txt_path, file_fmu)
 
@@ -238,7 +238,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     u_limit_list = [[5, 15], [30, 50], [30, 50], [15, 50]]
 
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data/simplified_chillers'
+    file_path_init = './model_data/GPC_data/simplified_chiller'
     # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
     file_fmu_state = txt_path + "/process_data/fmu_state.txt"
     # FMU模型仿真时间：仿真开始的时间(start_time)
@@ -257,7 +257,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
 
     # 模型初始化
     input_data_initialize = [start_time, 27.1, 0, True, 8, 50, 50, 50]
-    initialize_simplified_chillers(file_fmu_time, file_fmu_state, input_data_initialize, start_time, stop_time,
+    initialize_simplified_chiller(file_fmu_time, file_fmu_state, input_data_initialize, start_time, stop_time,
                                    simulate_time0, Ts, time_out, tolerance, txt_path)
     # 计算U0和y0
     input_data_list = [Q_total * 1000]
@@ -286,7 +286,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
         yrk_list = []
     yr0_correction_list = copy.deepcopy(yrk_list)
 
-    ans_model = model_dynamics_simplified_chillers()
+    ans_model = model_dynamics_simplified_chiller()
     # MMGPC内置模型的制冷功率列表
     Q_model_list = ans_model[0]
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
@@ -579,7 +579,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     plt.show()
 
 
-def identify_dynamics_simplified_chillers(Q_total_list, txt_path, file_fmu):
+def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
     """
 
     Args:
@@ -665,7 +665,7 @@ def identify_dynamics_simplified_chillers(Q_total_list, txt_path, file_fmu):
             fmu_address_list = [unzipdir_address, description_address, instance_address]
             write_txt_data(file_fmu_address, fmu_address_list)
             input_data_initialize = [start_time, 27.1, 0, True, 8, 50, 50, 50]
-            initialize_simplified_chillers(file_fmu_time, file_fmu_state, input_data_initialize, start_time,
+            initialize_simplified_chiller(file_fmu_time, file_fmu_state, input_data_initialize, start_time,
                                            stop_time, simulate_time0, Ts, time_out, tolerance, txt_path)
 
             # 第2步:给定冷负荷，并使得系统稳定
@@ -849,7 +849,7 @@ def identify_dynamics_simplified_chillers(Q_total_list, txt_path, file_fmu):
             print(print_txt)
 
 
-def initialize_simplified_chillers(file_fmu_time, file_fmu_state, input_data_initialize, start_time, stop_time,
+def initialize_simplified_chiller(file_fmu_time, file_fmu_state, input_data_initialize, start_time, stop_time,
                                    time_initialize, output_interval, time_out, tolerance, txt_path):
     """
 
@@ -887,7 +887,7 @@ def initialize_simplified_chillers(file_fmu_time, file_fmu_state, input_data_ini
     return result
 
 
-def tuning_dynamics_simplified_chillers(tuning_set):
+def tuning_dynamics_simplified_chiller(tuning_set):
     """
 
     Args:
@@ -897,7 +897,7 @@ def tuning_dynamics_simplified_chillers(tuning_set):
 
     """
     # 传递函数
-    model_info = model_dynamics_simplified_chillers()
+    model_info = model_dynamics_simplified_chiller()
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
     # 仿真时长和采样周期，单位：秒
@@ -954,7 +954,7 @@ def tuning_dynamics_simplified_chillers(tuning_set):
     # 情况txt内容
     clear_all_txt_data(path_result_root)
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data/simplified_chillers'
+    file_path_init = './model_data/GPC_data/simplified_chiller'
     # smgpc整定
     if tuning_set == "smgpc":
         tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
@@ -968,22 +968,22 @@ def tuning_dynamics_simplified_chillers(tuning_set):
 if __name__ == "__main__":
     # 运行 OR 系统辨识
     txt_path = "../optimal_control_algorithm_for_cooling_season"
-    file_fmu = "./model_data/file_fmu/simplified_chillers_model_Cvode.fmu"
+    file_fmu = "./model_data/file_fmu/simplified_chiller_model_Cvode.fmu"
     run_mode = "simulate"
     # Q_total_list = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800,
     #                 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400]
     # Q_total_list = [700, 1400, 1900, 2300, 2500, 2700, 2900]
     Q_total_list = [1700]
     Q_index = 0
-    run_simplified_chillers(Q_total_list, Q_index, txt_path, file_fmu, run_mode)
+    run_simplified_chiller(Q_total_list, Q_index, txt_path, file_fmu, run_mode)
     # # GPC控制器运行
-    # run_GPC_simplified_chillers()
+    # run_GPC_simplified_chiller()
     # # 控制器整定
     # tuning_set = "smgpc"
-    # tuning_dynamics_simplified_chillers(tuning_set)
+    # tuning_dynamics_simplified_chiller(tuning_set)
     # # 模型间隙度计算
     # from gap_metric import *
     # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/gap_metric"
-    # model_list = model_dynamics_simplified_chillers()[1]
-    # # model_list = plant_dynamics_simplified_chillers()[1]
+    # model_list = model_dynamics_simplified_chiller()[1]
+    # # model_list = plant_dynamics_simplified_chiller()[1]
     # calculate_gap_metric(path_matlab, model_list)

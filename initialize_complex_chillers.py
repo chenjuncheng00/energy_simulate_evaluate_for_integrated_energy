@@ -5,10 +5,10 @@ from model_fmu_input_type import chiller_input_type, cold_storage_input_type, \
 from model_fmu_input_data_default import chiller_input_data_default, cold_storage_input_data_default, \
                                          simple_load_input_data_default, environment_input_data_default
 
-def initialize_simple_system(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
-                             output_interval, time_out, tolerance, txt_path):
+def initialize_complex_chillers(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
+                                output_interval, time_out, tolerance, txt_path):
     """
-    初始化简单模型：冷水机+蓄冷水罐+简单负荷
+    初始化模型：冷水机+蓄冷水罐+简单负荷
     Args:
         file_fmu_time: [string]，储存FMU模型仿真时间(start_time)的文件路径
         file_fmu_state: [string]，储存FMU模型状态的文件路径
