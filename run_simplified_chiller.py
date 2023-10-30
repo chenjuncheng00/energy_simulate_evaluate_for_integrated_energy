@@ -6,7 +6,7 @@ from fmpy import *
 from GPC_universal import *
 from algorithm_code import *
 from air_conditioner_dynamic import *
-from tuning_dynamics_model import tuning_mmgpc, tuning_smgpc
+from run_tuning_dynamics_model import tuning_mmgpc, tuning_smgpc
 from model_simplified_chiller import (model_input_type, model_dynamics_simplified_chiller,
                                       plant_dynamics_simplified_chiller)
 

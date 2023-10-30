@@ -71,13 +71,14 @@ def run_equipment_characteristic(fmu_path):
                                            cooling_tower_approach_result_txt_path)
 
 
-def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
+def run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode):
     """
 
     Args:
         fmu_path: [string]，FMU文件路径
         path_matlab: [string]，matlab文件所在的路径
         txt_path: [string]，相对路径
+        identify_mode: [int]，0:仅冷水机；1:冷水机+空气源热泵
 
     Returns:
 
@@ -91,38 +92,38 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path):
     Ts = 10 * 60  # 采样时间
     time_out = 600
     tolerance = 0.0001
-    chiller_equipment_type_path = ["chiller", txt_path]
     cfg_path_equipment = "./config/equipment_config.cfg"
     cfg_path_public = "./config/public_config.cfg"
     # EER数据获取模型，0：直接读取FMU数据；1：保持Q不变，自行计算
     EER_mode = 0
-    # 需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
-    chiller_object_list = ["Teo", "Few", "Fcw", "Fca"]
-    # 模型输出模式：EER/Tei
-    chiller_Y_mode_list = ["EER", "Tei"]
     # 辨识的冷负荷列表，单位：kW
-    # chiller_Q_list = [14000, 13500, 13000, 12500, 12000, 11500, 11000, 10500, 10000, 9500, 9000, 8500, 8000,
-    #                   7500, 7000, 6500, 6000, 5500, 5000, 4500, 4000, 3500, 3000, 2500, 2000]
-    chiller_Q_list = [11000]
+    if identify_mode == 0:
+        Q_list = [14000, 13500, 13000, 12500, 12000, 11500, 11000, 10500, 10000, 9500, 9000, 8500, 8000,
+                  7500, 7000, 6500, 6000, 5500, 5000, 4500, 4000, 3500, 3000, 2500, 2000]
+    elif identify_mode == 1:
+        Q_list = [14600, 15200, 15800, 16400, 17000, 17600]
+        # Q_list = [16400]
+    else:
+        Q_list = []
     # 传递函数极点的最大数
     np_max = 3
     # 系统辨识得分的目标
-    fitpercent_target_list = [95, 90, 85, 80, 75, 70]
+    fitpercent_target_list = [95, 90, 85, 80, 75, 70, 65, 60, 55, 50]
     main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                  Ts, time_out, tolerance, np_max, fitpercent_target_list, EER_mode, chiller_object_list,
-                                  chiller_Y_mode_list, chiller_Q_list, chiller_equipment_type_path,
-                                  cfg_path_equipment, cfg_path_public)
+                                  Ts, time_out, tolerance, np_max, fitpercent_target_list, EER_mode, Q_list, txt_path,
+                                  cfg_path_equipment, cfg_path_public, identify_mode)
 
 
 if __name__ == "__main__":
-    # # 水力特性模型辨识
-    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
-    # run_identify_hydraulic_characteristic(fmu_path)
-    # # 设备性能模型辨识
-    # fmu_path = "./model_data/file_fmu/system_characteristic_Cvode.fmu"
-    # run_equipment_characteristic(fmu_path)
+    # # # 水力特性模型辨识
+    # # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
+    # # run_identify_hydraulic_characteristic(fmu_path)
+    # # # 设备性能模型辨识
+    # # fmu_path = "./model_data/file_fmu/system_characteristic_Cvode.fmu"
+    # # run_equipment_characteristic(fmu_path)
     # 系统动态特性辨识
+    identify_mode = 1  # 0:仅冷水机；1:冷水机+空气源热泵
     path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
     fmu_path = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
     txt_path = "../optimal_control_algorithm_for_cooling_season"
-    run_identify_system_dynamics(fmu_path, path_matlab, txt_path)
+    run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)

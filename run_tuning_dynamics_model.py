@@ -2,7 +2,7 @@ import time
 import numpy as np
 from GPC_tuning import *
 from algorithm_code import *
-from model_fmu_dynamics import model_dynamics_complex_chillers
+from model_fmu_dynamics import model_dynamics_complex_chiller, model_dynamics_chiller_ashp
 
 def tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
                  y_gpc_list, fit_target):
@@ -150,8 +150,15 @@ def tuning_mmgpc(path_result_mmgpc, model_info, file_path_init, L, Ts, yr_list, 
 
 
 if __name__ == "__main__":
+    # model_mode: 0:仅冷水机；1:冷水机+空气源热泵
+    model_mode = 1
     # 系统模型
-    model_info = model_dynamics_complex_chillers()
+    if model_mode == 0:
+        model_info = model_dynamics_complex_chiller()
+    elif model_mode == 1:
+        model_info = model_dynamics_chiller_ashp()
+    else:
+        model_info = None
     # 控制器目标
     y_gpc_list = ['EER', 'Tei']
     # 仿真时长和采样周期，单位：秒
@@ -208,7 +215,12 @@ if __name__ == "__main__":
     # 情况txt内容
     clear_all_txt_data(path_result_root)
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data/simple_system'
+    if model_mode == 0:
+        file_path_init = 'model_data/GPC_data/complex_chiller'
+    elif model_mode == 1:
+        file_path_init = 'model_data/GPC_data/chiller_ashp'
+    else:
+        file_path_init = ''
     # smgpc整定
     tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
                  y_gpc_list, fit_target)

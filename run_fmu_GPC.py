@@ -1,7 +1,9 @@
 from GPC_universal import *
-from model_fmu_dynamics import model_dynamics_complex_chillers
+from model_fmu_dynamics import model_dynamics_complex_chiller, model_dynamics_chiller_ashp
 
 if __name__ == "__main__":
+    # model_mode: 0:仅冷水机；1:冷水机+空气源热泵
+    model_mode = 1
     # 仿真类型：smgpc、mmgpc
     simulate_mode = 'mmgpc'
     # 控制器目标
@@ -11,10 +13,10 @@ if __name__ == "__main__":
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
     ms_mode = 0
 
-    # MMGPC内置模型编号
-    model_index = 5
+    # MMGPC内置模型编号,1
+    model_index = 0
     # 用于测试的被控对象模型编号
-    plant_index = 2
+    plant_index = 4
 
     # 仿真时长和采样周期，单位：秒
     L = 24 * 3600
@@ -74,7 +76,12 @@ if __name__ == "__main__":
     u_limit_list = [[6, 15], [350, 3500], [450, 4200], [30, 300]]
 
     # MMGPC内置系统动态模型
-    ans_model = model_dynamics_complex_chillers()
+    if model_mode == 0:
+        ans_model = model_dynamics_complex_chiller()
+    elif model_mode == 1:
+        ans_model = model_dynamics_chiller_ashp()
+    else:
+        ans_model = None
     Q_model_list = ans_model[0]
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
         model_list = ans_model[1]
@@ -98,7 +105,12 @@ if __name__ == "__main__":
 
     # mmgpc仿真参数设置
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data/simple_system'
+    if model_mode == 0:
+        file_path_init = 'model_data/GPC_data/complex_chiller'
+    elif model_mode == 1:
+        file_path_init = 'model_data/GPC_data/chiller_ashp'
+    else:
+        file_path_init = ''
     # 多模型权值系数的递推计算收敛系数
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
         s_list = [s_EER, s_Tei]
