@@ -2,18 +2,18 @@ import pickle
 import numpy as np
 from fmpy import *
 from algorithm_code import *
-from model_fmu_output_name import chiller_output_name, cold_storage_output_name, simple_load_output_name
-from model_fmu_input_type import chiller_input_type, cold_storage_input_type, simple_load_input_type, \
-                                 environment_input_type
-from model_fmu_dynamics import model_dynamics_complex_chillers
-from initialize_complex_chillers import initialize_complex_chillers
+from model_fmu_output_name import main_model_output_name
+from model_fmu_input_name import main_model_input_name
+from model_fmu_input_type import load_input_type
+from model_fmu_dynamics import model_dynamics_complex_chiller
+from initialize_integrated_system import initialize_integrated_system
 from run_initialize import run_initialize
 from get_fmu_real_data import get_chiller_input_real_data, get_storage_input_real_data
 
-def run_simple_system(Q_total_list, txt_path, file_fmu):
+def run_dynamics_control(Q_total_list, txt_path, file_fmu):
     """
-    冷水机+蓄冷水罐+简单的用户负荷
-    搜算优化算法+GPC控制算法
+    测试GPC控制算法
+    综合系统：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+简单负荷
     Args:
         Q_total_list: [list]，冷负荷，列表，单位：kW
         txt_path: [string]，相对路径
@@ -33,6 +33,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
 
     # 设备的pkl文件路径
     file_pkl_chiller = "./model_data/file_equipment/chiller.pkl"
+    # file_pkl_ashp = "./model_data/file_equipment/ashp.pkl"
     # file_pkl_stroage = "./model_data/file_equipment/storage.pkl"
     file_pkl_system = "./model_data/file_equipment/system.pkl"
 
@@ -64,6 +65,14 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     n0_chiller_cooling_pump2 = chiller_dict["n_chiller_cooling_pump2"]
     n0_chiller_cooling_tower = chiller_dict["n_chiller_cooling_tower"]
     n_chiller_user_value = chiller_dict["n_chiller_user_value"]
+    # # 读取空气源热泵设备信息
+    # with open(file_pkl_ashp, "rb") as f_obj:
+    #     ashp_dict = pickle.load(f_obj)
+    # # H_ashp_chilled_pump = ashp_dict["H_ashp_chilled_pump"]
+    # n0_air_source_heat_pump = ashp_dict["n_air_source_heat_pump"]
+    # n0_ashp_chilled_pump = ashp_dict["n_ashp_chilled_pump"]
+    # air_source_heat_pump = ashp_dict["air_source_heat_pump"]
+    # ashp_chilled_pump = ashp_dict["ashp_chilled_pump"]
     # # 读取蓄冷水罐设备信息
     # with open(file_pkl_stroage, "rb") as f_obj:
     #     storage_dict = pickle.load(f_obj)
@@ -98,7 +107,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     # V: 一个非常小的正实数，保证所有子控制器将来可用
     V = 0.0001
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data/simple_system'
+    file_path_init = 'model_data/GPC_data/complex_chiller'
     # MMGPC是否绘图
     mmgpc_plot_set = True
     # 是否将MMGPC各个内置模型的计算结果画图
@@ -108,7 +117,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     Ts = 10 * 60
 
     # MMGPC内置系统动态模型
-    ans_model = model_dynamics_complex_chillers()
+    ans_model = model_dynamics_complex_chiller()
     Q_model_list = ans_model[0]
     if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
         model_list = ans_model[1]
@@ -124,6 +133,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     file_Q_model_list = file_path_init + "/Q_model_list.txt"
     write_txt_data(file_Q_model_list, Q_model_list)
 
+    # 0：user_load；1：simple_load
+    load_mode = 1
     # 日志文件
     # file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
     # file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
@@ -158,12 +169,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     file_fmu_state = txt_path + "/process_data/fmu_state.txt"
     # FMU模型输出名称
     file_fmu_input_output_name = txt_path + "/process_data/fmu_input_output_name.pkl"
-    fmu_output_name = chiller_output_name()[0] + cold_storage_output_name()[0] + simple_load_output_name()
-    chiller_input_name = get_fmu_input_name(chiller_input_type()[0])
-    cold_storage_input_name = get_fmu_input_name(cold_storage_input_type()[0])
-    simple_load_input_name = get_fmu_input_name(simple_load_input_type())
-    environment_input_name = get_fmu_input_name(environment_input_type()[0])
-    fmu_input_name = chiller_input_name + cold_storage_input_name + simple_load_input_name + environment_input_name
+    fmu_output_name = main_model_output_name(load_mode)
+    fmu_input_name = main_model_input_name(load_mode)
     fmu_input_output_name = fmu_output_name + fmu_input_name
     with open(file_fmu_input_output_name, 'wb') as f:
         pickle.dump(fmu_input_output_name, f)
@@ -182,8 +189,8 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
     write_txt_data(file_fmu_result_all, [txt_str])
     write_txt_data(file_fmu_result_last, [txt_str])
     # FMU模型初始化
-    initialize_complex_chillers(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
-                                output_interval, time_out, tolerance, txt_path)
+    initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out,
+                                 tolerance, load_mode, txt_path)
     # 仿真计算
     for i in range(n_simulate):
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +
@@ -210,7 +217,7 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
         print(input_log_2)
         write_txt_data(file_fmu_input_log, [input_log_2, "\n"], 1)
         write_txt_data(file_fmu_input_feedback_log, [input_log_2, "\n"], 1)
-        input_type_list = simple_load_input_type()
+        input_type_list = load_input_type(load_mode)
         input_data_list = [Q_user * 1000]
         result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
 
@@ -277,6 +284,6 @@ def run_simple_system(Q_total_list, txt_path, file_fmu):
 
 if __name__ == "__main__":
     txt_path = "../optimal_control_algorithm_for_cooling_season"
-    file_fmu = "./model_data/file_fmu/chiller_and_storage_with_simple_load_Cvode.fmu"
+    file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
     Q_total_list = [11000]
-    run_simple_system(Q_total_list, txt_path, file_fmu)
+    run_dynamics_control(Q_total_list, txt_path, file_fmu)

@@ -5,9 +5,10 @@ from model_fmu_input_type import chiller_input_type, cold_storage_input_type, \
 from model_fmu_input_data_default import chiller_input_data_default, cold_storage_input_data_default, \
                                          simple_load_input_data_default, environment_input_data_default
 
-def initialize_complex_chillers(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
-                                output_interval, time_out, tolerance, txt_path):
+def initialize_complex_chiller(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
+                               output_interval, time_out, tolerance, txt_path):
     """
+    chiller_and_storage_with_simple_load.fmu
     初始化模型：冷水机+蓄冷水罐+简单负荷
     Args:
         file_fmu_time: [string]，储存FMU模型仿真时间(start_time)的文件路径
@@ -24,6 +25,8 @@ def initialize_complex_chillers(file_fmu_time, file_fmu_state, start_time, stop_
 
     """
     print("正在初始化FMU模型......")
+    # 0：user_load；1：simple_load
+    load_mode = 1
     # 第1步：初始化设置
     # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out, tolerance
     fmu_state_list = [1, 0, stop_time, output_interval, time_out, tolerance]
@@ -44,10 +47,10 @@ def initialize_complex_chillers(file_fmu_time, file_fmu_state, start_time, stop_
     chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_value + \
                          chiller_tower_chilled_value + chiller_user_value
     # 模型输入名称和类型
-    input_type_list = [('time', np.float_)] + environment_input_type()[0] + chiller_input_type()[0] + \
+    input_type_list = [('time', np.float_)] + environment_input_type(load_mode)[0] + chiller_input_type()[0] + \
                       cold_storage_input_type()[0] + simple_load_input_type()
     # 模型输入数据
-    input_data_list = [start_time] + environment_input_data_default() + chiller_input_data + \
+    input_data_list = [start_time] + environment_input_data_default(load_mode) + chiller_input_data + \
                       cold_storage_input_data_default() + simple_load_input_data_default()
     # FMU仿真
     main_simulate_pause_single(input_data_list, input_type_list, simulate_initialize, txt_path, add_input=False)
@@ -64,7 +67,7 @@ def initialize_complex_chillers(file_fmu_time, file_fmu_state, start_time, stop_
     # 第4步：关闭所有设备，恢复初始状态
     print("初始化FMU模型：关闭所有设备，恢复初始状态...")
     # FMU输入名称和数据类型
-    input_data_list = [t1_initialize] + environment_input_data_default() + chiller_input_data_default() + \
+    input_data_list = [t1_initialize] + environment_input_data_default(load_mode) + chiller_input_data_default() + \
                       cold_storage_input_data_default() + simple_load_input_data_default()
     # FMU仿真
     main_simulate_pause_single(input_data_list, input_type_list, simulate_time2, txt_path, add_input=False)

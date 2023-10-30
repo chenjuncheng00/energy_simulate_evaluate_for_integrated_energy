@@ -11,8 +11,9 @@ from run_initialize import run_initialize
 from get_fmu_real_data import get_chiller_input_real_data, get_ashp_input_real_data, get_storage_input_real_data, \
                               get_tower_chilled_input_real_data
 
-def run_integrated_system(txt_path, file_fmu, load_mode):
+def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     """
+    测试稳态点优化搜索算法
     综合系统：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+负荷(简单负荷 OR 复杂负荷)
     Args:
         txt_path: [string]，相对路径
@@ -369,7 +370,6 @@ def run_integrated_system(txt_path, file_fmu, load_mode):
         # 第4步：获取FMU模型的实际数据并写入txt文件
         input_log_4 = "第4步：获取FMU模型的实际数据并写入txt文件..."
         print(input_log_4)
-        print("\n")
         get_chiller_input_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
         get_ashp_input_real_data(result, ashp_equipment_type_path, cfg_path_equipment)
         get_storage_input_real_data(result, storage_equipment_type_path, cfg_path_equipment)
@@ -408,4 +408,4 @@ if __name__ == "__main__":
     else:
         file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
     # 执行程序
-    run_integrated_system(txt_path, file_fmu, load_mode)
+    run_run_steady_optimize(txt_path, file_fmu, load_mode)

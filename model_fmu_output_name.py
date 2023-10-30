@@ -214,7 +214,7 @@ def load_output_name(load_mode):
     if load_mode == 0:
         load_output = user_load_output_name()[0]
     else:
-        load_output = simple_load_output_name()
+        load_output = simple_load_output_name()[0]
     # 返回结果
     return load_output
 
@@ -253,6 +253,12 @@ def simple_load_output_name():
 
     """
     # 制冷功率，单位：kW
-    user_Q = ['user_Q_chiller', 'user_Q_ashp', 'user_Q_storage', 'user_Q_tower_chilled']
+    Q = ['user_Q_total', 'user_Q_chiller', 'user_Q_ashp', 'user_Q_storage', 'user_Q_tower_chilled']
+    # 冷冻水流量，单位：t/h
+    Few = ['user_Few_total']
+    # 冷冻水温度，单位：℃
+    Te = ['user_Ted', 'user_Tei', 'user_Teo']
+    # 总输出
+    user_output = Q + Few + Te
     # 返回结果
-    return user_Q
+    return user_output, Q, Few, Te
