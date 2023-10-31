@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
     ms_mode = 0
 
-    # MMGPC内置模型编号,1
+    # MMGPC内置模型编号
     model_index = 0
     # 用于测试的被控对象模型编号
     plant_index = 4
@@ -49,10 +49,16 @@ if __name__ == "__main__":
     # 控制指令u初始值
     # Teo, Few, Fcw, Fca
     Teo0 = 8
-    Few0 = 1435
+    Few10 = 1435
     Fcw0 = 1675
     Fca0 = 200
-    u_0_list = [Teo0, Few0, Fcw0, Fca0]
+    Few20 = 400
+    if model_mode == 0:
+        u_0_list = [Teo0, Few10, Fcw0, Fca0]
+    elif model_mode == 1:
+        u_0_list = [Teo0, Few10, Fcw0, Fca0, Few20]
+    else:
+        u_0_list = []
     # 输出的目标值yr
     yr_EER_list = []
     yr_Tei_list = []
@@ -72,9 +78,15 @@ if __name__ == "__main__":
     else:
         yr_list = []
     # 控制量限制
-    du_limit_list = [1, 50, 50, 50]
-    u_limit_list = [[6, 15], [350, 3500], [450, 4200], [30, 300]]
-
+    if model_mode == 0:
+        du_limit_list = [1, 50, 50, 50]
+        u_limit_list = [[6, 15], [350, 3500], [450, 4200], [30, 300]]
+    elif model_mode == 1:
+        du_limit_list = [1, 50, 50, 50, 50]
+        u_limit_list = [[6, 15], [350, 3500], [450, 4200], [30, 300], [100, 800]]
+    else:
+        du_limit_list = []
+        u_limit_list = []
     # MMGPC内置系统动态模型
     if model_mode == 0:
         ans_model = model_dynamics_complex_chiller()
