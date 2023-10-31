@@ -146,7 +146,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
     """
     # 需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
     object_list = ["Teo", "Few", "Fcw", "Fca"]
-    x_column_max_list = [1, 1, 1, 1]
+    n_object_list = [1, 1, 1, 1]
     # 模型输出模式：EER/Tei
     Y_mode_list = ["EER", "Tei"]
     # 设备类型名称，相对路径，设备名称类型一定要是列表
@@ -481,7 +481,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输出：" + Y_mode + "，正在进行传递函数辨识!")
                 info_txt = "Q=" + str(round(Q_input, 2)) + "kW"
                 # 传递函数系统辨识
-                ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, object_list, x_column_max_list, np_max,
+                ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, object_list, n_object_list, np_max,
                                                     fitpercent_target_list, i + 1, Y_mode, True)
                 tf_txt = "# " + Y_mode + "模型: " + info_txt + "\n"
                 tf_txt += ans_tf
@@ -559,7 +559,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
     # 需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
     object_list = ["Teo", "chiller_Few", "Fcw", "Fca", "ashp_Few"]
     estf_object_list = ["Teo", "Few", "Fcw", "Fca"]
-    x_column_max_list = [1, 3, 1, 1]  # 一定是奇数
+    n_object_list = [1, 2, 1, 1]
     # 模型输出模式：EER/Tei
     Y_mode_list = ["EER", "Tei"]
     # 设备类型
@@ -1002,7 +1002,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + Y_mode + "，正在进行传递函数辨识!")
                 info_txt = "Q=" + str(round(Q_input, 2)) + "kW"
                 # 传递函数系统辨识
-                ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, estf_object_list, x_column_max_list,
+                ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, estf_object_list, n_object_list,
                                                     np_max, fitpercent_target_list, i + 1, Y_mode, True)
                 tf_txt = "# " + Y_mode + "模型: " + info_txt + "\n"
                 tf_txt += ans_tf
