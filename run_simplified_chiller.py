@@ -179,13 +179,13 @@ def run_simplified_chiller(Q_total_list, Q_index, txt_path, file_fmu, run_mode):
     with open(file_fmu_input_output_name, 'wb') as f:
         pickle.dump(fmu_input_output_name, f)
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
-    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
+    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.log"
+    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.log"
     txt_str = "start_time" + "\t" + "pause_time"
     for i in range(len(fmu_input_output_name)):
         txt_str += "\t" + fmu_input_output_name[i]
-    write_txt_data(file_fmu_result_all, [txt_str])
-    write_txt_data(file_fmu_result_last, [txt_str])
+    write_log_data(file_fmu_result_all, [txt_str], "data")
+    write_log_data(file_fmu_result_last, [txt_str], "data")
 
     # 系统动态特性辨识
     if run_mode == "identify":

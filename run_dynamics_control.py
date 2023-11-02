@@ -90,8 +90,8 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         system_dict = pickle.load(f_obj)
     n_calculate_hour = system_dict["n_calculate_hour"]
     # 日志文件
-    file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
-    file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
+    file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.log"
+    file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.log"
 
     # 用于MMGPC控制器的列表
     H_chilled_pump_list = [H_chiller_chilled_pump, H_ashp_chilled_pump]
@@ -159,9 +159,6 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
 
     # 0：user_load；1：simple_load
     load_mode = 1
-    # 日志文件
-    # file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
-    # file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
     # 计算总次数
     n_simulate = len(Q_total_list)
     # 模型仿真时间
@@ -206,13 +203,13 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
     write_txt_data(file_Q_user, [Q_user_all_list[0]])
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
-    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
+    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.log"
+    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.log"
     txt_str = "start_time" + "\t" + "pause_time"
     for i in range(len(fmu_input_output_name)):
         txt_str += "\t" + fmu_input_output_name[i]
-    write_txt_data(file_fmu_result_all, [txt_str])
-    write_txt_data(file_fmu_result_last, [txt_str])
+    write_log_data(file_fmu_result_all, [txt_str], "data")
+    write_log_data(file_fmu_result_last, [txt_str], "data")
     # FMU模型初始化
     initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval, time_out,
                                  tolerance, load_mode, txt_path)
@@ -239,8 +236,8 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         # 第2步：用向用户侧供冷供冷，冷水机优化和控制
         input_log_2 = "第2步：用向用户侧供冷供冷，冷水机优化和控制..."
         print(input_log_2)
-        write_txt_data(file_fmu_input_log, [input_log_2, "\n"], 1)
-        write_txt_data(file_fmu_input_feedback_log, [input_log_2, "\n"], 1)
+        write_log_data(file_fmu_input_log, [input_log_2], "info")
+        write_log_data(file_fmu_input_feedback_log, [input_log_2], "info")
         algorithm_chiller_double(chiller_Q_user, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                  chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
                                  chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
@@ -252,8 +249,8 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         # 第3步：用向用户侧供冷功率，空气源热泵优化和控制
         input_log_3 = "第3步：用向用户侧供冷功率，空气源热泵优化和控制..."
         print(input_log_3)
-        write_txt_data(file_fmu_input_log, [input_log_3, "\n"], 1)
-        write_txt_data(file_fmu_input_feedback_log, [input_log_3, "\n"], 1)
+        write_log_data(file_fmu_input_log, [input_log_3], "info")
+        write_log_data(file_fmu_input_feedback_log, [input_log_3], "info")
         ashp_Q_user = min(Q_total - chiller_Q_user, ashp_Q0_max)
         ashp_chilled_pump_H = 0.67 * chiller_user_chilled_pump_H
         algorithm_air_source_heat_pump(ashp_Q_user, ashp_chilled_pump_H, 0, air_source_heat_pump, ashp_chilled_pump,
@@ -263,8 +260,8 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         # 第4步：持续仿真，使得系统稳定下来
         input_log_4 = "第4步：持续仿真，使得系统稳定下来..."
         print(input_log_4)
-        write_txt_data(file_fmu_input_log, [input_log_4, "\n"], 1)
-        write_txt_data(file_fmu_input_feedback_log, [input_log_4, "\n"], 1)
+        write_log_data(file_fmu_input_log, [input_log_4], "info")
+        write_log_data(file_fmu_input_feedback_log, [input_log_4], "info")
         input_type_list = load_input_type(load_mode)
         input_data_list = [Q_user * 1000]
         result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
@@ -280,8 +277,8 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         # 第6步：MMGPC对EER和Tei进行控制
         input_log_6 = "第6步：MMGPC对EER和Tei进行控制..."
         print(input_log_6)
-        write_txt_data(file_fmu_input_log, [input_log_6, "\n"], 1)
-        write_txt_data(file_fmu_input_feedback_log, [input_log_6, "\n"], 1)
+        write_log_data(file_fmu_input_log, [input_log_6], "info")
+        write_log_data(file_fmu_input_feedback_log, [input_log_6], "info")
         Teo0 = result['chiller_Teo_set'][-1]
         chiller_Few0 = result['chiller_Few_total'][-1]
         chiller_Fcw0 = result['chiller_Fcw_total'][-1]
