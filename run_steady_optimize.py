@@ -91,8 +91,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     n_calculate_hour = system_dict["n_calculate_hour"]
 
     # 日志文件
-    file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.txt"
-    file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.txt"
+    file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.log"
+    file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.log"
     # FMU仿真参数
     if load_mode == 0:
         start_time = (31 + 28 + 31 + 28) * 24 * 3600
@@ -137,13 +137,13 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
     write_txt_data(file_Q_user, [Q_user_all_list[0]])
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
-    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
+    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.log"
+    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.log"
     txt_str = "start_time" + "\t" + "pause_time"
     for i in range(len(fmu_input_output_name)):
         txt_str += "\t" + fmu_input_output_name[i]
-    write_txt_data(file_fmu_result_all, [txt_str])
-    write_txt_data(file_fmu_result_last, [txt_str])
+    write_log_data(file_fmu_result_all, [txt_str], "data")
+    write_log_data(file_fmu_result_last, [txt_str], "data")
     # FMU模型初始化
     init_time_total = initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop_time,
                                                    output_interval, time_out, tolerance, load_mode, txt_path)
@@ -203,8 +203,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-3步：用向用户侧供冷供冷+蓄冷功率，冷水机优化和控制，但是不进行冷冻水泵控制
             input_log_2_3 = "第2-3步：用向用户侧供冷供冷+蓄冷功率，冷水机优化和控制，但是不进行冷冻水泵控制..."
             print(input_log_2_3)
-            write_txt_data(file_fmu_input_log, [input_log_2_3, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_3, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_3], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_3], "info")
             chiller_Q_total = min(Q_total, chiller_Q0_max)
             algorithm_chiller_double(chiller_Q_total, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                      chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
@@ -217,8 +217,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-4步：用向用户侧供冷功率，冷水机优化和控制，仅进行冷冻水泵控制
             input_log_2_4 = "第2-4步：用向用户侧供冷功率，冷水机优化和控制，仅进行冷冻水泵控制..."
             print(input_log_2_4)
-            write_txt_data(file_fmu_input_log, [input_log_2_4, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_4, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_4], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_4], "info")
             chiller_Few_user = chiller_Q_user * 3.6 / 4.18 / Ted_set
             algorithm_chilled_pump(chiller_Few_user, H_chiller_chilled_pump, 0, chiller_user_chilled_value_open,
                                    chiller_chilled_pump_list, [], n_chiller_chilled_pump_list, [],
@@ -227,8 +227,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-5步：蓄冷水罐和水泵优化+控制，蓄冷工况
             input_log_2_5 = "第2-5步：蓄冷水罐和水泵优化+控制，蓄冷工况..."
             print(input_log_2_5)
-            write_txt_data(file_fmu_input_log, [input_log_2_5, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_5, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_5], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_5], "info")
             H_chilled_pump_to_user = 0.65 * chiller_user_chilled_pump_H
             H_chilled_pump_in_storage = 0.65 * chiller_user_chilled_pump_H
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
@@ -241,8 +241,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-6步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_6 = "第2-6步：用向用户侧供冷功率，空气源热泵优化和控制..."
             print(input_log_2_6)
-            write_txt_data(file_fmu_input_log, [input_log_2_6, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_6, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_6], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_6], "info")
             ashp_Q_user = min(Q_user - chiller_Q_user, ashp_Q0_max)
             H_ashp_chilled_pump = 0.65 * chiller_user_chilled_pump_H
             algorithm_air_source_heat_pump(ashp_Q_user, H_ashp_chilled_pump, 0, air_source_heat_pump,
@@ -266,8 +266,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-2步：蓄冷水罐和水泵优化+控制，供冷工况
             input_log_2_2 = "第2-2步：蓄冷水罐和水泵优化+控制，供冷工况..."
             print(input_log_2_2)
-            write_txt_data(file_fmu_input_log, [input_log_2_2, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_2, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_2], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_2], "info")
             H_chilled_pump_to_user = 0.65 * chiller_user_chilled_pump_H
             H_chilled_pump_in_storage = 0.65 * chiller_user_chilled_pump_H
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
@@ -280,8 +280,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-3步：用向用户侧供冷供冷，冷水机优化和控制
             input_log_2_3 = "第2-3步：用向用户侧供冷供冷，冷水机优化和控制..."
             print(input_log_2_3)
-            write_txt_data(file_fmu_input_log, [input_log_2_3, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_3, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_3], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_3], "info")
             algorithm_chiller_double(chiller_Q_user, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                      chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
                                      chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
@@ -293,8 +293,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-4步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_4 = "第2-4步：用向用户侧供冷功率，空气源热泵优化和控制..."
             print(input_log_2_4)
-            write_txt_data(file_fmu_input_log, [input_log_2_4, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_4, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_4], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_4], "info")
             ashp_Q_user = min(Q_total - chiller_Q_user, ashp_Q0_max)
             H_ashp_chilled_pump = 0.65 * chiller_user_chilled_pump_H
             algorithm_air_source_heat_pump(ashp_Q_user, H_ashp_chilled_pump, 0, air_source_heat_pump,
@@ -304,8 +304,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-1步：Q_out_ese=0，蓄冷水罐控制，目的是关闭蓄冷水罐及其系统
             input_log_2_1 = "第2-1步：Q_out_ese=0，蓄冷水罐控制，目的是关闭蓄冷水罐及其系统..."
             print(input_log_2_1)
-            write_txt_data(file_fmu_input_log, [input_log_2_1, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_1, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_1], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_1], "info")
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
                                                energy_storage_equipment, chilled_pump_to_user, chilled_pump_in_storage,
                                                None, None, 0, 0, 0, n_chilled_value_in_storage, n_chilled_value_to_user,
@@ -328,8 +328,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-3步：用向用户侧供冷供冷，冷水机优化和控制
             input_log_2_3 = "第2-3步：用向用户侧供冷供冷，冷水机优化和控制..."
             print(input_log_2_3)
-            write_txt_data(file_fmu_input_log, [input_log_2_3, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_3, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_3], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_3], "info")
             algorithm_chiller_double(chiller_Q_user, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
                                      chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
                                      chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
@@ -341,8 +341,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             # 第2-4步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_4 = "第2-4步：用向用户侧供冷功率，空气源热泵优化和控制..."
             print(input_log_2_4)
-            write_txt_data(file_fmu_input_log, [input_log_2_4, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_2_4, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_2_4], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_2_4], "info")
             ashp_Q_user = min(Q_total - chiller_Q_user, ashp_Q0_max)
             H_ashp_chilled_pump = 0.65 * chiller_user_chilled_pump_H
             algorithm_air_source_heat_pump(ashp_Q_user, H_ashp_chilled_pump, 0, air_source_heat_pump,
@@ -354,8 +354,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
         # 第3步：获取time，并仿真到指定时间
         input_log_3 = "第3步：获取time，并仿真到指定时间..."
         print(input_log_3)
-        write_txt_data(file_fmu_input_log, [input_log_3, "\n"], 1)
-        write_txt_data(file_fmu_input_feedback_log, [input_log_3, "\n"], 1)
+        write_log_data(file_fmu_input_log, [input_log_3], "info")
+        write_log_data(file_fmu_input_feedback_log, [input_log_3], "info")
         time_now = read_txt_data(file_fmu_time)[0]
         n_cal_now = int((time_now - start_time) / (3600 * (1 / n_calculate_hour)))
         simulate_time = start_time + (n_cal_now + 1) * 3600 * (1 / n_calculate_hour) - time_now
@@ -379,8 +379,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
         if load_mode == 0:
             input_log_5 = "第5步：根据用户末端室内的温湿度，修正Teo..."
             print(input_log_5)
-            write_txt_data(file_fmu_input_log, [input_log_5, "\n"], 1)
-            write_txt_data(file_fmu_input_feedback_log, [input_log_5, "\n"], 1)
+            write_log_data(file_fmu_input_log, [input_log_5], "info")
+            write_log_data(file_fmu_input_feedback_log, [input_log_5], "info")
             algorithm_Teo_set_user(chiller_equipment_type_path, n_calculate_hour)
             algorithm_Teo_set_user(ashp_equipment_type_path, n_calculate_hour)
         else:

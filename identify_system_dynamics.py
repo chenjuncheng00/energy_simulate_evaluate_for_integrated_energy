@@ -47,8 +47,8 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
     # FMU模型输出名称
     file_fmu_input_output_name = txt_path + "/process_data/fmu_input_output_name.pkl"
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.txt"
-    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.txt"
+    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.log"
+    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.log"
     # 设备的pkl文件路径
     file_pkl_chiller = "./model_data/file_equipment/chiller.pkl"
     file_pkl_ashp = "./model_data/file_equipment/ashp.pkl"
@@ -219,8 +219,8 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 txt_str = "start_time" + "\t" + "pause_time"
                 for k in range(len(fmu_input_output_name)):
                     txt_str += "\t" + fmu_input_output_name[k]
-                write_txt_data(file_fmu_result_all, [txt_str])
-                write_txt_data(file_fmu_result_last, [txt_str])
+                write_log_data(file_fmu_result_all, [txt_str], "data")
+                write_log_data(file_fmu_result_last, [txt_str], "data")
                 # 模型初始化和实例化
                 fmu_instance = instantiate_fmu(unzipdir=fmu_unzipdir, model_description=fmu_description)
                 # 获取内存地址
@@ -651,8 +651,8 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 txt_str = "start_time" + "\t" + "pause_time"
                 for k in range(len(fmu_input_output_name)):
                     txt_str += "\t" + fmu_input_output_name[k]
-                write_txt_data(file_fmu_result_all, [txt_str])
-                write_txt_data(file_fmu_result_last, [txt_str])
+                write_log_data(file_fmu_result_all, [txt_str], "data")
+                write_log_data(file_fmu_result_last, [txt_str], "data")
                 # 模型初始化和实例化
                 fmu_instance = instantiate_fmu(unzipdir=fmu_unzipdir, model_description=fmu_description)
                 # 获取内存地址

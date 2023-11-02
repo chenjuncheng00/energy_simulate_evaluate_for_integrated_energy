@@ -65,8 +65,10 @@ def run_initialize(txt_path):
     write_txt_data(file_storage_E, [energy_storage_equipment_E0])
 
     # FMU仿真结果
-    path_fmu_result = "./model_data/simulate_result"
+    path_fmu_result = "./model_data/simulate_result/"
     clear_all_txt_data(path_fmu_result)
+    # 删除已有的.log文件
+    delete_all_file(path_fmu_result, ".log")
     # 冷负荷总需求功率
     file_Q_total = "./model_data/simulate_result/fmu_Q_user.txt"
     write_txt_data(file_Q_total, [10000])
