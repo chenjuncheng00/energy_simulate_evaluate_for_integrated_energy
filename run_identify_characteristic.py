@@ -2,12 +2,14 @@ from fmpy import extract, read_model_description
 from identify_hydraulic_characteristic import main_identify_hydraulic_characteristic
 from identify_equipment_characteristic import main_identify_equipment_characteristic
 from identify_system_dynamics import main_identify_system_dynamics
+from identify_user_characteristic import identify_user_characteristic
 
-def run_identify_hydraulic_characteristic(fmu_path):
+def run_identify_hydraulic_characteristic(fmu_path, load_mode):
     """
 
     Args:
         fmu_path: [string]，FMU文件路径
+        load_mode: [int]，0：user_load；1：simple_load
 
     Returns:
 
@@ -33,8 +35,8 @@ def run_identify_hydraulic_characteristic(fmu_path):
     fmu_unzipdir = extract(fmu_path)
     fmu_description = read_model_description(fmu_unzipdir)
     # 水力特性辨识
-    main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
-                                           time_out, tolerance, n_cal_f_pump, cfg_path_equipment,
+    main_identify_hydraulic_characteristic(fmu_unzipdir, fmu_description, load_mode, start_time, stop_time,
+                                           output_interval, time_out, tolerance, n_cal_f_pump, cfg_path_equipment,
                                            chiller_chilled_result_txt_path, chiller_cooling_result_txt_path,
                                            ashp_chilled_result_txt_path, storage_from_chiller_result_txt_path,
                                            storage_to_user_result_txt_path, chiller_user_storage_result_txt_path,
@@ -114,16 +116,43 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
                                   cfg_path_equipment, cfg_path_public, identify_mode)
 
 
+def run_identify_user_characteristic(fmu_path):
+    """
+
+    Args:
+        fmu_path: [string]，FMU文件路径
+
+    Returns:
+
+    """
+    fmu_unzipdir = extract(fmu_path)
+    fmu_description = read_model_description(fmu_unzipdir)
+    start_time = (31 + 28 + 31 + 30 + 31) * 24 * 3600
+    stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30) * 24 * 3600
+    output_interval = 3600
+    time_out = 600
+    tolerance = 0.0001
+    Teo_min = 5
+    Teo_max = 10
+    Tdi_target = 26
+    identify_user_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval, time_out,
+                                 tolerance, Teo_min, Teo_max, Tdi_target)
+
+
 if __name__ == "__main__":
-    # # # 水力特性模型辨识
-    # # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
-    # # run_identify_hydraulic_characteristic(fmu_path)
-    # # # 设备性能模型辨识
-    # # fmu_path = "./model_data/file_fmu/system_characteristic_Cvode.fmu"
-    # # run_equipment_characteristic(fmu_path)
-    # 系统动态特性辨识
-    identify_mode = 1  # 0:仅冷水机；1:冷水机+空气源热泵
-    path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
-    fmu_path = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
-    run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
+    # # 水力特性模型辨识
+    # load_mode = 0
+    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
+    # run_identify_hydraulic_characteristic(fmu_path, load_mode)
+    # # 设备性能模型辨识
+    # fmu_path = "./model_data/file_fmu/equipment_characteristic_Cvode.fmu"
+    # run_equipment_characteristic(fmu_path)
+    # # 系统动态特性辨识
+    # identify_mode = 1  # 0:仅冷水机；1:冷水机+空气源热泵
+    # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
+    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
+    # txt_path = "../optimal_control_algorithm_for_cooling_season"
+    # run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
+    # 用户侧特性辨识
+    fmu_path = "./model_data/file_fmu/user_characteristic_Cvode.fmu"
+    run_identify_user_characteristic(fmu_path)
