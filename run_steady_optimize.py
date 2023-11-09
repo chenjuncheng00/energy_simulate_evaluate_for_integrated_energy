@@ -91,12 +91,12 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     n_calculate_hour = system_dict["n_calculate_hour"]
 
     # 日志文件
-    file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.log"
-    file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.log"
+    file_fmu_input_log = "./model_data/simulate_log/fmu_input_log.log"
+    file_fmu_input_feedback_log = "./model_data/simulate_log/fmu_input_feedback_log.log"
     # FMU仿真参数
     if load_mode == 0:
-        start_time = (31 + 28 + 31 + 28) * 24 * 3600
-        stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31) * 24 * 3600 - 3600
+        start_time = (31 + 28 + 31 + 30 + 31 + 30) * 24 * 3600
+        stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30) * 24 * 3600 - 3600
     else:
         start_time = 0
         stop_time = 141 * 24 * 3600 - 3600
@@ -131,14 +131,14 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     Q0_total_in = chiller_Q0_max
     Q0_total_out = chiller_Q0_max + ashp_Q0_max
     # 冷负荷总需求功率
-    file_Q_user = "./model_data/simulate_result/fmu_Q_user.txt"
-    file_Q_user_list = "./model_data/fmu_Q_user_list.txt"
+    file_Q_user = "./model_data/file_Q/fmu_Q_user.txt"
+    file_Q_user_list = "./model_data/file_Q/fmu_Q_user_list.txt"
     Q_time_all_list = read_txt_data(file_Q_user_list, column_index=0)
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
     write_txt_data(file_Q_user, [Q_user_all_list[0]])
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.log"
-    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.log"
+    file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
+    file_fmu_result_last = "./model_data/simulate_log/fmu_result_last.log"
     txt_str = "start_time" + "\t" + "pause_time"
     for i in range(len(fmu_input_output_name)):
         txt_str += "\t" + fmu_input_output_name[i]

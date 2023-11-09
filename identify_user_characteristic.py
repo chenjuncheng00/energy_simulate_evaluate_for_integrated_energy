@@ -23,7 +23,7 @@ def identify_user_characteristic(fmu_unzipdir, fmu_description, start_time, stop
     # 储存结果的开始编号，第一天的数据不储存
     start_index = int(24 * 3600 / output_interval)
     # 储存最终结果的文件路径
-    path_result_txt = "./model_data/file_txt/result_user_characteristic/result_user_characteristic.txt"
+    path_result_txt = "./model_data/file_identify/result_user_characteristic/result_user_characteristic.txt"
     txt_str = ("冷冻水出水温度" + "\t" + "冷冻水流量" + "\t" + "室内干球温度" + "\t" + "室内相对湿度" + "\t" +
                "室外干球温度" + "\t" + "室外相对湿度" + "\t" + "制冷负荷" + "\t" + "冷冻水回水温度")
     result_list = [txt_str]
@@ -50,10 +50,11 @@ def identify_user_characteristic(fmu_unzipdir, fmu_description, start_time, stop
         Hro_list = list(result["user.weather_data.relHum"])[start_index:]
         Q_list = list(result["Q"])[start_index:]
         Tei_list = list(result["Tei"])[start_index:]
+        # Few和Q要乘以4，实际模型有4个房间，但是做特性辨识时只有1个
         for j in range(len(Q_list)):
-            txt_tmp = (str(Teo) + "\t" + str(round(Few_list[j], 2)) + "\t" + str(round(Tdi_list[j], 2)) + "\t" +
+            txt_tmp = (str(Teo) + "\t" + str(round(4 * Few_list[j], 2)) + "\t" + str(round(Tdi_list[j], 2)) + "\t" +
                        str(round(100 * Hri_list[j], 2)) + "\t" + str(round(Tdo_list[j] - 273.15, 2)) + "\t" +
-                       str(round(100 * Hro_list[j], 2)) + "\t" + str(round(Q_list[j], 2)) + "\t" +
+                       str(round(100 * Hro_list[j], 2)) + "\t" + str(round(4 * Q_list[j], 2)) + "\t" +
                        str(round(Tei_list[j], 2)))
             result_list.append(txt_tmp)
     # 结果写入txt文件

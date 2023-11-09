@@ -47,30 +47,30 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
     # FMU模型输出名称
     file_fmu_input_output_name = txt_path + "/process_data/fmu_input_output_name.pkl"
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.log"
-    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.log"
+    file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
+    file_fmu_result_last = "./model_data/simulate_log/fmu_result_last.log"
     # 设备的pkl文件路径
     file_pkl_chiller = "./model_data/file_equipment/chiller.pkl"
     file_pkl_ashp = "./model_data/file_equipment/ashp.pkl"
     # file_pkl_stroage = "./model_data/file_equipment/storage.pkl"
     file_pkl_system = "./model_data/file_equipment/system.pkl"
     # 用来拟合传递函数的数据储存路径：EER
-    path_Few_EER_tfdata = './model_data/file_txt/result_system_dynamics/tf_Few_EER.txt'  # 冷冻水流量
-    path_Fcw_EER_tfdata = './model_data/file_txt/result_system_dynamics/tf_Fcw_EER.txt'  # 冷却水流量
-    path_Fca_EER_tfdata = './model_data/file_txt/result_system_dynamics/tf_Fca_EER.txt'  # 冷却塔风量
-    path_Teo_EER_tfdata = './model_data/file_txt/result_system_dynamics/tf_Teo_EER.txt'  # 冷冻水出水温度
+    path_Few_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Few_EER.txt'  # 冷冻水流量
+    path_Fcw_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fcw_EER.txt'  # 冷却水流量
+    path_Fca_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fca_EER.txt'  # 冷却塔风量
+    path_Teo_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Teo_EER.txt'  # 冷冻水出水温度
     # 用来拟合传递函数的数据储存路径：Tei
-    path_Few_Tei_tfdata = './model_data/file_txt/result_system_dynamics/tf_Few_Tei.txt'  # 冷冻水流量
-    path_Fcw_Tei_tfdata = './model_data/file_txt/result_system_dynamics/tf_Fcw_Tei.txt'  # 冷却水流量
-    path_Fca_Tei_tfdata = './model_data/file_txt/result_system_dynamics/tf_Fca_Tei.txt'  # 冷却塔风量
-    path_Teo_Tei_tfdata = './model_data/file_txt/result_system_dynamics/tf_Teo_Tei.txt'  # 冷冻水出水温度
+    path_Few_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Few_Tei.txt'  # 冷冻水流量
+    path_Fcw_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fcw_Tei.txt'  # 冷却水流量
+    path_Fca_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fca_Tei.txt'  # 冷却塔风量
+    path_Teo_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Teo_Tei.txt'  # 冷冻水出水温度
     # 储存最终结果文本的文件路径
-    path_result_EER = './model_data/file_txt/result_system_dynamics/result_transfer_function_EER.txt'
-    path_result_Tei = './model_data/file_txt/result_system_dynamics/result_transfer_function_Tei.txt'
+    path_result_EER = './model_data/file_identify/result_system_dynamics/result_transfer_function_EER.txt'
+    path_result_Tei = './model_data/file_identify/result_system_dynamics/result_transfer_function_Tei.txt'
     # 传递函数数据的.txt文件文件所在的文件夹路径
-    path_tf = './model_data/file_txt/result_system_dynamics'
+    path_tf = './model_data/file_identify/result_system_dynamics'
     # 清空txt文件
-    root_path1 = "./model_data/file_txt/result_system_dynamics"
+    root_path1 = "./model_data/file_identify/result_system_dynamics"
     clear_all_txt_data(root_path1)
 
     # 冷水机系统动态特性辨识

@@ -179,8 +179,8 @@ def run_simplified_chiller(Q_total_list, Q_index, txt_path, file_fmu, run_mode):
     with open(file_fmu_input_output_name, 'wb') as f:
         pickle.dump(fmu_input_output_name, f)
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.log"
-    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.log"
+    file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
+    file_fmu_result_last = "./model_data/simulate_log/fmu_result_last.log"
     txt_str = "start_time" + "\t" + "pause_time"
     for i in range(len(fmu_input_output_name)):
         txt_str += "\t" + fmu_input_output_name[i]
@@ -612,6 +612,7 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
 
     # 需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
     object_list = ["Teo", "Few", "Fcw", "Fca"]
+    n_object_list = [1, 1, 1, 1]
     # 模型输出模式：EER/Tei
     Y_mode_list = ["EER", "Tei"]
     # 传递函数极点的最大数
@@ -622,22 +623,22 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
     path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
 
     # 用来拟合传递函数的数据储存路径：EER
-    path_Few_EER_tfdata = './model_data/file_txt/result_system_dynamics/tf_Few_EER.txt'  # 冷冻水流量
-    path_Fcw_EER_tfdata = './model_data/file_txt/result_system_dynamics/tf_Fcw_EER.txt'  # 冷却水流量
-    path_Fca_EER_tfdata = './model_data/file_txt/result_system_dynamics/tf_Fca_EER.txt'  # 冷却塔风量
-    path_Teo_EER_tfdata = './model_data/file_txt/result_system_dynamics/tf_Teo_EER.txt'  # 冷冻水出水温度
+    path_Few_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Few_EER.txt'  # 冷冻水流量
+    path_Fcw_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fcw_EER.txt'  # 冷却水流量
+    path_Fca_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fca_EER.txt'  # 冷却塔风量
+    path_Teo_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Teo_EER.txt'  # 冷冻水出水温度
     # 用来拟合传递函数的数据储存路径：Tei
-    path_Few_Tei_tfdata = './model_data/file_txt/result_system_dynamics/tf_Few_Tei.txt'  # 冷冻水流量
-    path_Fcw_Tei_tfdata = './model_data/file_txt/result_system_dynamics/tf_Fcw_Tei.txt'  # 冷却水流量
-    path_Fca_Tei_tfdata = './model_data/file_txt/result_system_dynamics/tf_Fca_Tei.txt'  # 冷却塔风量
-    path_Teo_Tei_tfdata = './model_data/file_txt/result_system_dynamics/tf_Teo_Tei.txt'  # 冷冻水出水温度
+    path_Few_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Few_Tei.txt'  # 冷冻水流量
+    path_Fcw_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fcw_Tei.txt'  # 冷却水流量
+    path_Fca_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fca_Tei.txt'  # 冷却塔风量
+    path_Teo_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Teo_Tei.txt'  # 冷冻水出水温度
     # 储存最终结果文本的文件路径
-    path_result_EER = './model_data/file_txt/result_system_dynamics/result_transfer_function_EER.txt'
-    path_result_Tei = './model_data/file_txt/result_system_dynamics/result_transfer_function_Tei.txt'
+    path_result_EER = './model_data/file_identify/result_system_dynamics/result_transfer_function_EER.txt'
+    path_result_Tei = './model_data/file_identify/result_system_dynamics/result_transfer_function_Tei.txt'
     # 传递函数数据的.txt文件文件所在的文件夹路径
-    path_tf = './model_data/file_txt/result_system_dynamics'
+    path_tf = './model_data/file_identify/result_system_dynamics'
     # 清空txt文件
-    root_path1 = "./model_data/file_txt/result_system_dynamics"
+    root_path1 = "./model_data/file_identify/result_system_dynamics"
     clear_all_txt_data(root_path1)
 
     # 仿真各个阶段的时间，单位：秒
@@ -829,7 +830,7 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
             print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输出：" + Y_mode + "，正在进行传递函数辨识!")
             info_txt = ("Q=" + str(round(Q_input, 2)) + "kW")
             # 传递函数系统辨识
-            ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, object_list, np_max,
+            ans_tf = estimate_transfer_function(path_tf, path_matlab, Ts, object_list, n_object_list, np_max,
                                                 fitpercent_target_list, i + 1, Y_mode, True)
             tf_txt = "# " + Y_mode + "模型: " + info_txt + "\n"
             tf_txt += ans_tf
@@ -948,7 +949,7 @@ def tuning_dynamics_simplified_chiller(tuning_set):
     # 设置优化目标
     fit_target = 2
     # 储存结果的文件路径
-    path_result_root = "./model_data/file_txt/result_system_dynamics"
+    path_result_root = "./model_data/file_identify/result_system_dynamics"
     path_result_smgpc = path_result_root + "/result_tuning_smgpc.txt"
     path_result_mmgpc = path_result_root + "/result_tuning_mmgpc.txt"
     # 情况txt内容
