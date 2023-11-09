@@ -22,15 +22,15 @@ def run_identify_hydraulic_characteristic(fmu_path, load_mode):
     n_cal_f_pump = 5
     pump_f0_cal = True
     cfg_path_equipment = "./config/equipment_config.cfg"
-    chiller_chilled_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/chiller_chilled.txt"
-    chiller_cooling_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/chiller_cooling.txt"
-    ashp_chilled_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/ashp_chilled.txt"
-    storage_from_chiller_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/storage_from_chiller.txt"
-    storage_to_user_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/storage_to_user.txt"
-    chiller_user_storage_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/chiller_user_storage.txt"
-    tower_chilled_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/tower_chilled.txt"
-    tower_cooling_chilled_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/tower_cooling_chilled.txt"
-    full_open_result_txt_path = "./model_data/file_txt/result_hydraulic_characteristic/full_open.txt"
+    chiller_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/chiller_chilled.txt"
+    chiller_cooling_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/chiller_cooling.txt"
+    ashp_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/ashp_chilled.txt"
+    storage_from_chiller_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/storage_from_chiller.txt"
+    storage_to_user_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/storage_to_user.txt"
+    chiller_user_storage_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/chiller_user_storage.txt"
+    tower_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/tower_chilled.txt"
+    tower_cooling_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/tower_cooling_chilled.txt"
+    full_open_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/full_open.txt"
     # 模型初始化
     fmu_unzipdir = extract(fmu_path)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -59,10 +59,10 @@ def run_equipment_characteristic(fmu_path):
     time_out = 600
     tolerance = 0.0001
     cfg_path_equipment = "./config/equipment_config.cfg"
-    chiller_big_cop_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/chiller_big_cop.txt"
-    chiller_small_cop_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/chiller_small_cop.txt"
-    ashp_cop_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/ashp_cop.txt"
-    cooling_tower_approach_result_txt_path = "./model_data/file_txt/result_equipment_characteristic/cooling_tower_approach.txt"
+    chiller_big_cop_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/chiller_big_cop.txt"
+    chiller_small_cop_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/chiller_small_cop.txt"
+    ashp_cop_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/ashp_cop.txt"
+    cooling_tower_approach_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/cooling_tower_approach.txt"
     # 模型初始化
     fmu_unzipdir = extract(fmu_path)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -129,7 +129,7 @@ def run_identify_user_characteristic(fmu_path):
     fmu_description = read_model_description(fmu_unzipdir)
     start_time = (31 + 28 + 31 + 30 + 31) * 24 * 3600
     stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30) * 24 * 3600
-    output_interval = 3600
+    output_interval = 10 * 60  # 与系统动态特性模型的采样周期Ts保持一致
     time_out = 600
     tolerance = 0.0001
     Teo_min = 5

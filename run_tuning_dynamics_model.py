@@ -209,7 +209,7 @@ if __name__ == "__main__":
     # 设置优化目标
     fit_target = 2
     # 储存结果的文件路径
-    path_result_root = "./model_data/file_txt/result_system_dynamics"
+    path_result_root = "./model_data/file_identify/result_system_dynamics"
     path_result_smgpc = path_result_root + "/result_tuning_smgpc.txt"
     path_result_mmgpc = path_result_root + "/result_tuning_mmgpc.txt"
     # 情况txt内容

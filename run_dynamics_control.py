@@ -1,5 +1,6 @@
 import pickle
 import numpy as np
+import tensorflow as tf
 from fmpy import *
 from algorithm_code import *
 from model_fmu_output_name import main_model_output_name
@@ -11,7 +12,7 @@ from run_initialize import run_initialize
 from get_fmu_real_data import (get_chiller_input_real_data, get_ashp_input_real_data, get_storage_input_real_data,
                                get_tower_chilled_input_real_data)
 
-def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
+def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
     """
     测试GPC控制算法
     综合系统：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+简单负荷
@@ -19,7 +20,7 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         Q_total_list: [list]，冷负荷，列表，单位：kW
         txt_path: [string]，相对路径
         file_fmu: [string]，FMU模型文件
-        model_mode: [int]，0:仅冷水机；1:冷水机+空气源热泵
+        load_mode: [int]，0：user_load；1：simple_load
 
     Returns:
 
@@ -34,6 +35,16 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
     tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     # 重置所有内容
     run_initialize(txt_path)
+
+    # 室外温湿度文件路径
+    ans_environment_value_txt_path = get_environment_equipment_real_value_txt_path(txt_path)
+    file_Tdo_value = ans_environment_value_txt_path[0]
+    file_Hro_value = ans_environment_value_txt_path[1]
+    # 总冷负荷
+    file_Q_total = txt_path + "/process_data/Q_total.txt"
+    # 室内温湿度控制目标值
+    Tdi_set = read_cfg_data(cfg_path_public, "计算目标设定值", "Tdi_set", 0)
+    Hri_set = read_cfg_data(cfg_path_public, "计算目标设定值", "Hri_set", 0)
 
     # 设备的pkl文件路径
     file_pkl_chiller = "./model_data/file_equipment/chiller.pkl"
@@ -90,8 +101,14 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         system_dict = pickle.load(f_obj)
     n_calculate_hour = system_dict["n_calculate_hour"]
     # 日志文件
-    file_fmu_input_log = "./model_data/simulate_result/fmu_input_log.log"
-    file_fmu_input_feedback_log = "./model_data/simulate_result/fmu_input_feedback_log.log"
+    file_fmu_input_log = "./model_data/simulate_log/fmu_input_log.log"
+    file_fmu_input_feedback_log = "./model_data/simulate_log/fmu_input_feedback_log.log"
+
+    # 加载user_Tei_model
+    path_model = "./model_data/model_user_nn.h5"
+    user_model_nn = tf.keras.models.load_model(path_model)
+    user_input_min_list = [5, 400, 22.19, 46.32, 17.17, 33.9, 2768.28, 10.54]
+    user_input_max_list = [10, 4800, 27.73, 87.07, 38.8, 100, 27040.84, 21.48]
 
     # 用于MMGPC控制器的列表
     H_chilled_pump_list = [H_chiller_chilled_pump, H_ashp_chilled_pump]
@@ -104,21 +121,12 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
     n_cooling_tower_list = [[n0_chiller_cooling_tower], []]
     equipment_type_list = ["chiller", "air_source_heat_pump"]
 
-    # 控制器目标
-    y_gpc_list = ['EER', 'Tei']
     # MMGPC的计算模式，bayes、ms、itae
     mmgpc_mode = "ms"
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
     ms_mode = 0
     # 多模型权值系数的递推计算收敛系数
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
-        s_list = [1, 100]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
-        s_list = [1]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
-        s_list = [100]
-    else:
-        s_list = []
+    s_list = [1, 100]
     # V: 一个非常小的正实数，保证所有子控制器将来可用
     V = 0.0001
     # MMGPC是否绘图
@@ -126,54 +134,45 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
     # 是否将MMGPC各个内置模型的计算结果画图
     model_plot_set = False
     # MMGPC控制时长
-    L = 24 * 3600
+    if load_mode == 0:
+        L = 24
+    elif load_mode == 1:
+        L = 24 * 3600
+    else:
+        L = 0
+    # 采样周期
     Ts = 10 * 60
 
-    # MMGPC内置系统动态模型
-    if model_mode == 0:
-        ans_model = model_dynamics_complex_chiller()
-    elif model_mode == 1:
-        ans_model = model_dynamics_chiller_ashp()
-    else:
-        ans_model = None
-    Q_model_list = ans_model[0]
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
-        model_list = ans_model[1]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
-        model_list = ans_model[2]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
-        model_list = ans_model[3]
-    else:
-        model_list = []
-    Np_list = ans_model[4]
-    Nc_list = ans_model[5]
-    # 将初始化的控制器参数数据保存下来的路径
-    if model_mode == 0:
-        file_path_init = 'model_data/GPC_data/complex_chiller'
-    elif model_mode == 1:
-        file_path_init = 'model_data/GPC_data/chiller_ashp'
-    else:
-        file_path_init = ''
-    file_Q_model_list = file_path_init + "/Q_model_list.txt"
-    write_txt_data(file_Q_model_list, Q_model_list)
-
-    # 0：user_load；1：simple_load
-    load_mode = 1
     # 计算总次数
-    n_simulate = len(Q_total_list)
+    if load_mode == 0:
+        n_simulate = 30 * 24
+    elif load_mode == 1:
+        n_simulate = len(Q_total_list)
+    else:
+        n_simulate = 0
     # 模型仿真时间
     simulate_initialize = 23 * 3600
-    simulate_time1 = 8 * 3600
+    if load_mode == 0:
+        simulate_time1 = 1 * 3600
+    elif load_mode == 1:
+        simulate_time1 = 8 * 3600
+    else:
+        simulate_time1 = None
     simulate_time2 = 1 * 3600
     # FMU仿真参数
-    start_time = 0
-    stop_time = start_time + simulate_initialize + (simulate_time1 + 6 * L) * n_simulate + simulate_time2
+    if load_mode == 0:
+        start_time = (31 + 28 + 31 + 30 + 31 + 15) * 24 * 3600
+        stop_time = (31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30) * 24 * 3600 - 3600
+    else:
+        start_time = 0
+        stop_time = start_time + simulate_initialize + (simulate_time1 + 6 * L) * n_simulate + simulate_time2
     output_interval = 30
     time_out = 600
     tolerance = 0.0001
+
     # 各系统制冷功率最大值
-    chiller_Q0_max = 14000
-    ashp_Q0_max = 3600
+    chiller_Q0_max = 15000
+    ashp_Q0_max = 4000
     # 模型初始化和实例化
     fmu_unzipdir = extract(file_fmu)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -197,14 +196,14 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
     with open(file_fmu_input_output_name, 'wb') as f:
         pickle.dump(fmu_input_output_name, f)
     # 冷负荷总需求功率
-    file_Q_user = "./model_data/simulate_result/fmu_Q_user.txt"
-    file_Q_user_list = "./model_data/fmu_Q_user_list.txt"
+    file_Q_user = "./model_data/file_Q/fmu_Q_user.txt"
+    file_Q_user_list = "./model_data/file_Q/fmu_Q_user_list.txt"
     # Q_time_all_list = read_txt_data(file_Q_user_list, column_index=0)
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
     write_txt_data(file_Q_user, [Q_user_all_list[0]])
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_result/fmu_result_all.log"
-    file_fmu_result_last = "./model_data/simulate_result/fmu_result_last.log"
+    file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
+    file_fmu_result_last = "./model_data/simulate_log/fmu_result_last.log"
     txt_str = "start_time" + "\t" + "pause_time"
     for i in range(len(fmu_input_output_name)):
         txt_str += "\t" + fmu_input_output_name[i]
@@ -218,8 +217,12 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         print("一共需要计算" + str(n_simulate) + "次，正在进行第" + str(i + 1) + "次计算；已完成" + str(i) + "次计算；已完成" +
               str(np.round(100 * i / n_simulate, 4)) + "%")
         # 读取Q_user
-        Q_total = Q_total_list[i]
-        Q_user = Q_total
+        if load_mode == 0:
+            Q_user = read_txt_data(file_Q_user)[0]
+        elif load_mode == 1:
+            Q_user = Q_total_list[i]
+        else:
+            Q_user = 0
 
         # 第1步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程
         input_log_1 = "第1步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程..."
@@ -251,7 +254,7 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         print(input_log_3)
         write_log_data(file_fmu_input_log, [input_log_3], "info")
         write_log_data(file_fmu_input_feedback_log, [input_log_3], "info")
-        ashp_Q_user = min(Q_total - chiller_Q_user, ashp_Q0_max)
+        ashp_Q_user = min(Q_user - chiller_Q_user, ashp_Q0_max)
         ashp_chilled_pump_H = 0.67 * chiller_user_chilled_pump_H
         algorithm_air_source_heat_pump(ashp_Q_user, ashp_chilled_pump_H, 0, air_source_heat_pump, ashp_chilled_pump,
                                        None, ashp_equipment_type_path, n_calculate_hour, 0, cfg_path_equipment,
@@ -284,6 +287,32 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         chiller_Fcw0 = result['chiller_Fcw_total'][-1]
         chiller_Fca0 = result['chiller_Fca_total'][-1]
         ashp_Few0 = result['ashp_Few_total'][-1]
+        # 确定动态控制的模型类型，model_mode: 0:仅冷水机；1:冷水机+空气源热泵
+        if Q_user > chiller_Q0_max:
+            model_mode = 1
+        else:
+            model_mode = 0
+        # MMGPC内置系统动态模型
+        if model_mode == 0:
+            ans_model = model_dynamics_complex_chiller()
+        elif model_mode == 1:
+            ans_model = model_dynamics_chiller_ashp()
+        else:
+            ans_model = None
+        Q_model_list = ans_model[0]
+        model_list = ans_model[1]
+        Np_list = ans_model[4]
+        Nc_list = ans_model[5]
+        # 将初始化的控制器参数数据保存下来的路径
+        if model_mode == 0:
+            file_path_init = 'model_data/GPC_data/complex_chiller'
+        elif model_mode == 1:
+            file_path_init = 'model_data/GPC_data/chiller_ashp'
+        else:
+            file_path_init = ''
+        file_Q_model_list = file_path_init + "/Q_model_list.txt"
+        write_txt_data(file_Q_model_list, Q_model_list)
+        # 动态控制器初始值
         if model_mode == 1:
             u_0_list = [Teo0, chiller_Few0, chiller_Fcw0, chiller_Fca0, ashp_Few0]
         elif model_mode == 0:
@@ -296,17 +325,12 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
         Q0_tmp = result["chiller_Q_total"][-1] + result["ashp_Q_total"][-1]
         EER0 = Q0_tmp / P0_tmp
         Tei0 = result['user_Tei'][-1]
-        if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
-            yr_0_list = [EER0, Tei0]
+        yr_0_list = [EER0, Tei0]
+        if load_mode == 0:
+            yrk_list = yr_0_list
+        elif load_mode == 1:
             yrk_list = [EER0 + 0.3, Tei0 + 0.5]
-        elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
-            yr_0_list = [EER0]
-            yrk_list = [EER0 + 0.3]
-        elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
-            yr_0_list = [Tei0]
-            yrk_list = [Tei0 + 0.5]
         else:
-            yr_0_list = []
             yrk_list = []
         # 获取冷却塔开启数量
         ans_chiller_open_status_txt_path = get_station_equipment_open_status_txt_path(chiller_equipment_type_path[0],
@@ -330,12 +354,22 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
             du_limit_list = []
             u_limit_list = []
 
+        # 初始化user_Tei_model
+        # 更新系统总冷负荷
+        Q_total = read_txt_data(file_Q_total)[0]
+        # 室外环境温湿度
+        Tdo = read_txt_data(file_Tdo_value)[0]
+        Hro = read_txt_data(file_Hro_value)[0]
+        user_input_data_list = [Teo0, chiller_Few0 + ashp_Few0, Tdi_set, Hri_set, Tdo, Hro, Q_total, Tei0]
+        initialize_user_Tei(user_model_nn, user_input_data_list, user_input_min_list, user_input_max_list)
+
         # MMGPC
-        algorithm_dynamics(Q_user, Np_list, Nc_list, model_list, s_list, V, mmgpc_mode, ms_mode, yrk_list, yr_0_list,
-                           u_0_list, du_limit_list, u_limit_list, L, Ts, file_path_init, 0, H_chilled_pump_list,
-                           H_cooling_pump_list, [], chilled_pump_list, cooling_pump_list, n_air_conditioner_list,
-                           [], n_chilled_pump_list, n_cooling_pump_list, n_cooling_tower_list, equipment_type_list,
-                           txt_path, cfg_path_equipment, cfg_path_public, mmgpc_plot_set, model_plot_set)
+        algorithm_dynamics(Q_user, user_model_nn, user_input_min_list, user_input_max_list, Np_list, Nc_list,
+                           model_list, s_list, V, mmgpc_mode, ms_mode, yrk_list, yr_0_list, u_0_list, du_limit_list,
+                           u_limit_list, L, Ts, file_path_init, 0, H_chilled_pump_list, H_cooling_pump_list, [],
+                           chilled_pump_list, cooling_pump_list, n_air_conditioner_list, [], n_chilled_pump_list,
+                           n_cooling_pump_list, n_cooling_tower_list, equipment_type_list, txt_path, cfg_path_equipment,
+                           cfg_path_public, mmgpc_plot_set, model_plot_set)
 
     # 第5步：终止FMU模型，最后仿真一次
     input_log_5 = "第5步：终止FMU模型，最后仿真一次..."
@@ -348,8 +382,14 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode):
 
 
 if __name__ == "__main__":
-    model_mode = 1  # model_mode: 0:仅冷水机；1:冷水机+空气源热泵
     txt_path = "../optimal_control_algorithm_for_cooling_season"
-    file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
+    # simple_load使用的参数
     Q_total_list = [16500]
-    run_dynamics_control(Q_total_list, txt_path, file_fmu, model_mode)
+    # 负荷模型类型选择：0：user_load；1：simple_load
+    load_mode = 0
+    # 确定FMU模型文件
+    if load_mode == 0:
+        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
+    else:
+        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
+    run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode)
