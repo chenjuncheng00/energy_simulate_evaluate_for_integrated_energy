@@ -9,8 +9,8 @@ from model_fmu_input_type import load_input_type
 from model_fmu_dynamics import model_dynamics_complex_chiller, model_dynamics_chiller_ashp
 from initialize_integrated_system import initialize_integrated_system
 from run_initialize import run_initialize
-from get_fmu_real_data import (get_chiller_input_real_data, get_ashp_input_real_data, get_storage_input_real_data,
-                               get_tower_chilled_input_real_data)
+from get_fmu_real_data import get_chiller_real_data, get_ashp_real_data, get_storage_real_data, \
+                              get_tower_chilled_real_data, get_user_real_data, get_environment_real_data
 
 def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
     """
@@ -134,18 +134,13 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
     # 是否将MMGPC各个内置模型的计算结果画图
     model_plot_set = False
     # MMGPC控制时长
-    if load_mode == 0:
-        L = 24
-    elif load_mode == 1:
-        L = 24 * 3600
-    else:
-        L = 0
+    L = 48 * 3600
     # 采样周期
     Ts = 10 * 60
 
     # 计算总次数
     if load_mode == 0:
-        n_simulate = 30 * 24
+        n_simulate = 1
     elif load_mode == 1:
         n_simulate = len(Q_total_list)
     else:
@@ -153,7 +148,7 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
     # 模型仿真时间
     simulate_initialize = 23 * 3600
     if load_mode == 0:
-        simulate_time1 = 1 * 3600
+        simulate_time1 = 2 * 3600
     elif load_mode == 1:
         simulate_time1 = 8 * 3600
     else:
@@ -193,7 +188,7 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
     fmu_output_name = main_model_output_name(load_mode)
     fmu_input_name = main_model_input_name(load_mode)
     fmu_input_output_name = fmu_output_name + fmu_input_name
-    with open(file_fmu_input_output_name, 'wb') as f:
+    with open(file_fmu_input_output_name, "wb") as f:
         pickle.dump(fmu_input_output_name, f)
     # 冷负荷总需求功率
     file_Q_user = "./model_data/file_Q/fmu_Q_user.txt"
@@ -266,27 +261,34 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
         write_log_data(file_fmu_input_log, [input_log_4], "info")
         write_log_data(file_fmu_input_feedback_log, [input_log_4], "info")
         input_type_list = load_input_type(load_mode)
-        input_data_list = [Q_user * 1000]
+        if load_mode == 0:
+            input_data_list = [50, 50]
+        elif load_mode == 1:
+            input_data_list = [Q_user * 1000]
+        else:
+            input_data_list = []
         result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
 
         # 第5步：获取FMU模型的实际数据并写入txt文件
         input_log_5 = "第5步：获取FMU模型的实际数据并写入txt文件..."
         print(input_log_5)
-        get_chiller_input_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
-        get_ashp_input_real_data(result, ashp_equipment_type_path, cfg_path_equipment)
-        get_storage_input_real_data(result, storage_equipment_type_path, cfg_path_equipment)
-        get_tower_chilled_input_real_data(result, tower_chilled_equipment_type_path, cfg_path_equipment)
+        get_chiller_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
+        get_ashp_real_data(result, ashp_equipment_type_path, cfg_path_equipment)
+        get_storage_real_data(result, storage_equipment_type_path, cfg_path_equipment)
+        get_tower_chilled_real_data(result, tower_chilled_equipment_type_path, cfg_path_equipment)
+        get_user_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
+        get_environment_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
 
         # 第6步：MMGPC对EER和Tei进行控制
         input_log_6 = "第6步：MMGPC对EER和Tei进行控制..."
         print(input_log_6)
         write_log_data(file_fmu_input_log, [input_log_6], "info")
         write_log_data(file_fmu_input_feedback_log, [input_log_6], "info")
-        Teo0 = result['chiller_Teo_set'][-1]
-        chiller_Few0 = result['chiller_Few_total'][-1]
-        chiller_Fcw0 = result['chiller_Fcw_total'][-1]
-        chiller_Fca0 = result['chiller_Fca_total'][-1]
-        ashp_Few0 = result['ashp_Few_total'][-1]
+        Teo0 = result["chiller_Teo_set"][-1]
+        chiller_Few0 = result["chiller_Few_total"][-1]
+        chiller_Fcw0 = result["chiller_Fcw_total"][-1]
+        chiller_Fca0 = result["chiller_Fca_total"][-1]
+        ashp_Few0 = result["ashp_Few_total"][-1]
         # 确定动态控制的模型类型，model_mode: 0:仅冷水机；1:冷水机+空气源热泵
         if Q_user > chiller_Q0_max:
             model_mode = 1
@@ -305,11 +307,11 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
         Nc_list = ans_model[5]
         # 将初始化的控制器参数数据保存下来的路径
         if model_mode == 0:
-            file_path_init = 'model_data/GPC_data/complex_chiller'
+            file_path_init = "model_data/GPC_data/complex_chiller"
         elif model_mode == 1:
-            file_path_init = 'model_data/GPC_data/chiller_ashp'
+            file_path_init = "model_data/GPC_data/chiller_ashp"
         else:
-            file_path_init = ''
+            file_path_init = ""
         file_Q_model_list = file_path_init + "/Q_model_list.txt"
         write_txt_data(file_Q_model_list, Q_model_list)
         # 动态控制器初始值
@@ -324,14 +326,9 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
                   result["ashp_P_total_main_equipment"][-1] + result["ashp_P_total_chilled_pump"][-1])
         Q0_tmp = result["chiller_Q_total"][-1] + result["ashp_Q_total"][-1]
         EER0 = Q0_tmp / P0_tmp
-        Tei0 = result['user_Tei'][-1]
+        Tei0 = result["user_Tei"][-1]
         yr_0_list = [EER0, Tei0]
-        if load_mode == 0:
-            yrk_list = yr_0_list
-        elif load_mode == 1:
-            yrk_list = [EER0 + 0.3, Tei0 + 0.5]
-        else:
-            yrk_list = []
+        yrk_list = [EER0 + 0.3, Tei0 + 0.5]
         # 获取冷却塔开启数量
         ans_chiller_open_status_txt_path = get_station_equipment_open_status_txt_path(chiller_equipment_type_path[0],
                                                                                       txt_path)
@@ -389,7 +386,7 @@ if __name__ == "__main__":
     load_mode = 0
     # 确定FMU模型文件
     if load_mode == 0:
-        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
+        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
     else:
-        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
+        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
     run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode)
