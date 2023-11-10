@@ -111,15 +111,15 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
         approach_set_tower_list.append(approach_set_min + i * approach_step)
 
     # FMU模型输入名称和数据类型
-    model_input_type = [('time', np.float_), ('Teo_set', np.float_), ('Tei', np.float_), ('chiller_Tci', np.float_),
-                        ('turn_chiller_big', np.bool_), ('chiller_big_Few', np.float_), ('chiller_big_Fcw', np.float_),
-                        ('turn_chiller_small', np.bool_), ('chiller_small_Few', np.float_),
-                        ('chiller_small_Fcw', np.float_), ('turn_ashp', np.bool_), ('ashp_Tci', np.float_),
-                        ('ashp_Few', np.float_), ('ashp_Fca', np.float_), ('Two', np.float_), ('tower_Tin', np.float_),
-                        ('tower_Fcw', np.float_), ('approach_set', np.float_)]
-    model_output_name = ['P_chiller_big', 'Teo_chiller_big', 'Tco_chiller_big', 'P_chiller_small', 'Teo_chiller_small',
-                         'Tco_chiller_small', 'P_ashp', 'Teo_ashp', 'Tco_ashp', 'tower_Tout', 'f_tower', 'RH_air_in',
-                         'RH_air_out']
+    model_input_type = [("time", np.float_), ("Teo_set", np.float_), ("Tei", np.float_), ("chiller_Tci", np.float_),
+                        ("turn_chiller_big", np.bool_), ("chiller_big_Few", np.float_), ("chiller_big_Fcw", np.float_),
+                        ("turn_chiller_small", np.bool_), ("chiller_small_Few", np.float_),
+                        ("chiller_small_Fcw", np.float_), ("turn_ashp", np.bool_), ("ashp_Tci", np.float_),
+                        ("ashp_Few", np.float_), ("ashp_Fca", np.float_), ("Two", np.float_), ("tower_Tin", np.float_),
+                        ("tower_Fcw", np.float_), ("approach_set", np.float_)]
+    model_output_name = ["P_chiller_big", "Teo_chiller_big", "Tco_chiller_big", "P_chiller_small", "Teo_chiller_small",
+                         "Tco_chiller_small", "P_ashp", "Teo_ashp", "Tco_ashp", "tower_Tout", "f_tower", "RH_air_in",
+                         "RH_air_out"]
     # 仿真开始时间
     time_data = [start_time]
 
@@ -210,9 +210,9 @@ def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1
                                                      model_input_data, model_input_type, model_output_name,
                                                      output_interval, time_out, tolerance, False, False)
                             # 获取仿真结果
-                            P_chiller = result['P_chiller_big'][-1] # W
-                            Teo_real = result['Teo_chiller_big'][-1] # K
-                            Tco = result['Tco_chiller_big'][-1] # K
+                            P_chiller = result["P_chiller_big"][-1] # W
+                            Teo_real = result["Teo_chiller_big"][-1] # K
+                            Tco = result["Tco_chiller_big"][-1] # K
                             # 重新计算制冷功率，kW
                             Q_real = Few * (Tei - Teo_real) * 4.18
                             # 计算温差
@@ -317,9 +317,9 @@ def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chille
                                                      model_input_data, model_input_type, model_output_name,
                                                      output_interval, time_out, tolerance, False, False)
                             # 获取仿真结果
-                            P_chiller = result['P_chiller_small'][-1]  # W
-                            Teo_real = result['Teo_chiller_small'][-1]  # K
-                            Tco = result['Tco_chiller_small'][-1]  # K
+                            P_chiller = result["P_chiller_small"][-1]  # W
+                            Teo_real = result["Teo_chiller_small"][-1]  # K
+                            Tco = result["Tco_chiller_small"][-1]  # K
                             # 重新计算制冷功率，kW
                             Q_real = Few * (Tei - Teo_real) * 4.18
                             # 计算温差
@@ -424,9 +424,9 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
                                                      model_input_data, model_input_type, model_output_name,
                                                      output_interval, time_out, tolerance, False, False)
                             # 获取仿真结果
-                            P_ashp = result['P_ashp'][-1]  # W
-                            Teo_real = result['Teo_ashp'][-1]  # K
-                            Tco = result['Tco_ashp'][-1]  # K
+                            P_ashp = result["P_ashp"][-1]  # W
+                            Teo_real = result["Teo_ashp"][-1]  # K
+                            Tco = result["Tco_ashp"][-1]  # K
                             # 重新计算制冷功率，kW
                             Q_real = Few * (Tei - Teo_real) * 4.18
                             # 计算温差
@@ -521,10 +521,10 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, cooling_to
                                                  model_input_data, model_input_type, model_output_name,
                                                  output_interval, time_out, tolerance, False, False)
                         # 获取仿真结果
-                        tower_Tout = result['tower_Tout'][-1]
+                        tower_Tout = result["tower_Tout"][-1]
                         Tcd = Tin - tower_Tout
                         approach = tower_Tout - Two
-                        f = result['f_tower'][-1]
+                        f = result["f_tower"][-1]
                         # 仿真结果生成txt
                         if Tcd > 0.1 and approach_set - 0.5 < approach <= approach_set + 0.5 and f > 0.2 and f <= 1.1:
                             tmp_txt = str(Two - 273.15) + "\t" + str(np.round(Fcw * 3.6, 2)) + "\t" + \

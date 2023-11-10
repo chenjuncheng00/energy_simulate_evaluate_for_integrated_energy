@@ -181,7 +181,7 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     chiller_dict["n_chiller_cooling_pump2"] = n_chiller_cooling_pump2
     chiller_dict["n_chiller_cooling_tower"] = n_chiller_cooling_tower
     chiller_dict["n_chiller_user_value"] = n_chiller_user_value
-    with open(file_pkl_chiller, 'wb') as f:
+    with open(file_pkl_chiller, "wb") as f:
         pickle.dump(chiller_dict, f)
 
     # 实例化空气源热泵系统设备模型
@@ -228,7 +228,7 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     ashp_dict["n_ashp_chilled_pump"] = n_ashp_chilled_pump
     ashp_dict["air_source_heat_pump"] = air_source_heat_pump
     ashp_dict["ashp_chilled_pump"] = ashp_chilled_pump
-    with open(file_pkl_ashp, 'wb') as f:
+    with open(file_pkl_ashp, "wb") as f:
         pickle.dump(ashp_dict, f)
 
     # 实例化蓄冷系统设备模型
@@ -303,7 +303,7 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     storage_dict["n_chilled_value_in_storage"] = n_chilled_value_in_storage
     storage_dict["n_chilled_value_to_user"] = n_chilled_value_to_user
     storage_dict["n_storage_chilled_pump"] = n_storage_chilled_pump
-    with open(file_pkl_storage, 'wb') as f:
+    with open(file_pkl_storage, "wb") as f:
         pickle.dump(storage_dict, f)
 
     # 实例化冷却塔直接供冷设备模型
@@ -335,13 +335,13 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     tower_chilled_dict["tower_chilled_pump"] = tower_chilled_pump
     tower_chilled_dict["n_tower_chilled_value"] = n_tower_chilled_value
     tower_chilled_dict["n_tower_chilled_pump"] = n_tower_chilled_pump
-    with open(file_pkl_tower_chilled, 'wb') as f:
+    with open(file_pkl_tower_chilled, "wb") as f:
         pickle.dump(tower_chilled_dict, f)
 
     # 储存系统公用参数
     system_dict = dict()
     system_dict["n_calculate_hour"] = n_calculate_hour
-    with open(file_pkl_system, 'wb') as f:
+    with open(file_pkl_system, "wb") as f:
         pickle.dump(system_dict, f)
 
 

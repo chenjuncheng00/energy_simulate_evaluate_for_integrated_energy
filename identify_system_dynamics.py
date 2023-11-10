@@ -55,20 +55,20 @@ def main_identify_system_dynamics(path_matlab, fmu_unzipdir, fmu_description, st
     # file_pkl_stroage = "./model_data/file_equipment/storage.pkl"
     file_pkl_system = "./model_data/file_equipment/system.pkl"
     # 用来拟合传递函数的数据储存路径：EER
-    path_Few_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Few_EER.txt'  # 冷冻水流量
-    path_Fcw_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fcw_EER.txt'  # 冷却水流量
-    path_Fca_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fca_EER.txt'  # 冷却塔风量
-    path_Teo_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Teo_EER.txt'  # 冷冻水出水温度
+    path_Few_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Few_EER.txt"  # 冷冻水流量
+    path_Fcw_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fcw_EER.txt"  # 冷却水流量
+    path_Fca_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fca_EER.txt"  # 冷却塔风量
+    path_Teo_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Teo_EER.txt"  # 冷冻水出水温度
     # 用来拟合传递函数的数据储存路径：Tei
-    path_Few_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Few_Tei.txt'  # 冷冻水流量
-    path_Fcw_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fcw_Tei.txt'  # 冷却水流量
-    path_Fca_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fca_Tei.txt'  # 冷却塔风量
-    path_Teo_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Teo_Tei.txt'  # 冷冻水出水温度
+    path_Few_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Few_Tei.txt"  # 冷冻水流量
+    path_Fcw_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fcw_Tei.txt"  # 冷却水流量
+    path_Fca_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fca_Tei.txt"  # 冷却塔风量
+    path_Teo_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Teo_Tei.txt"  # 冷冻水出水温度
     # 储存最终结果文本的文件路径
-    path_result_EER = './model_data/file_identify/result_system_dynamics/result_transfer_function_EER.txt'
-    path_result_Tei = './model_data/file_identify/result_system_dynamics/result_transfer_function_Tei.txt'
+    path_result_EER = "./model_data/file_identify/result_system_dynamics/result_transfer_function_EER.txt"
+    path_result_Tei = "./model_data/file_identify/result_system_dynamics/result_transfer_function_Tei.txt"
     # 传递函数数据的.txt文件文件所在的文件夹路径
-    path_tf = './model_data/file_identify/result_system_dynamics'
+    path_tf = "./model_data/file_identify/result_system_dynamics"
     # 清空txt文件
     root_path1 = "./model_data/file_identify/result_system_dynamics"
     clear_all_txt_data(root_path1)
@@ -213,7 +213,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 # 重置所有内容
                 run_initialize(txt_path)
                 # 生成FMU输出名称文件
-                with open(file_fmu_input_output_name, 'wb') as f:
+                with open(file_fmu_input_output_name, "wb") as f:
                     pickle.dump(fmu_input_output_name, f)
                 # 仿真结果
                 txt_str = "start_time" + "\t" + "pause_time"
@@ -645,7 +645,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 # 重置所有内容
                 run_initialize(txt_path)
                 # 生成FMU输出名称文件
-                with open(file_fmu_input_output_name, 'wb') as f:
+                with open(file_fmu_input_output_name, "wb") as f:
                     pickle.dump(fmu_input_output_name, f)
                 # 仿真结果
                 txt_str = "start_time" + "\t" + "pause_time"

@@ -10,9 +10,9 @@ def model_input_type():
     Returns:
 
     """
-    fmu_input_type = [('time', np.float_), ('Two', np.float_), ('Q_set', np.float_), ('chiller_turn1', np.bool_),
-                      ('chiller_Teo_set', np.float_), ('chiller_f_chilled_pump1', np.float_),
-                      ('chiller_f_cooling_pump1', np.float_), ('chiller_f_cooling_tower1', np.float_)]
+    fmu_input_type = [("time", np.float_), ("Two", np.float_), ("Q_set", np.float_), ("chiller_turn1", np.bool_),
+                      ("chiller_Teo_set", np.float_), ("chiller_f_chilled_pump1", np.float_),
+                      ("chiller_f_cooling_pump1", np.float_), ("chiller_f_cooling_tower1", np.float_)]
     return fmu_input_type
 
 
