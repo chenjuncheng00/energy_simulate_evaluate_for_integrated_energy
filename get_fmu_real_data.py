@@ -5,7 +5,7 @@ from model_fmu_input_type import chiller_input_type, air_source_heat_pump_input_
 from model_fmu_output_name import chiller_output_name, air_source_heat_pump_output_name, cold_storage_output_name, \
                                   tower_chilled_output_name
 
-def get_chiller_input_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
+def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
     """
     读取冷水机模型的实际值，并写入txt文件
     Args:
@@ -321,7 +321,7 @@ def get_chiller_input_real_data(simulate_result, equipment_type_path, cfg_path_e
     return real_value_DO_dict, real_value_AO_dict
 
 
-def get_ashp_input_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
+def get_ashp_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
     """
     读取空气源热泵模型的实际值，并写入txt文件
     Args:
@@ -461,7 +461,7 @@ def get_ashp_input_real_data(simulate_result, equipment_type_path, cfg_path_equi
     return real_value_DO_dict, real_value_AO_dict
 
 
-def get_storage_input_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
+def get_storage_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
     """
     读取蓄冷水罐模型的实际值，并写入txt文件
     Args:
@@ -567,7 +567,7 @@ def get_storage_input_real_data(simulate_result, equipment_type_path, cfg_path_e
     return real_value_DO_dict, real_value_AO_dict
 
 
-def get_tower_chilled_input_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
+def get_tower_chilled_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
     """
     读取蓄冷水罐模型的实际值，并写入txt文件
     Args:
@@ -622,5 +622,93 @@ def get_tower_chilled_input_real_data(simulate_result, equipment_type_path, cfg_
     # 写入txt
     read_real_value_DO_station(real_value_DO_dict, n_system_value, equipment_type_path, cfg_path_equipment)
     read_real_value_AO_station(real_value_AO_dict, n_system_value, equipment_type_path, cfg_path_equipment)
+    # 返回结果
+    return real_value_DO_dict, real_value_AO_dict
+
+
+def get_environment_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
+    """
+    读取室外温湿度的实际值，并写入txt文件
+    Args:
+        simulate_result: [object]，FMU模型仿真结果
+        equipment_type_path:[string]，[list]，设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
+        cfg_path_equipment:[string]，设备信息参数cfg文件路径
+
+    Returns:
+
+    """
+    # 设备数量
+    n_Tdo = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Tdo", 1)
+    n_Hro = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Hro", 1)
+    # 设备实时值
+    real_value_AO_dict = dict()
+    real_value_AO_dict["real_value"] = dict()
+    real_value_DO_dict = dict()
+    real_value_DO_dict["real_value"] = dict()
+    # 可能没有天气数据
+    try:
+        # 读取数值
+        Tdo = round(list(simulate_result["weather_data.TDryBul"])[-1] - 273.15, 2)
+        Hro = round(list(simulate_result["weather_data.relHum"])[-1] * 100, 2)
+        # 生成字典
+        for i in range(n_Tdo):
+            Tdo_name_tmp = "室外温度传感器_" + str(i)
+            real_value_AO_dict["real_value"][Tdo_name_tmp]["AO"]["温度"] = Tdo
+            real_value_DO_dict["real_value"][Tdo_name_tmp]["DO"]["状态"] = 1
+        for i in range(n_Hro):
+            Hro_name_tmp = "室外湿度传感器_" + str(i)
+            real_value_AO_dict["real_value"][Hro_name_tmp]["AO"]["湿度"] = Hro
+            real_value_DO_dict["real_value"][Hro_name_tmp]["DO"]["状态"] = 1
+        # 写入txt
+        read_real_value_DO_environment(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
+        read_real_value_AO_environment(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    except:
+        pass
+    # 返回结果
+    return real_value_DO_dict, real_value_AO_dict
+
+
+def get_user_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
+    """
+    读取室内温湿度的实际值，并写入txt文件
+    Args:
+        simulate_result: [object]，FMU模型仿真结果
+        equipment_type_path:[string]，[list]，设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
+        cfg_path_equipment:[string]，设备信息参数cfg文件路径
+
+    Returns:
+
+    """
+    # 设备数量
+    n_Tdi = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Tdi", 1)
+    n_Hri = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Hri", 1)
+    # 设备实时值
+    real_value_AO_dict = dict()
+    real_value_AO_dict["real_value"] = dict()
+    real_value_DO_dict = dict()
+    real_value_DO_dict["real_value"] = dict()
+    # 可能没有用户末端房间模型
+    try:
+        for i in range(n_Tdi):
+            # 读取数值
+            name_tmp = "user_Tdi_room" + str(i + 1)
+            Tdi_tmp = round(list(simulate_result[name_tmp])[-1], 2)
+            # 生成字典
+            Tdi_name_tmp = "室内温度传感器_" + str(i)
+            real_value_AO_dict["real_value"][Tdi_name_tmp]["AO"]["温度"] = Tdi_tmp
+            real_value_DO_dict["real_value"][Tdi_name_tmp]["DO"]["状态"] = 1
+        for i in range(n_Hri):
+            # 读取数值
+            name_tmp = "user_Hri_room" + str(i + 1)
+            Hri_tmp = round(list(simulate_result[name_tmp])[-1] * 100, 2)
+            # 生成字典
+            Hri_name_tmp = "室内湿度传感器_" + str(i)
+            real_value_AO_dict["real_value"][Hri_name_tmp]["AO"]["湿度"] = Hri_tmp
+            real_value_DO_dict["real_value"][Hri_name_tmp]["DO"]["状态"] = 1
+        # 写入txt
+        read_real_value_DO_user(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
+        read_real_value_AO_user(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    except:
+        pass
     # 返回结果
     return real_value_DO_dict, real_value_AO_dict

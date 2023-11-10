@@ -8,8 +8,8 @@ from model_fmu_input_type import load_input_type
 from calculate_energy_storage_value import generate_Q_list, generate_time_name_list
 from initialize_integrated_system import initialize_integrated_system
 from run_initialize import run_initialize
-from get_fmu_real_data import get_chiller_input_real_data, get_ashp_input_real_data, get_storage_input_real_data, \
-                              get_tower_chilled_input_real_data
+from get_fmu_real_data import get_chiller_real_data, get_ashp_real_data, get_storage_real_data, \
+                              get_tower_chilled_real_data, get_user_real_data, get_environment_real_data
 
 def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     """
@@ -370,10 +370,12 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
         # 第4步：获取FMU模型的实际数据并写入txt文件
         input_log_4 = "第4步：获取FMU模型的实际数据并写入txt文件..."
         print(input_log_4)
-        get_chiller_input_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
-        get_ashp_input_real_data(result, ashp_equipment_type_path, cfg_path_equipment)
-        get_storage_input_real_data(result, storage_equipment_type_path, cfg_path_equipment)
-        get_tower_chilled_input_real_data(result, tower_chilled_equipment_type_path, cfg_path_equipment)
+        get_chiller_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
+        get_ashp_real_data(result, ashp_equipment_type_path, cfg_path_equipment)
+        get_storage_real_data(result, storage_equipment_type_path, cfg_path_equipment)
+        get_tower_chilled_real_data(result, tower_chilled_equipment_type_path, cfg_path_equipment)
+        get_user_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
+        get_environment_real_data(result, chiller_equipment_type_path, cfg_path_equipment)
 
         # 第5步：根据用户末端室内的温湿度，修正Teo
         if load_mode == 0:
