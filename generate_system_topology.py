@@ -120,47 +120,47 @@ def generate_system_topology(cfg_path_equipment, file_raw_pickle):
     # 生成拓扑结构字典
     index_dict = dict()
     for i in range(n_user_load):
-        tmp_name = 'user_load_' + str(i)
-        tmp_dict = {'index_in': user_load_index_in_list[i], 'index_self': user_load_index_self_list[i]}
+        tmp_name = "user_load_" + str(i)
+        tmp_dict = {"index_in": user_load_index_in_list[i], "index_self": user_load_index_self_list[i]}
         index_dict[tmp_name] = tmp_dict
     for i in range(n_cooling_source):
-        tmp_name = 'cooling_source_' + str(i)
-        tmp_dict = {'index_out': cooling_source_index_out_list[i], 'index_self': cooling_source_index_self_list[i]}
+        tmp_name = "cooling_source_" + str(i)
+        tmp_dict = {"index_out": cooling_source_index_out_list[i], "index_self": cooling_source_index_self_list[i]}
         index_dict[tmp_name] = tmp_dict
     for i in range(n_air_conditioner):
-        tmp_name = 'air_conditioner_' + str(i)
-        tmp_dict = {'index_chilled': air_conditioner_index_chilled_list[i],
-                    'index_cooling': air_conditioner_index_cooling_list[i],
-                    'index_self': air_conditioner_index_self_list[i]}
+        tmp_name = "air_conditioner_" + str(i)
+        tmp_dict = {"index_chilled": air_conditioner_index_chilled_list[i],
+                    "index_cooling": air_conditioner_index_cooling_list[i],
+                    "index_self": air_conditioner_index_self_list[i]}
         index_dict[tmp_name] = tmp_dict
     for i in range(n_chilled_pump):
-        tmp_name = 'chilled_pump_' + str(i)
-        tmp_dict = {'index_in': chilled_pump_index_in_list[i],
-                    'index_out': chilled_pump_index_out_list[i],
-                    'index_self': chilled_pump_index_self_list[i]}
+        tmp_name = "chilled_pump_" + str(i)
+        tmp_dict = {"index_in": chilled_pump_index_in_list[i],
+                    "index_out": chilled_pump_index_out_list[i],
+                    "index_self": chilled_pump_index_self_list[i]}
         index_dict[tmp_name] = tmp_dict
     for i in range(n_cooling_pump):
-        tmp_name = 'cooling_pump_' + str(i)
-        tmp_dict = {'index_in': cooling_pump_index_in_list[i],
-                    'index_out': cooling_pump_index_out_list[i],
-                    'index_self': cooling_pump_index_self_list[i]}
+        tmp_name = "cooling_pump_" + str(i)
+        tmp_dict = {"index_in": cooling_pump_index_in_list[i],
+                    "index_out": cooling_pump_index_out_list[i],
+                    "index_self": cooling_pump_index_self_list[i]}
         index_dict[tmp_name] = tmp_dict
     number_dict = dict()
-    number_dict['user_load'] = {'number': n_user_load}
-    number_dict['cooling_source'] = {'number': n_cooling_source}
-    number_dict['air_conditioner'] = {'number': n_air_conditioner}
-    number_dict['chilled_pump'] = {'number': n_chilled_pump}
-    number_dict['chilled_pump_secondary'] = {'number': 0}
-    number_dict['cooling_pump'] = {'number': n_cooling_pump}
+    number_dict["user_load"] = {"number": n_user_load}
+    number_dict["cooling_source"] = {"number": n_cooling_source}
+    number_dict["air_conditioner"] = {"number": n_air_conditioner}
+    number_dict["chilled_pump"] = {"number": n_chilled_pump}
+    number_dict["chilled_pump_secondary"] = {"number": 0}
+    number_dict["cooling_pump"] = {"number": n_cooling_pump}
     raw_topology_dict = dict()
-    raw_topology_dict['topology_index'] = index_dict
-    raw_topology_dict['equipment_number'] = number_dict
+    raw_topology_dict["topology_index"] = index_dict
+    raw_topology_dict["equipment_number"] = number_dict
     # 储存pickle文件，没有经过辨识的原始编号文件
     with open(file_raw_pickle, "wb") as f_obj:
         pickle.dump(raw_topology_dict, f_obj)
 
 
 if __name__ == "__main__":
-    cfg_path_equipment = './config/equipment_config.cfg'
+    cfg_path_equipment = "./config/equipment_config.cfg"
     file_raw_pickle = "./model_data/file_equipment/raw_topology_index.pkl"
     generate_system_topology(cfg_path_equipment, file_raw_pickle)

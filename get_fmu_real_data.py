@@ -180,10 +180,10 @@ def get_chiller_input_real_data(simulate_result, equipment_type_path, cfg_path_e
     real_value_AO_dict["real_value"] = dict()
     # 模拟量，模拟量，模拟量，模拟量，模拟量
     Teo_set = np.round(float(simulate_result[Teo_set_input_name_list[0]][-1]), 4)
-    chiller_Teo = np.round(float(simulate_result['chiller_Teo'][-1]), 4)
-    chiller_Tei = np.round(float(simulate_result['chiller_Tei'][-1]), 4)
-    chiller_Tco = np.round(float(simulate_result['chiller_Tco'][-1]), 4)
-    chiller_Tci = np.round(float(simulate_result['chiller_Tci'][-1]), 4)
+    chiller_Teo = np.round(float(simulate_result["chiller_Teo"][-1]), 4)
+    chiller_Tei = np.round(float(simulate_result["chiller_Tei"][-1]), 4)
+    chiller_Tco = np.round(float(simulate_result["chiller_Tco"][-1]), 4)
+    chiller_Tci = np.round(float(simulate_result["chiller_Tci"][-1]), 4)
     # 空调主机
     for i in range(len(chiller_input_name_list)):
         input_tmp = bool(simulate_result[chiller_input_name_list[i]][-1])
@@ -397,8 +397,8 @@ def get_ashp_input_real_data(simulate_result, equipment_type_path, cfg_path_equi
     real_value_AO_dict["real_value"] = dict()
     # 模拟量，模拟量，模拟量，模拟量，模拟量
     Teo_set = np.round(float(simulate_result[Teo_set_input_name_list[0]][-1]), 4)
-    ashp_Teo = np.round(float(simulate_result['ashp_Teo'][-1]), 4)
-    ashp_Tei = np.round(float(simulate_result['ashp_Tei'][-1]), 4)
+    ashp_Teo = np.round(float(simulate_result["ashp_Teo"][-1]), 4)
+    ashp_Tei = np.round(float(simulate_result["ashp_Tei"][-1]), 4)
     # 空调主机
     for i in range(len(ashp_input_name_list)):
         input_tmp = bool(simulate_result[ashp_input_name_list[i]][-1])

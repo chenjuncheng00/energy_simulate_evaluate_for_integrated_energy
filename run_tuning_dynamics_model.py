@@ -25,11 +25,11 @@ def tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_l
 
     """
     # 系统动态模型
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         model_list = model_info[1]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         model_list = model_info[2]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         model_list = model_info[3]
     else:
         model_list = []
@@ -69,7 +69,7 @@ def tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_l
         txt_list = [txt_tuning]
         time_end = time.time()
         time_cost = np.round(time_end - time_start, 2)
-        print('计算用时(秒)：' + str(time_cost))
+        print("计算用时(秒)：" + str(time_cost))
         # 结果写入txt
         write_txt_data(path_result_smgpc, txt_list, write_model=1)
 
@@ -96,23 +96,23 @@ def tuning_mmgpc(path_result_mmgpc, model_info, file_path_init, L, Ts, yr_list, 
 
     """
     # 系统动态模型
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         model_list = model_info[1]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         model_list = model_info[2]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         model_list = model_info[3]
     else:
         model_list = []
     Np_list = model_info[4]
     Nc_list = model_info[5]
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         r_list = model_info[6]
         q_list = model_info[7]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         r_list = model_info[8]
         q_list = model_info[9]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         r_list = model_info[10]
         q_list = model_info[11]
     else:
@@ -144,7 +144,7 @@ def tuning_mmgpc(path_result_mmgpc, model_info, file_path_init, L, Ts, yr_list, 
         txt_list = [txt_tuning]
         time_end = time.time()
         time_cost = np.round(time_end - time_start, 2)
-        print('计算用时(秒)：' + str(time_cost))
+        print("计算用时(秒)：" + str(time_cost))
         # 结果写入txt
         write_txt_data(path_result_mmgpc, txt_list, write_model=1)
 
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     else:
         model_info = None
     # 控制器目标
-    y_gpc_list = ['EER', 'Tei']
+    y_gpc_list = ["EER", "Tei"]
     # 仿真时长和采样周期，单位：秒
     L = 24 * 3600
     Ts = 10 * 60
@@ -170,11 +170,11 @@ if __name__ == "__main__":
     # EER, Tei
     EER0 = 4.5
     Tei0 = 14
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         yr_0_list = [EER0, Tei0]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         yr_0_list = [EER0]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         yr_0_list = [EER0]
     else:
         yr_0_list = []
@@ -195,11 +195,11 @@ if __name__ == "__main__":
         else:
             yr_EER_list.append(EER0 + 0.4)
             yr_Tei_list.append(Tei0 + 0.5)
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         yr_list = [yr_EER_list, yr_Tei_list]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         yr_list = [yr_EER_list]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         yr_list = [yr_Tei_list]
     else:
         yr_list = []
@@ -216,11 +216,11 @@ if __name__ == "__main__":
     clear_all_txt_data(path_result_root)
     # 将初始化的控制器参数数据保存下来的路径
     if model_mode == 0:
-        file_path_init = 'model_data/GPC_data/complex_chiller'
+        file_path_init = "model_data/GPC_data/complex_chiller"
     elif model_mode == 1:
-        file_path_init = 'model_data/GPC_data/chiller_ashp'
+        file_path_init = "model_data/GPC_data/chiller_ashp"
     else:
-        file_path_init = ''
+        file_path_init = ""
     # smgpc整定
     tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
                  y_gpc_list, fit_target)

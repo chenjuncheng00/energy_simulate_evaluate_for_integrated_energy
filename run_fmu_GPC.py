@@ -5,9 +5,9 @@ if __name__ == "__main__":
     # model_mode: 0:仅冷水机；1:冷水机+空气源热泵
     model_mode = 1
     # 仿真类型：smgpc、mmgpc
-    simulate_mode = 'mmgpc'
+    simulate_mode = "mmgpc"
     # 控制器目标
-    y_gpc_list = ['EER', 'Tei']
+    y_gpc_list = ["EER", "Tei"]
     # MMGPC的计算模式，bayes、ms、itae
     mmgpc_mode = "bayes"
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
@@ -38,11 +38,11 @@ if __name__ == "__main__":
     # EER, Tei
     EER0 = 4.5
     Tei0 = 14
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         yr_0_list = [EER0, Tei0]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         yr_0_list = [EER0]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         yr_0_list = [EER0]
     else:
         yr_0_list = []
@@ -69,11 +69,11 @@ if __name__ == "__main__":
         else:
             yr_EER_list.append(EER0 + 0.2)
             yr_Tei_list.append(Tei0 + 0.5)
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         yr_list = [yr_EER_list, yr_Tei_list]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         yr_list = [yr_EER_list]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         yr_list = [yr_Tei_list]
     else:
         yr_list = []
@@ -95,22 +95,22 @@ if __name__ == "__main__":
     else:
         ans_model = None
     Q_model_list = ans_model[0]
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         model_list = ans_model[1]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         model_list = ans_model[2]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         model_list = ans_model[3]
     else:
         model_list = []
     Np_list = ans_model[4]
     Nc_list = ans_model[5]
     r_list = ans_model[6]
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         q_list = ans_model[7]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         q_list = ans_model[8]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         q_list = ans_model[9]
     else:
         q_list = []
@@ -118,32 +118,32 @@ if __name__ == "__main__":
     # mmgpc仿真参数设置
     # 将初始化的控制器参数数据保存下来的路径
     if model_mode == 0:
-        file_path_init = 'model_data/GPC_data/complex_chiller'
+        file_path_init = "model_data/GPC_data/complex_chiller"
     elif model_mode == 1:
-        file_path_init = 'model_data/GPC_data/chiller_ashp'
+        file_path_init = "model_data/GPC_data/chiller_ashp"
     else:
-        file_path_init = ''
+        file_path_init = ""
     # 多模型权值系数的递推计算收敛系数
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         s_list = [s_EER, s_Tei]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         s_list = [s_EER]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         s_list = [s_Tei]
     else:
         s_list = []
     # 计算隶属度函数
-    if mmgpc_mode == "ms" and simulate_mode == 'mmgpc':
+    if mmgpc_mode == "ms" and simulate_mode == "mmgpc":
         ms_list = calculate_membership(Q_model_list[plant_index], Q_model_list, ms_mode)
     else:
         ms_list = []
 
     # 控制器仿真
     # smgpc
-    if simulate_mode == 'smgpc':
+    if simulate_mode == "smgpc":
         smgpc(L, Ts, Np_list[model_index], Nc_list[model_index], model_list[model_index], r_list[model_index],
               q_list[model_index], yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, True)
-    elif simulate_mode == 'mmgpc':
+    elif simulate_mode == "mmgpc":
         mmgpc(L, Ts, Np_list, Nc_list, s_list, V, model_list[plant_index], model_list, r_list, q_list, yr_list,
               yr_0_list, u_0_list, du_limit_list, u_limit_list, file_path_init, save_data_init, ms_list, mmgpc_mode,
               plot_set, model_plot_set)

@@ -28,7 +28,7 @@ def identify_user_characteristic(fmu_unzipdir, fmu_description, start_time, stop
                "室外干球温度" + "\t" + "室外相对湿度" + "\t" + "制冷负荷" + "\t" + "冷冻水回水温度")
     result_list = [txt_str]
     # FMU输入输出
-    input_type_list = [('time', np.float_), ('Teo', np.float_), ('Tdi_target', np.float_)]
+    input_type_list = [("time", np.float_), ("Teo", np.float_), ("Tdi_target", np.float_)]
     output_name_list = ["Teo", "user.Few", "Tdi", "Hri", "user.weather_data.TDryBul", "user.weather_data.relHum",
                         "Q", "Tei"]
     # 冷冻水出水温度

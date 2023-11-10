@@ -123,7 +123,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     fmu_output_name = main_model_output_name(load_mode)
     fmu_input_name = main_model_input_name(load_mode)
     fmu_input_output_name = fmu_output_name + fmu_input_name
-    with open(file_fmu_input_output_name, 'wb') as f:
+    with open(file_fmu_input_output_name, "wb") as f:
         pickle.dump(fmu_input_output_name, f)
     # 各系统制冷功率最大值
     chiller_Q0_max = 14000

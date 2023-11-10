@@ -17,9 +17,9 @@ def run_GPC_simplified_chiller():
 
     """
     # 仿真类型：smgpc、mmgpc
-    simulate_mode = 'mmgpc'
+    simulate_mode = "mmgpc"
     # 控制器目标
-    y_gpc_list = ['EER', 'Tei']
+    y_gpc_list = ["EER", "Tei"]
     # MMGPC的计算模式：bayes、ms、itae
     mmgpc_mode = "bayes"
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
@@ -50,11 +50,11 @@ def run_GPC_simplified_chiller():
     # EER, Tei
     EER0 = 4.5
     Tei0 = 12
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         yr_0_list = [EER0, Tei0]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         yr_0_list = [EER0]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         yr_0_list = [Tei0]
     else:
         yr_0_list = []
@@ -74,11 +74,11 @@ def run_GPC_simplified_chiller():
         else:
             yr_EER_list.append(EER0 + 0.1)
             yr_Tei_list.append(Tei0 + 0.2)
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         yr_list = [yr_EER_list, yr_Tei_list]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         yr_list = [yr_EER_list]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         yr_list = [yr_Tei_list]
     else:
         yr_list = []
@@ -89,22 +89,22 @@ def run_GPC_simplified_chiller():
     # MMGPC内置系统动态模型
     ans_model = model_dynamics_simplified_chiller()
     Q_model_list = ans_model[0]
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         model_list = ans_model[1]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         model_list = ans_model[2]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         model_list = ans_model[3]
     else:
         model_list = []
     Np_list = ans_model[4]
     Nc_list = ans_model[5]
     r_list = ans_model[6]
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         q_list = ans_model[7]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         q_list = ans_model[8]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         q_list = ans_model[9]
     else:
         q_list = []
@@ -112,39 +112,39 @@ def run_GPC_simplified_chiller():
     # 用于测试的plant_model
     ans_plant = plant_dynamics_simplified_chiller()
     Q_plant_list = ans_plant[0]
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         plant_list = ans_plant[1]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         plant_list = ans_plant[2]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         plant_list = ans_plant[3]
     else:
         plant_list = []
 
     # mmgpc仿真参数设置
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data/simplified_chiller'
+    file_path_init = "./model_data/GPC_data/simplified_chiller"
     # 多模型权值系数的递推计算收敛系数
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         s_list = [s_EER, s_Tei]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         s_list = [s_EER]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         s_list = [s_Tei]
     else:
         s_list = []
     # 计算隶属度函数
-    if mmgpc_mode == "ms" and simulate_mode == 'mmgpc':
+    if mmgpc_mode == "ms" and simulate_mode == "mmgpc":
         ms_list = calculate_membership(Q_plant_list[plant_index], Q_model_list, ms_mode)
     else:
         ms_list = []
 
     # 控制器仿真
     # smgpc
-    if simulate_mode == 'smgpc':
+    if simulate_mode == "smgpc":
         smgpc(L, Ts, Np_list[model_index], Nc_list[model_index], model_list[model_index], r_list[model_index],
               q_list[model_index], yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list, True)
-    elif simulate_mode == 'mmgpc':
+    elif simulate_mode == "mmgpc":
         mmgpc(L, Ts, Np_list, Nc_list, s_list, V, plant_list[plant_index], model_list, r_list, q_list, yr_list,
               yr_0_list, u_0_list, du_limit_list, u_limit_list, file_path_init, save_data_init, ms_list, mmgpc_mode,
               plot_set, model_plot_set)
@@ -166,7 +166,7 @@ def run_simplified_chiller(Q_total_list, Q_index, txt_path, file_fmu, run_mode):
     # 模型输入
     fmu_input_type = model_input_type()
     # 模型输出
-    fmu_output_name = ['Q_total', 'P_total', 'Teo', 'Tei', 'Tco', 'Tci', 'Few', 'Fcw']
+    fmu_output_name = ["Q_total", "P_total", "Teo", "Tei", "Tco", "Tci", "Few", "Fcw"]
     fmu_input_name = get_fmu_input_name(fmu_input_type)
     fmu_input_output_name = fmu_input_name + fmu_output_name
 
@@ -176,7 +176,7 @@ def run_simplified_chiller(Q_total_list, Q_index, txt_path, file_fmu, run_mode):
     # file_fmu_state = txt_path + "/process_data/fmu_state.txt"
     # FMU模型输出名称
     file_fmu_input_output_name = txt_path + "/process_data/fmu_input_output_name.pkl"
-    with open(file_fmu_input_output_name, 'wb') as f:
+    with open(file_fmu_input_output_name, "wb") as f:
         pickle.dump(fmu_input_output_name, f)
     # 仿真结果
     file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
@@ -206,7 +206,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
 
     """
     # 控制器目标
-    y_gpc_list = ['EER', 'Tei']
+    y_gpc_list = ["EER", "Tei"]
     # MMGPC的计算模式，bayes、ms、itae
     mmgpc_mode = "ms"
     # 多模型隶属度函数计算模式，0：梯形隶属度函数；1：三角形隶属度函数
@@ -238,7 +238,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     u_limit_list = [[5, 15], [30, 50], [30, 50], [15, 50]]
 
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data/simplified_chiller'
+    file_path_init = "./model_data/GPC_data/simplified_chiller"
     # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
     file_fmu_state = txt_path + "/process_data/fmu_state.txt"
     # FMU模型仿真时间：仿真开始的时间(start_time)
@@ -261,12 +261,12 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
                                    simulate_time0, Ts, time_out, tolerance, txt_path)
     # 计算U0和y0
     input_data_list = [Q_total * 1000]
-    input_type_list = [('Q_set', np.float_)]
+    input_type_list = [("Q_set", np.float_)]
     result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
     Teo0 = list(result["chiller_Teo_set"])[-1]
     Few0 = list(result["chiller_f_chilled_pump1"])[-1]
     Fcw0 = list(result["chiller_f_cooling_pump1"])[-1]
-    Fca0 = list(result['chiller_f_cooling_tower1'])[-1]
+    Fca0 = list(result["chiller_f_cooling_tower1"])[-1]
     u_0_list = [Teo0, Few0, Fcw0, Fca0]
     Tei0 = list(result["Tei"])[-1]
     Q0 = list(result["Q_total"])[-1]
@@ -289,11 +289,11 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     ans_model = model_dynamics_simplified_chiller()
     # MMGPC内置模型的制冷功率列表
     Q_model_list = ans_model[0]
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         model_list = ans_model[1]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         model_list = ans_model[2]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         model_list = ans_model[3]
     else:
         model_list = []
@@ -301,11 +301,11 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     Nc_list = ans_model[5]
 
     # 多模型权值系数的递推计算收敛系数
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         s_list = [s_EER, s_Tei]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         s_list = [s_EER]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         s_list = [s_Tei]
     else:
         s_list = []
@@ -346,21 +346,21 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     yrk_model_Np_list = []
     # 逐个模型初始化GPC控制器，从已经保存在文件里的控制器参数文件读取数据
     for i in range(n_model):
-        file_name_init = file_path_init + '/model_' + str(i + 1) + '.npz'
+        file_name_init = file_path_init + "/model_" + str(i + 1) + ".npz"
         GPC_data = np.load(file_name_init, allow_pickle=True)
         # 获取GPC初始化的结果
-        F1_list.append(GPC_data['F1'])
-        F2_list.append(GPC_data['F2'])
-        G_list.append(GPC_data['G'])
-        R_list.append(GPC_data['R'])
-        Q_list.append(GPC_data['Q'])
-        B_list.append(GPC_data['B_list'])
-        C_list.append(GPC_data['C_list'])
-        len_A_list.append(GPC_data['len_A_list'])
-        len_B_list.append(GPC_data['len_B_list'])
-        len_B_max_list.append(GPC_data['len_B_max_list'])
-        duk_model_list.append(GPC_data['duk_list'])
-        yrk_model_Np_list.append(GPC_data['yrk_Np_list'])
+        F1_list.append(GPC_data["F1"])
+        F2_list.append(GPC_data["F2"])
+        G_list.append(GPC_data["G"])
+        R_list.append(GPC_data["R"])
+        Q_list.append(GPC_data["Q"])
+        B_list.append(GPC_data["B_list"])
+        C_list.append(GPC_data["C_list"])
+        len_A_list.append(GPC_data["len_A_list"])
+        len_B_list.append(GPC_data["len_B_list"])
+        len_B_max_list.append(GPC_data["len_B_max_list"])
+        duk_model_list.append(GPC_data["duk_list"])
+        yrk_model_Np_list.append(GPC_data["yrk_Np_list"])
 
     # 实际被控对象，控制指令的实际值u的列表
     u_list = []
@@ -508,8 +508,8 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
         Fcw = uk_list[2]
         Fca = uk_list[3]
         # 写入控制命令
-        input_type_list = [('chiller_Teo_set', np.float_), ('chiller_f_chilled_pump1', np.float_),
-                           ('chiller_f_cooling_pump1', np.float_), ('chiller_f_cooling_tower1', np.float_)]
+        input_type_list = [("chiller_Teo_set", np.float_), ("chiller_f_chilled_pump1", np.float_),
+                           ("chiller_f_cooling_pump1", np.float_), ("chiller_f_cooling_tower1", np.float_)]
         input_data_list = [Teo, Few, Fcw, Fca]
 
         result = main_simulate_pause_single(input_data_list, input_type_list, Ts, txt_path)
@@ -532,48 +532,48 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
 
     # GPC计算结果画图
     # plt画线颜色列表
-    color_list = ['black', 'brown', 'green', 'blue', 'purple', 'sienna', 'yellowgreen', 'slategray',
-                  'hotpink', 'yellow', 'peachpuff', 'palegreen', 'goldenrod', 'turquoise', 'plum',
-                  'gray', 'fuchsia', 'tomato', 'goldenrod', 'cyan', 'slateblue', 'orchid', 'seagreen']
+    color_list = ["black", "brown", "green", "blue", "purple", "sienna", "yellowgreen", "slategray",
+                  "hotpink", "yellow", "peachpuff", "palegreen", "goldenrod", "turquoise", "plum",
+                  "gray", "fuchsia", "tomato", "goldenrod", "cyan", "slateblue", "orchid", "seagreen"]
     # 输出值y和输出目标值yr画图
     n = min(min(len(y_list[0]), len(yr_list[0])), len(time_list))
     for i in range(n_output):
         plt.figure(i + 1).set_size_inches(24, 8)
-        plt.title('y_' + str(i + 1) + ' and ' + 'yr_' + str(i + 1))
+        plt.title("y_" + str(i + 1) + " and " + "yr_" + str(i + 1))
         plt.xlabel("t(s)")
         plt.ylabel("y_" + str(i + 1))
-        plt.plot(time_list[:n], y_list[i][:n], color='skyblue', label='y', linewidth=3)
-        plt.plot(time_list[:n], yr_list[i][:n], color='red', label='yr', linewidth=3)
+        plt.plot(time_list[:n], y_list[i][:n], color="skyblue", label="y", linewidth=3)
+        plt.plot(time_list[:n], yr_list[i][:n], color="red", label="yr", linewidth=3)
         if model_plot_set == True:
-            plt.plot(time_list[:n], yr_correction_list[i][:n], color='blueviolet', label='yr_correction',
-                     linewidth=3, linestyle='dashed')
+            plt.plot(time_list[:n], yr_correction_list[i][:n], color="blueviolet", label="yr_correction",
+                     linewidth=3, linestyle="dashed")
             for j in range(n_model):
                 plt.plot(time_list[:n], y_model_list[j][i][:n], color=color_list[j],
-                         label='y_model_' + str(j + 1), linewidth=3, linestyle='dotted')
+                         label="y_model_" + str(j + 1), linewidth=3, linestyle="dotted")
         plt.legend()
     # 控制量u画图
     for i in range(n_input):
         plt.figure(i + 1 + n_output).set_size_inches(24, 8)
-        plt.title('u_' + str(i + 1))
+        plt.title("u_" + str(i + 1))
         plt.xlabel("t(s)")
         plt.ylabel("u_" + str(i + 1))
-        plt.plot(time_list[:n], u_list[i][:n], color='skyblue', label='u', linewidth=3)
+        plt.plot(time_list[:n], u_list[i][:n], color="skyblue", label="u", linewidth=3)
         if model_plot_set == True:
             for j in range(n_model):
                 plt.plot(time_list[:n], u_model_list[j][i][:n], color=color_list[j],
-                         label='u_model_' + str(j + 1), linewidth=3, linestyle='dotted')
+                         label="u_model_" + str(j + 1), linewidth=3, linestyle="dotted")
         plt.legend()
     # 控制量变化率du画图
     for i in range(n_input):
         plt.figure(i + 1 + n_output + n_input).set_size_inches(24, 8)
-        plt.title('du_' + str(i + 1))
+        plt.title("du_" + str(i + 1))
         plt.xlabel("t(s)")
         plt.ylabel("du_" + str(i + 1))
-        plt.plot(time_list[:n], du_list[i][:n], color='skyblue', label='du', linewidth=3)
+        plt.plot(time_list[:n], du_list[i][:n], color="skyblue", label="du", linewidth=3)
         if model_plot_set == True:
             for j in range(n_model):
                 plt.plot(time_list[:n], du_model_list[j][i][:n], color=color_list[j],
-                         label='du_model_' + str(j + 1), linewidth=3, linestyle='dotted')
+                         label="du_model_" + str(j + 1), linewidth=3, linestyle="dotted")
         plt.legend()
     # 显示画图结果
     plt.show()
@@ -623,20 +623,20 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
     path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
 
     # 用来拟合传递函数的数据储存路径：EER
-    path_Few_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Few_EER.txt'  # 冷冻水流量
-    path_Fcw_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fcw_EER.txt'  # 冷却水流量
-    path_Fca_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fca_EER.txt'  # 冷却塔风量
-    path_Teo_EER_tfdata = './model_data/file_identify/result_system_dynamics/tf_Teo_EER.txt'  # 冷冻水出水温度
+    path_Few_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Few_EER.txt"  # 冷冻水流量
+    path_Fcw_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fcw_EER.txt"  # 冷却水流量
+    path_Fca_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fca_EER.txt"  # 冷却塔风量
+    path_Teo_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Teo_EER.txt"  # 冷冻水出水温度
     # 用来拟合传递函数的数据储存路径：Tei
-    path_Few_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Few_Tei.txt'  # 冷冻水流量
-    path_Fcw_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fcw_Tei.txt'  # 冷却水流量
-    path_Fca_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Fca_Tei.txt'  # 冷却塔风量
-    path_Teo_Tei_tfdata = './model_data/file_identify/result_system_dynamics/tf_Teo_Tei.txt'  # 冷冻水出水温度
+    path_Few_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Few_Tei.txt"  # 冷冻水流量
+    path_Fcw_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fcw_Tei.txt"  # 冷却水流量
+    path_Fca_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fca_Tei.txt"  # 冷却塔风量
+    path_Teo_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Teo_Tei.txt"  # 冷冻水出水温度
     # 储存最终结果文本的文件路径
-    path_result_EER = './model_data/file_identify/result_system_dynamics/result_transfer_function_EER.txt'
-    path_result_Tei = './model_data/file_identify/result_system_dynamics/result_transfer_function_Tei.txt'
+    path_result_EER = "./model_data/file_identify/result_system_dynamics/result_transfer_function_EER.txt"
+    path_result_Tei = "./model_data/file_identify/result_system_dynamics/result_transfer_function_Tei.txt"
     # 传递函数数据的.txt文件文件所在的文件夹路径
-    path_tf = './model_data/file_identify/result_system_dynamics'
+    path_tf = "./model_data/file_identify/result_system_dynamics"
     # 清空txt文件
     root_path1 = "./model_data/file_identify/result_system_dynamics"
     clear_all_txt_data(root_path1)
@@ -671,12 +671,12 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
 
             # 第2步:给定冷负荷，并使得系统稳定
             input_data_list = [Q_input * 1000]
-            input_type_list = [('Q_set', np.float_)]
+            input_type_list = [("Q_set", np.float_)]
             result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
             Teo0 = list(result["chiller_Teo_set"])
             Few0 = list(result["Few"])
             Fcw0 = list(result["Fcw"])
-            Fca0 = list(result['chiller_f_cooling_tower1'])
+            Fca0 = list(result["chiller_f_cooling_tower1"])
             Tei0 = list(result["Tei"])
             Q0 = list(result["Q_total"])
             P0 = list(result["P_total"])
@@ -686,16 +686,16 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
             # 第3步:系统阶跃响应试验
             if tf_obj == "Teo":
                 input_data_list = [9]
-                input_type_list = [('chiller_Teo_set', np.float_)]
+                input_type_list = [("chiller_Teo_set", np.float_)]
             elif tf_obj == "Few":
                 input_data_list = [40]
-                input_type_list = [('chiller_f_chilled_pump1', np.float_)]
+                input_type_list = [("chiller_f_chilled_pump1", np.float_)]
             elif tf_obj == "Fcw":
                 input_data_list = [40]
-                input_type_list = [('chiller_f_cooling_pump1', np.float_)]
+                input_type_list = [("chiller_f_cooling_pump1", np.float_)]
             elif tf_obj == "Fca":
                 input_data_list = [40]
-                input_type_list = [('chiller_f_cooling_tower1', np.float_)]
+                input_type_list = [("chiller_f_cooling_tower1", np.float_)]
             else:
                 input_data_list = []
                 input_type_list = []
@@ -703,7 +703,7 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
             Teo1 = list(result["chiller_Teo_set"])
             Few1 = list(result["Few"])
             Fcw1 = list(result["Fcw"])
-            Fca1 = list(result['chiller_f_cooling_tower1'])
+            Fca1 = list(result["chiller_f_cooling_tower1"])
             Tei1 = list(result["Tei"])
             Q1 = list(result["Q_total"])
             P1 = list(result["P_total"])
@@ -900,7 +900,7 @@ def tuning_dynamics_simplified_chiller(tuning_set):
     # 传递函数
     model_info = model_dynamics_simplified_chiller()
     # 控制器目标
-    y_gpc_list = ['EER', 'Tei']
+    y_gpc_list = ["EER", "Tei"]
     # 仿真时长和采样周期，单位：秒
     L = 8 * 3600
     Ts = 1 * 60
@@ -910,11 +910,11 @@ def tuning_dynamics_simplified_chiller(tuning_set):
     # EER, Tei
     EER0 = 4.5
     Tei0 = 14
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         yr_0_list = [EER0, Tei0]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         yr_0_list = [EER0]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         yr_0_list = [EER0]
     else:
         yr_0_list = []
@@ -935,11 +935,11 @@ def tuning_dynamics_simplified_chiller(tuning_set):
         else:
             yr_EER_list.append(EER0 + 0.1)
             yr_Tei_list.append(Tei0 + 0.2)
-    if 'EER' in y_gpc_list and 'Tei' in y_gpc_list:
+    if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         yr_list = [yr_EER_list, yr_Tei_list]
-    elif 'EER' in y_gpc_list and 'Tei' not in y_gpc_list:
+    elif "EER" in y_gpc_list and "Tei" not in y_gpc_list:
         yr_list = [yr_EER_list]
-    elif 'EER' not in y_gpc_list and 'Tei' in y_gpc_list:
+    elif "EER" not in y_gpc_list and "Tei" in y_gpc_list:
         yr_list = [yr_Tei_list]
     else:
         yr_list = []
@@ -955,7 +955,7 @@ def tuning_dynamics_simplified_chiller(tuning_set):
     # 情况txt内容
     clear_all_txt_data(path_result_root)
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = './model_data/GPC_data/simplified_chiller'
+    file_path_init = "./model_data/GPC_data/simplified_chiller"
     # smgpc整定
     if tuning_set == "smgpc":
         tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
