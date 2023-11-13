@@ -47,10 +47,11 @@ def run_initialize(txt_path):
     n_Hro = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Hro", 1)
     initialize_txt_other(txt_path, n_Tdo, 0, n_Hro)
     # 室内数量
+    n_Te = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Te", 1)
     n_Tdi = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Tdi", 1)
     n_Hri = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Hri", 1)
     n_mau = read_cfg_data(cfg_path_equipment, "室内新风机组", "n_mau", 1)
-    initialize_txt_user_terminal(txt_path, n_Tdi, n_Hri, n_mau, 0, 0, 0)
+    initialize_txt_user_terminal(txt_path, n_Te, n_Tdi, n_Hri, n_mau, 0, 0, 0)
 
     # 蓄冷水罐
     # 蓄冷阀门个数 AND 放冷阀门个数
@@ -76,17 +77,17 @@ def run_initialize(txt_path):
     # 系统初始化时，会将冷水机系统全开，但是其他系统全关
     ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
     ashp_real_value_dict = air_source_heat_pump_default_status(n_air_source_heat_pump, n_ashp_chilled_pump)
-    read_real_value_DO_station(ashp_real_value_dict, n_user_value, ashp_equipment_type_path, cfg_path_equipment)
+    read_real_value_DO_station(ashp_real_value_dict, ashp_equipment_type_path, cfg_path_equipment)
     chiller_equipment_type_path = ["chiller", txt_path]
     chiller_real_value_dict = chiller_default_status(n_chiller, n_chiller_chilled_pump, n_chiller_cooling_pump,
                                                      n_chiller_cooling_tower)
-    read_real_value_DO_station(chiller_real_value_dict, n_user_value, chiller_equipment_type_path, cfg_path_equipment)
+    read_real_value_DO_station(chiller_real_value_dict, chiller_equipment_type_path, cfg_path_equipment)
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
     storage_real_value_dict = storage_default_status(n_storage_chilled_value, n_storage_chilled_pump)
-    read_real_value_DO_station(storage_real_value_dict, 0, storage_equipment_type_path, cfg_path_equipment)
+    read_real_value_DO_station(storage_real_value_dict, storage_equipment_type_path, cfg_path_equipment)
     tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     tower_chilled_real_value_dict = tower_chilled_default_status(n_tower_chilled_pump)
-    read_real_value_DO_station(tower_chilled_real_value_dict, 0, tower_chilled_equipment_type_path, cfg_path_equipment)
+    read_real_value_DO_station(tower_chilled_real_value_dict, tower_chilled_equipment_type_path, cfg_path_equipment)
 
 if __name__ == "__main__":
     txt_path = "../optimal_control_algorithm_for_cooling_season"
