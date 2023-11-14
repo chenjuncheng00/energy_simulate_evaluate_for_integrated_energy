@@ -9,7 +9,7 @@ from model_fmu_input_type import load_input_type
 from model_fmu_dynamics import model_dynamics_complex_chiller, model_dynamics_chiller_ashp
 from initialize_integrated_system import initialize_integrated_system
 from run_initialize import run_initialize
-from get_fmu_real_data import main_get_fmu_real_data
+from get_fmu_real_data import main_get_fmu_real_data, get_Teo_set_real_data
 
 def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
     """
@@ -257,6 +257,7 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
         input_log_5 = "第5步：获取FMU模型的实际数据并写入txt文件..."
         print(input_log_5)
         main_get_fmu_real_data(result, cfg_path_equipment, txt_path)
+        get_Teo_set_real_data(txt_path)
 
         # 第6步：MMGPC对EER和Tei进行控制
         input_log_6 = "第6步：MMGPC对EER和Tei进行控制..."
@@ -355,6 +356,7 @@ def run_dynamics_control(Q_total_list, txt_path, file_fmu, load_mode):
         for result in results:
             print(input_log_7)
             main_get_fmu_real_data(result, cfg_path_equipment, txt_path)
+            get_Teo_set_real_data(txt_path)
 
     # 第8步：终止FMU模型，最后仿真一次
     input_log_8 = "第8步：终止FMU模型，最后仿真一次..."
