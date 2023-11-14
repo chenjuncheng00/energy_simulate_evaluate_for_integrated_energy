@@ -21,13 +21,27 @@ def main_get_fmu_real_data(simulate_result, cfg_path_equipment, txt_path):
     ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
     tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
-
+    # 获取FMU仿真的结果值
     get_chiller_real_data(simulate_result, chiller_equipment_type_path, cfg_path_equipment)
     get_ashp_real_data(simulate_result, ashp_equipment_type_path, cfg_path_equipment)
     get_storage_real_data(simulate_result, storage_equipment_type_path, cfg_path_equipment)
     get_tower_chilled_real_data(simulate_result, tower_chilled_equipment_type_path, cfg_path_equipment)
     get_user_real_data(simulate_result, txt_path, cfg_path_equipment)
     get_environment_real_data(simulate_result, txt_path, cfg_path_equipment)
+
+
+def get_Teo_set_real_data(txt_path):
+    """
+    需要先执行main_get_fmu_real_data()，将各个设备的Teo_set值记录，再计算综合值
+    Args:
+        txt_path: [string]，相对路径
+
+    Returns:
+
+    """
+    equipment_type_list = ["chiller", "air_source_heat_pump"]
+    # 计算Teo_set
+    calculate_Teo_set_synthesize_value(equipment_type_list, txt_path)
 
 
 def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
