@@ -118,9 +118,9 @@ if __name__ == "__main__":
     # mmgpc仿真参数设置
     # 将初始化的控制器参数数据保存下来的路径
     if model_mode == 0:
-        file_path_init = "model_data/GPC_data/complex_chiller"
+        file_path_init = "./model_data/GPC_data/complex_chiller"
     elif model_mode == 1:
-        file_path_init = "model_data/GPC_data/chiller_ashp"
+        file_path_init = "./model_data/GPC_data/chiller_ashp"
     else:
         file_path_init = ""
     # 多模型权值系数的递推计算收敛系数

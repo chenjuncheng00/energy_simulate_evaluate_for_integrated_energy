@@ -26,7 +26,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     chiller_equipment_type_path = ["chiller", txt_path]
     ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
-    tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
+    # tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     # 重置所有内容
     run_initialize(txt_path)
 
@@ -130,10 +130,15 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     Q0_total_in = chiller_Q0_max
     Q0_total_out = chiller_Q0_max + ashp_Q0_max
     # 冷负荷总需求功率
-    file_Q_user = "./model_data/file_Q/fmu_Q_user.txt"
-    file_Q_user_list = "./model_data/file_Q/fmu_Q_user_list.txt"
+    file_name_Q_list = "./model_data/file_Q/file_name_Q_list.txt"
+    if load_mode == 0:
+        file_Q_user_list = "./model_data/file_Q/fmu_Q_MixedAir_list.txt"
+    else:
+        file_Q_user_list = "./model_data/file_Q/fmu_Q_simple_list.txt"
+    write_txt_data(file_name_Q_list, [file_Q_user_list])
     Q_time_all_list = read_txt_data(file_Q_user_list, column_index=0)
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
+    file_Q_user = "./model_data/file_Q/fmu_Q_user.txt"
     write_txt_data(file_Q_user, [Q_user_all_list[0]])
     # 仿真结果
     file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
