@@ -272,7 +272,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             print(input_log_2_2)
             write_log_data(file_fmu_input_log, [input_log_2_2], "info")
             write_log_data(file_fmu_input_feedback_log, [input_log_2_2], "info")
-            H_chilled_pump_to_user = 0.65 * chiller_user_chilled_pump_H
+            H_chilled_pump_to_user = 0.75 * chiller_user_chilled_pump_H
             H_chilled_pump_in_storage = 0.65 * chiller_user_chilled_pump_H
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
                                                energy_storage_equipment, chilled_pump_to_user, chilled_pump_in_storage,
@@ -400,7 +400,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
 
 if __name__ == "__main__":
     # 相对路径
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
+    txt_path = "../optimal_control_algorithm_for_integrated_energy"
     # 负荷模型类型选择：0：user_load；1：simple_load
     load_mode = 0
     # 确定FMU模型文件
