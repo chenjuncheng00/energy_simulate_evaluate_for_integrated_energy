@@ -151,7 +151,7 @@ if __name__ == "__main__":
     # identify_mode = 1  # 0:仅冷水机；1:冷水机+空气源热泵
     # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
     # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
-    # txt_path = "../optimal_control_algorithm_for_cooling_season"
+    # txt_path = "../optimal_control_algorithm_for_integrated_energy"
     # run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
     # 用户侧特性辨识
     fmu_path = "./model_data/file_fmu/user_characteristic_Cvode.fmu"

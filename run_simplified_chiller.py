@@ -968,7 +968,7 @@ def tuning_dynamics_simplified_chiller(tuning_set):
 
 if __name__ == "__main__":
     # 运行 OR 系统辨识
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
+    txt_path = "../optimal_control_algorithm_for_integrated_energy"
     file_fmu = "./model_data/file_fmu/simplified_chiller_model_Cvode.fmu"
     run_mode = "simulate"
     # Q_total_list = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800,

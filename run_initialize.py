@@ -90,5 +90,5 @@ def run_initialize(txt_path):
     read_real_value_DO_station(tower_chilled_real_value_dict, tower_chilled_equipment_type_path, cfg_path_equipment)
 
 if __name__ == "__main__":
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
+    txt_path = "../optimal_control_algorithm_for_integrated_energy"
     run_initialize(txt_path)

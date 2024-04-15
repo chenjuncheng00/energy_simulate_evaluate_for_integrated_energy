@@ -366,7 +366,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
 
 
 if __name__ == "__main__":
-    txt_path = "../optimal_control_algorithm_for_cooling_season"
+    txt_path = "../optimal_control_algorithm_for_integrated_energy"
     # simple_load使用的参数
     Q_total = 12000
     # 负荷模型类型选择：0：user_load；1：simple_load
