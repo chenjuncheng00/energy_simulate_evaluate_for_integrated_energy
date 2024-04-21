@@ -16,8 +16,8 @@ def run_initialize(txt_path):
     # 系统公用二级冷冻水泵数量
     n_chilled_pump_secondary = read_cfg_data(cfg_path_equipment, "二级冷冻水泵", "n_chilled_pump_secondary", 1)
     # 向用户侧供冷阀门和冷却塔直接供冷阀门，默认数量都是2
-    n_user_value = 2
-    n_tower_chilled_value = 2
+    n_user_valve = 2
+    n_tower_chilled_valve = 2
     # 冷水机设备数量
     n_chiller1 = read_cfg_data(cfg_path_equipment, "冷水机1", "n_chiller1", 1)
     n_chiller2 = read_cfg_data(cfg_path_equipment, "冷水机2", "n_chiller2", 1)
@@ -30,17 +30,18 @@ def run_initialize(txt_path):
     n_chiller_chilled_pump = n_chiller_chilled_pump1 + n_chiller_chilled_pump2
     n_chiller_cooling_pump = n_chiller_cooling_pump1 + n_chiller_cooling_pump2
     initialize_txt_chiller(txt_path, n_chiller, n_chilled_pump_secondary, n_chiller_chilled_pump,
-                           n_chiller_cooling_pump, n_chiller_cooling_tower, n_user_value, n_tower_chilled_value)
+                           n_chiller_cooling_pump, n_chiller_cooling_tower, n_user_valve, n_tower_chilled_valve)
 
     # 空气源热泵数量
     n_air_source_heat_pump = read_cfg_data(cfg_path_equipment, "空气源热泵", "n_air_source_heat_pump", 1)
     n_ashp_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "n_chilled_pump", 1)
     initialize_txt_air_source_heat_pump(txt_path, n_air_source_heat_pump, n_chilled_pump_secondary,
-                                        n_ashp_chilled_pump, n_user_value)
+                                        n_ashp_chilled_pump, n_user_valve)
 
     # 冷却塔直接供冷设备数量
     n_tower_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷却塔直接供冷", "n_chilled_pump", 1)
-    initialize_txt_tower_chilled(txt_path, n_chilled_pump_secondary, n_tower_chilled_pump)
+    initialize_txt_tower_chilled(txt_path, n_chilled_pump_secondary, n_tower_chilled_pump, n_chiller_cooling_tower,
+                                 n_tower_chilled_valve)
 
     # 温湿度传感器设备数量
     n_Tdo = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Tdo", 1)
@@ -55,12 +56,12 @@ def run_initialize(txt_path):
 
     # 蓄冷水罐
     # 蓄冷阀门个数 AND 放冷阀门个数
-    n_chilled_value_in_storage = read_cfg_data(cfg_path_equipment, "蓄冷阀门_蓄能装置", "n_chilled_value", 1)
-    n_chilled_value_to_user = read_cfg_data(cfg_path_equipment, "放冷阀门_蓄能装置", "n_chilled_value", 1)
-    n_storage_chilled_value = n_chilled_value_in_storage + n_chilled_value_to_user
+    n_chilled_valve_in_storage = read_cfg_data(cfg_path_equipment, "蓄冷阀门_蓄能装置", "n_chilled_valve", 1)
+    n_chilled_valve_to_user = read_cfg_data(cfg_path_equipment, "放冷阀门_蓄能装置", "n_chilled_valve", 1)
+    n_storage_chilled_valve = n_chilled_valve_in_storage + n_chilled_valve_to_user
     n_storage_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "n_chilled_pump", 1)
     initialize_txt_energy_storage_equipment(txt_path, n_chilled_pump_secondary, n_storage_chilled_pump,
-                                            n_chilled_value_in_storage, n_chilled_value_to_user)
+                                            n_chilled_valve_in_storage, n_chilled_valve_to_user)
     file_storage_E = txt_path + "/real_value/energy_storage_equipment/Q_plan_E_plan/energy_storage_equipment_E.txt"
     energy_storage_equipment_E0 = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_E0", 0)
     write_txt_data(file_storage_E, [energy_storage_equipment_E0])
@@ -83,7 +84,7 @@ def run_initialize(txt_path):
                                                      n_chiller_cooling_tower)
     read_real_value_DO_station(chiller_real_value_dict, chiller_equipment_type_path, cfg_path_equipment)
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
-    storage_real_value_dict = storage_default_status(n_storage_chilled_value, n_storage_chilled_pump)
+    storage_real_value_dict = storage_default_status(n_storage_chilled_valve, n_storage_chilled_pump)
     read_real_value_DO_station(storage_real_value_dict, storage_equipment_type_path, cfg_path_equipment)
     tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     tower_chilled_real_value_dict = tower_chilled_default_status(n_tower_chilled_pump)

@@ -153,7 +153,7 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     n_chiller_cooling_pump_list = [n_chiller_cooling_pump1, n_chiller_cooling_pump2]
     chiller_cooling_tower_list = [chiller_cooling_tower]
     n_chiller_cooling_tower_list = [n_chiller_cooling_tower]
-    n_chiller_user_value = 2
+    n_chiller_user_valve = 2
     # 保存冷水机模型文件
     chiller_dict = dict()
     chiller_dict["H_chiller_chilled_pump"] = H_chiller_chilled_pump
@@ -180,7 +180,7 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     chiller_dict["n_chiller_cooling_pump1"] = n_chiller_cooling_pump1
     chiller_dict["n_chiller_cooling_pump2"] = n_chiller_cooling_pump2
     chiller_dict["n_chiller_cooling_tower"] = n_chiller_cooling_tower
-    chiller_dict["n_chiller_user_value"] = n_chiller_user_value
+    chiller_dict["n_chiller_user_valve"] = n_chiller_user_valve
     with open(file_pkl_chiller, "wb") as f:
         pickle.dump(chiller_dict, f)
 
@@ -238,8 +238,8 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     H_chilled_pump_to_user = read_cfg_data(cfg_path_equipment, "水泵扬程需求", "H_storage_chilled_pump_to_user", 0)
     H_chilled_pump_in_storage = read_cfg_data(cfg_path_equipment, "水泵扬程需求", "H_storage_chilled_pump_in_storage", 0)
     # 蓄冷阀门个数 AND 放冷阀门个数
-    n_chilled_value_in_storage = read_cfg_data(cfg_path_equipment, "蓄冷阀门_蓄能装置", "n_chilled_value", 1)
-    n_chilled_value_to_user = read_cfg_data(cfg_path_equipment, "放冷阀门_蓄能装置", "n_chilled_value", 1)
+    n_chilled_valve_in_storage = read_cfg_data(cfg_path_equipment, "蓄冷阀门_蓄能装置", "n_chilled_valve", 1)
+    n_chilled_valve_to_user = read_cfg_data(cfg_path_equipment, "放冷阀门_蓄能装置", "n_chilled_valve", 1)
     # 水泵性能系数
     chilled_pump_to_user_Fw0_coef = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置",
                                                   "chilled_pump_to_user_Fw0_coef", 0)
@@ -300,8 +300,8 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     storage_dict["energy_storage_equipment"] = energy_storage_equipment
     storage_dict["chilled_pump_to_user"] = chilled_pump_to_user
     storage_dict["chilled_pump_in_storage"] = chilled_pump_in_storage
-    storage_dict["n_chilled_value_in_storage"] = n_chilled_value_in_storage
-    storage_dict["n_chilled_value_to_user"] = n_chilled_value_to_user
+    storage_dict["n_chilled_valve_in_storage"] = n_chilled_valve_in_storage
+    storage_dict["n_chilled_valve_to_user"] = n_chilled_valve_to_user
     storage_dict["n_storage_chilled_pump"] = n_storage_chilled_pump
     with open(file_pkl_storage, "wb") as f:
         pickle.dump(storage_dict, f)
@@ -328,12 +328,12 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
                                     tower_chilled_pump_Few0, tower_chilled_pump_H0, tower_chilled_pump_P0,
                                     tower_chilled_pump_Rw, tower_chilled_pump_f_status)
     n_tower_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷却塔直接供冷", "n_chilled_pump", 1)
-    n_tower_chilled_value = 2
+    n_tower_chilled_valve = 2
     # 保存冷却塔直接供冷模型文件
     tower_chilled_dict = dict()
     tower_chilled_dict["H_tower_chilled_pump"] = H_tower_chilled_pump
     tower_chilled_dict["tower_chilled_pump"] = tower_chilled_pump
-    tower_chilled_dict["n_tower_chilled_value"] = n_tower_chilled_value
+    tower_chilled_dict["n_tower_chilled_valve"] = n_tower_chilled_valve
     tower_chilled_dict["n_tower_chilled_pump"] = n_tower_chilled_pump
     with open(file_pkl_tower_chilled, "wb") as f:
         pickle.dump(tower_chilled_dict, f)

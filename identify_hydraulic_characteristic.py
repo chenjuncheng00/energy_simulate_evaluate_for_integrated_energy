@@ -240,10 +240,10 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                                        "冷冻水泵扬程")
     # 默认值
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [1, 1]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [1, 1]
     for i in range(n_chiller1 + 1):
         for j in range(n_chiller2 + 1):
             for k in range(n_chiller_chilled_pump1 + 1):
@@ -265,7 +265,7 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                             continue
                         if pump_Fw0_total <= 0.2 * chiller_Few0_total:
                             continue
-                        chiller_chilled_value_data = []
+                        chiller_chilled_valve_data = []
                         chiller_chilled_pump_data = []
                         print("正在进行 冷水机模型 冷冻侧 水力特性辨识：" + "大冷冻阀门开启数量：" + str(i) +
                               "，小冷冻阀门开启数量" + str(j) + "，大冷冻水泵开启数量" + str(k) +
@@ -274,14 +274,14 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                         # 阀门和水泵输入数值
                         for ii in range(n_chiller1 + 1)[1:]:
                             if ii <= i:
-                                chiller_chilled_value_data.append(1)
+                                chiller_chilled_valve_data.append(1)
                             else:
-                                chiller_chilled_value_data.append(0)
+                                chiller_chilled_valve_data.append(0)
                         for jj in range(n_chiller2 + 1)[1:]:
                             if jj <= j:
-                                chiller_chilled_value_data.append(1)
+                                chiller_chilled_valve_data.append(1)
                             else:
-                                chiller_chilled_value_data.append(0)
+                                chiller_chilled_valve_data.append(0)
                         for kk in range(n_chiller_chilled_pump1 + 1)[1:]:
                             if kk <= k:
                                 chiller_chilled_pump_data.append(pump1_f)
@@ -295,9 +295,9 @@ def identify_chiller_chilled_side(n_chiller1, n_chiller2, n_chiller_chilled_pump
                         # 整个模型输入数值
                         model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                                            chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                                           chiller_cooling_tower_data + chiller_chilled_value_data + \
-                                           chiller_cooling_value_data + chiller_tower_value_data + \
-                                           chiller_tower_chilled_value_data + chiller_user_value_data + \
+                                           chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                                           chiller_cooling_valve_data + chiller_tower_valve_data + \
+                                           chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                                            air_source_heat_pump_input_data_default() + \
                                            cold_storage_input_data_default() + tower_chilled_input_data_default() + \
                                            user_load_input_data_default()
@@ -429,9 +429,9 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                                        "大冷却水泵单台电功率" + "\t" + "小冷却水泵单台电功率" + "\t" + "冷却水泵扬程")
     # 默认值
     chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_chilled_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [0, 0]
+    chiller_chilled_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [0, 0]
     for i in range(n_chiller1 + 1):
         for j in range(n_chiller2 + 1):
             for k in range(n_chiller_cooling_tower + 1):
@@ -459,8 +459,8 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                                 continue
                             if pump_Fw0_total >= 2 * tower_Fcw0_total:
                                 continue
-                            chiller_cooling_value_data = []
-                            chiller_tower_value_data = []
+                            chiller_cooling_valve_data = []
+                            chiller_tower_valve_data = []
                             chiller_cooling_pump_data = []
                             print("正在进行 冷水机模型 冷却侧 水力特性辨识：" + "大冷却阀门开启数量：" + str(i) +
                                   "，小冷却阀门开启数量" + str(j) + "，冷却塔阀门开启数量" + str(k) +
@@ -469,19 +469,19 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                             # 阀门和水泵输入数值
                             for ii in range(n_chiller1 + 1)[1:]:
                                 if ii <= i:
-                                    chiller_cooling_value_data.append(1)
+                                    chiller_cooling_valve_data.append(1)
                                 else:
-                                    chiller_cooling_value_data.append(0)
+                                    chiller_cooling_valve_data.append(0)
                             for jj in range(n_chiller2 + 1)[1:]:
                                 if jj <= j:
-                                    chiller_cooling_value_data.append(1)
+                                    chiller_cooling_valve_data.append(1)
                                 else:
-                                    chiller_cooling_value_data.append(0)
+                                    chiller_cooling_valve_data.append(0)
                             for kk in range(n_chiller_cooling_tower + 1)[1:]:
                                 if kk <= k:
-                                    chiller_tower_value_data.append(1)
+                                    chiller_tower_valve_data.append(1)
                                 else:
-                                    chiller_tower_value_data.append(0)
+                                    chiller_tower_valve_data.append(0)
                             for ll in range(n_chiller_cooling_pump1 + 1)[1:]:
                                 if ll <= l:
                                     chiller_cooling_pump_data.append(pump1_f)
@@ -495,9 +495,9 @@ def identify_chiller_cooling_side(n_chiller1, n_chiller2, n_chiller_cooling_pump
                             # 整个模型输入数值
                             model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                                                chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                                               chiller_cooling_tower_data + chiller_chilled_value_data + \
-                                               chiller_cooling_value_data + chiller_tower_value_data + \
-                                               chiller_tower_chilled_value_data + chiller_user_value_data + \
+                                               chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                                               chiller_cooling_valve_data + chiller_tower_valve_data + \
+                                               chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                                                air_source_heat_pump_input_data_default() + \
                                                cold_storage_input_data_default() + \
                                                tower_chilled_input_data_default() + user_load_input_data_default()
@@ -630,16 +630,16 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
                     continue
                 if pump_Fw0_total <= 0.2 * ashp_Few0_total:
                     continue
-                ashp_chilled_value_data = []
+                ashp_chilled_valve_data = []
                 ashp_chilled_pump_data = []
                 print("正在进行 空气源热泵模型 冷冻侧 水力特性辨识：" + "冷冻阀门开启数量：" + str(i) +
                       "，冷冻水泵开启数量" + str(j) + "，冷冻水泵转速" + str(pump_f))
                 # 阀门和水泵输入数值
                 for ii in range(n_air_source_heat_pump + 1)[1:]:
                     if ii <= i:
-                        ashp_chilled_value_data.append(1)
+                        ashp_chilled_valve_data.append(1)
                     else:
-                        ashp_chilled_value_data.append(0)
+                        ashp_chilled_valve_data.append(0)
                 for jj in range(n_ashp_chilled_pump + 1)[1:]:
                     if jj <= j:
                         ashp_chilled_pump_data.append(pump_f)
@@ -647,7 +647,7 @@ def identify_air_source_heat_pump_chilled_side(n_air_source_heat_pump, n_ashp_ch
                         ashp_chilled_pump_data.append(0)
                 # 整个模型输入数值
                 model_input_data = time_data + environment_input_data_default(load_mode) + chiller_input_data_default() + \
-                                   air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
+                                   air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_valve_data + \
                                    cold_storage_input_data_default() + tower_chilled_input_data_default() + \
                                    user_load_input_data_default()
                 # FMU仿真
@@ -735,13 +735,13 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
     # 默认值
     chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [0, 0]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [0, 0]
     # 阀门列表：先是蓄冷阀门，然后是放冷阀门
-    storage_chiller_value_data = [1, 1, 1]
-    storage_user_value_data = [0, 0, 0]
+    storage_chiller_valve_data = [1, 1, 1]
+    storage_user_valve_data = [0, 0, 0]
     for i in range(n_chiller1 + 1):
         for j in range(n_chiller2 + 1):
             for k in range(n_storage_chilled_pump + 1):
@@ -760,7 +760,7 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                         continue
                     if pump_Fw0_total <= 0.2 * chiller_Few0_total:
                         continue
-                    chiller_chilled_value_data = []
+                    chiller_chilled_valve_data = []
                     storage_chilled_pump_data = []
                     print("正在进行 蓄冷水罐模型 蓄冷工况 水力特性辨识：" + "冷水机大冷冻阀门开启数量：" + str(i) +
                           "，冷水机小冷冻阀门开启数量" + str(j) + "，蓄冷水罐冷冻水泵开启数量" + str(k) +
@@ -768,14 +768,14 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                     # 阀门和水泵输入数值
                     for ii in range(n_chiller1 + 1)[1:]:
                         if ii <= i:
-                            chiller_chilled_value_data.append(1)
+                            chiller_chilled_valve_data.append(1)
                         else:
-                            chiller_chilled_value_data.append(0)
+                            chiller_chilled_valve_data.append(0)
                     for jj in range(n_chiller2 + 1)[1:]:
                         if jj <= j:
-                            chiller_chilled_value_data.append(1)
+                            chiller_chilled_valve_data.append(1)
                         else:
-                            chiller_chilled_value_data.append(0)
+                            chiller_chilled_valve_data.append(0)
                     for kk in range(n_storage_chilled_pump + 1)[1:]:
                         if kk <= k:
                             storage_chilled_pump_data.append(pump_f)
@@ -784,11 +784,11 @@ def identify_cold_storage_from_chiller(n_chiller1, n_chiller2, n_storage_chilled
                     # 整个模型输入数值
                     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                                        chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                                       chiller_cooling_tower_data + chiller_chilled_value_data + \
-                                       chiller_cooling_value_data + chiller_tower_value_data + \
-                                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                                       chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                                       chiller_cooling_valve_data + chiller_tower_valve_data + \
+                                       chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                                        air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
-                                       storage_chiller_value_data + storage_user_value_data + \
+                                       storage_chiller_valve_data + storage_user_valve_data + \
                                        tower_chilled_input_data_default() + user_load_input_data_default()
                     # FMU仿真
                     try:
@@ -882,8 +882,8 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, storage_chilled_pump_f
                                        "蓄冷水罐冷冻水泵单台水流量" + "\t" + "蓄冷水罐冷冻水泵单台电功率" + "\t" +
                                        "蓄冷水罐冷冻水泵扬程")
     # 阀门列表：先是蓄冷阀门，然后是放冷阀门
-    storage_chiller_value_data = [0, 0, 0]
-    storage_user_value_data = [1, 1, 1]
+    storage_chiller_valve_data = [0, 0, 0]
+    storage_user_valve_data = [1, 1, 1]
     for i in range(n_storage_chilled_pump + 1):
         if i == 0:
             continue
@@ -904,7 +904,7 @@ def identify_cold_storage_to_user(n_storage_chilled_pump, storage_chilled_pump_f
             # 整个模型输入数值
             model_input_data = time_data + environment_input_data_default(load_mode) + chiller_input_data_default() + \
                                air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
-                               storage_chiller_value_data + storage_user_value_data + \
+                               storage_chiller_valve_data + storage_user_valve_data + \
                                tower_chilled_input_data_default() + user_load_input_data_default()
             # FMU仿真
             try:
@@ -1000,12 +1000,12 @@ def identify_chiller_user_storage(n_chiller1, n_chiller2, n_chiller_chilled_pump
                                             "蓄冷水罐冷冻水泵单台电功率" + "\t" + "蓄冷水罐冷冻水泵扬程")
     # 默认值
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [1, 1]
-    storage_chiller_value_data = [1, 1, 1]
-    storage_user_value_data = [0, 0, 0]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [1, 1]
+    storage_chiller_valve_data = [1, 1, 1]
+    storage_user_valve_data = [0, 0, 0]
     for i in range(n_chiller1 + 1):
         for j in range(n_chiller2 + 1):
             for k in range(n_chiller_chilled_pump1 + 1):
@@ -1036,7 +1036,7 @@ def identify_chiller_user_storage(n_chiller1, n_chiller2, n_chiller_chilled_pump
                                 continue
                             if pump_Fw0_total <= 0.2 * chiller_Few0_total:
                                 continue
-                            chiller_chilled_value_data = []
+                            chiller_chilled_valve_data = []
                             chiller_chilled_pump_data = []
                             storage_chilled_pump_data = []
                             print("正在进行 冷水机同时向用户侧供冷+向水罐蓄冷 水力特性辨识：" +
@@ -1048,14 +1048,14 @@ def identify_chiller_user_storage(n_chiller1, n_chiller2, n_chiller_chilled_pump
                             # 阀门和水泵输入数值
                             for ii in range(n_chiller1 + 1)[1:]:
                                 if ii <= i:
-                                    chiller_chilled_value_data.append(1)
+                                    chiller_chilled_valve_data.append(1)
                                 else:
-                                    chiller_chilled_value_data.append(0)
+                                    chiller_chilled_valve_data.append(0)
                             for jj in range(n_chiller2 + 1)[1:]:
                                 if jj <= j:
-                                    chiller_chilled_value_data.append(1)
+                                    chiller_chilled_valve_data.append(1)
                                 else:
-                                    chiller_chilled_value_data.append(0)
+                                    chiller_chilled_valve_data.append(0)
                             for kk in range(n_chiller_chilled_pump1 + 1)[1:]:
                                 if kk <= k:
                                     chiller_chilled_pump_data.append(chiller_pump1_f)
@@ -1074,11 +1074,11 @@ def identify_chiller_user_storage(n_chiller1, n_chiller2, n_chiller_chilled_pump
                             # 整个模型输入数值
                             model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                                                chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                                               chiller_cooling_tower_data + chiller_chilled_value_data + \
-                                               chiller_cooling_value_data + chiller_tower_value_data + \
-                                               chiller_tower_chilled_value_data + chiller_user_value_data + \
+                                               chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                                               chiller_cooling_valve_data + chiller_tower_valve_data + \
+                                               chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                                                air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
-                                               storage_chiller_value_data + storage_user_value_data + \
+                                               storage_chiller_valve_data + storage_user_valve_data + \
                                                tower_chilled_input_data_default() + user_load_input_data_default()
                             # FMU仿真
                             try:
@@ -1219,10 +1219,10 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
     # 默认值
     chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_chilled_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [1, 1]
-    chiller_user_value_data = [0, 0]
+    chiller_chilled_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [1, 1]
+    chiller_user_valve_data = [0, 0]
     for i in range(n_chiller_cooling_tower + 1):
         for j in range(n_tower_chilled_pump + 1):
             if i == 0 or j == 0:
@@ -1236,16 +1236,16 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
                 pump_Fw0_total = j * tower_chilled_pump_Fw0 * (pump_f / tower_chilled_pump_f_list[0])
                 if pump_Fw0_total >= 2 * tower_Fcw0_total:
                     continue
-                chiller_tower_value_data = []
+                chiller_tower_valve_data = []
                 tower_chilled_pump_data = []
                 print("正在进行 冷却塔直接供冷模型 水力特性辨识：" + "，冷水机冷却塔阀门开启数量" + str(i) +
                       "，冷却塔直接供冷水泵开启数量" + str(j) + "，冷却塔直接供冷水泵转速" + str(pump_f))
                 # 阀门和水泵输入数值
                 for ii in range(n_chiller_cooling_tower + 1)[1:]:
                     if ii <= i:
-                        chiller_tower_value_data.append(1)
+                        chiller_tower_valve_data.append(1)
                     else:
-                        chiller_tower_value_data.append(0)
+                        chiller_tower_valve_data.append(0)
                 for jj in range(n_tower_chilled_pump + 1)[1:]:
                     if jj <= j:
                         tower_chilled_pump_data.append(pump_f)
@@ -1254,9 +1254,9 @@ def identify_tower_chilled(n_chiller_cooling_tower, n_tower_chilled_pump, chille
                 # 整个模型输入数值
                 model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                                    chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                                   chiller_cooling_tower_data + chiller_chilled_value_data + \
-                                   chiller_cooling_value_data + chiller_tower_value_data + \
-                                   chiller_tower_chilled_value_data + chiller_user_value_data + \
+                                   chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                                   chiller_cooling_valve_data + chiller_tower_valve_data + \
+                                   chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                                    air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
                                    tower_chilled_pump_data + user_load_input_data_default()
                 # FMU仿真
@@ -1359,9 +1359,9 @@ def identify_tower_cooling_chilled(n_chiller1, n_chiller2, n_chiller_cooling_pum
                                              "冷却塔直接供冷水泵扬程")
     # 默认值
     chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_chilled_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [1, 1]
-    chiller_user_value_data = [0, 0]
+    chiller_chilled_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [1, 1]
+    chiller_user_valve_data = [0, 0]
     for i in range(n_chiller1 + 1):
         for j in range(n_chiller2 + 1):
             for k in range(n_chiller_cooling_tower + 1):
@@ -1397,8 +1397,8 @@ def identify_tower_cooling_chilled(n_chiller1, n_chiller2, n_chiller_cooling_pum
                                     continue
                                 if chiller_pump_Fw0_total + tower_chilled_pump_Fw0_total >= 2 * tower_Fcw0_total:
                                     continue
-                                chiller_cooling_value_data = []
-                                chiller_tower_value_data = []
+                                chiller_cooling_valve_data = []
+                                chiller_tower_valve_data = []
                                 chiller_cooling_pump_data = []
                                 tower_chilled_pump_data = []
                                 print("正在进行 冷水机冷却侧+冷却塔直接供冷 水力特性辨识：" + "冷水机大冷却阀门开启数量：" +
@@ -1410,19 +1410,19 @@ def identify_tower_cooling_chilled(n_chiller1, n_chiller2, n_chiller_cooling_pum
                                 # 冷水机阀门和水泵输入数值
                                 for ii in range(n_chiller1 + 1)[1:]:
                                     if ii <= i:
-                                        chiller_cooling_value_data.append(1)
+                                        chiller_cooling_valve_data.append(1)
                                     else:
-                                        chiller_cooling_value_data.append(0)
+                                        chiller_cooling_valve_data.append(0)
                                 for jj in range(n_chiller2 + 1)[1:]:
                                     if jj <= j:
-                                        chiller_cooling_value_data.append(1)
+                                        chiller_cooling_valve_data.append(1)
                                     else:
-                                        chiller_cooling_value_data.append(0)
+                                        chiller_cooling_valve_data.append(0)
                                 for kk in range(n_chiller_cooling_tower + 1)[1:]:
                                     if kk <= k:
-                                        chiller_tower_value_data.append(1)
+                                        chiller_tower_valve_data.append(1)
                                     else:
-                                        chiller_tower_value_data.append(0)
+                                        chiller_tower_valve_data.append(0)
                                 for ll in range(n_chiller_cooling_pump1 + 1)[1:]:
                                     if ll <= l:
                                         chiller_cooling_pump_data.append(chiller_pump1_f)
@@ -1442,9 +1442,9 @@ def identify_tower_cooling_chilled(n_chiller1, n_chiller2, n_chiller_cooling_pum
                                 # 整个模型输入数值
                                 model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                                                    chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                                                   chiller_cooling_tower_data + chiller_chilled_value_data + \
-                                                   chiller_cooling_value_data + chiller_tower_value_data + \
-                                                   chiller_tower_chilled_value_data + chiller_user_value_data + \
+                                                   chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                                                   chiller_cooling_valve_data + chiller_tower_valve_data + \
+                                                   chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                                                    air_source_heat_pump_input_data_default() + \
                                                    cold_storage_input_data_default() + tower_chilled_pump_data + \
                                                    user_load_input_data_default()
@@ -1616,16 +1616,16 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
     chiller_chilled_pump_data = [chiller1_chilled_pump_f0, chiller1_chilled_pump_f0, chiller1_chilled_pump_f0,
                                  chiller1_chilled_pump_f0, chiller2_chilled_pump_f0, chiller2_chilled_pump_f0]
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [1, 1]
+    chiller_chilled_valve_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [1, 1]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                        chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                       chiller_cooling_tower_data + chiller_chilled_value_data + \
-                       chiller_cooling_value_data + chiller_tower_value_data + \
-                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                       chiller_cooling_valve_data + chiller_tower_valve_data + \
+                       chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                        air_source_heat_pump_input_data_default() + \
                        cold_storage_input_data_default() + tower_chilled_input_data_default() + \
                        user_load_input_data_default()
@@ -1684,16 +1684,16 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
     chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
     chiller_cooling_pump_data = [chiller1_cooling_pump_f0, chiller1_cooling_pump_f0, chiller1_cooling_pump_f0,
                                  chiller1_cooling_pump_f0, chiller2_cooling_pump_f0, chiller2_cooling_pump_f0]
-    chiller_chilled_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_cooling_value_data = [1, 1, 1, 1, 1, 1]
-    chiller_tower_value_data = [1, 1, 1, 1, 1, 1]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [0, 0]
+    chiller_chilled_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_cooling_valve_data = [1, 1, 1, 1, 1, 1]
+    chiller_tower_valve_data = [1, 1, 1, 1, 1, 1]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [0, 0]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                        chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                       chiller_cooling_tower_data + chiller_chilled_value_data + \
-                       chiller_cooling_value_data + chiller_tower_value_data + \
-                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                       chiller_cooling_valve_data + chiller_tower_valve_data + \
+                       chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                        air_source_heat_pump_input_data_default() + \
                        cold_storage_input_data_default() + tower_chilled_input_data_default() + \
                        user_load_input_data_default()
@@ -1746,9 +1746,9 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
                                  "冷冻水泵实际总电功率" + "\t" + "冷冻水泵实际扬程")
     ashp_chilled_pump_Fw0_total = n_ashp_chilled_pump * ashp_chilled_pump_Fw0
     ashp_chilled_pump_data = [ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0]
-    ashp_chilled_value_data = [1, 1, 1, 1]
+    ashp_chilled_valve_data = [1, 1, 1, 1]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_input_data_default() + \
-                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
+                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_valve_data + \
                        cold_storage_input_data_default() + tower_chilled_input_data_default() + \
                        user_load_input_data_default()
     try:
@@ -1780,22 +1780,22 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
     storage_chilled_pump_Fw0_total = n_storage_chilled_pump * storage_chilled_pump_Fw0
     chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [0, 0]
+    chiller_chilled_valve_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [0, 0]
     storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
                                  storage_chilled_pump_f0, storage_chilled_pump_f0]
-    storage_user_value_data = [0, 0, 0]
-    storage_chiller_value_data = [1, 1, 1]
+    storage_user_valve_data = [0, 0, 0]
+    storage_chiller_valve_data = [1, 1, 1]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                        chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                       chiller_cooling_tower_data + chiller_chilled_value_data + \
-                       chiller_cooling_value_data + chiller_tower_value_data + \
-                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                       chiller_cooling_valve_data + chiller_tower_valve_data + \
+                       chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                        air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
-                       storage_user_value_data + storage_chiller_value_data + \
+                       storage_user_valve_data + storage_chiller_valve_data + \
                        tower_chilled_input_data_default() + user_load_input_data_default()
     try:
         time1 = time.time()
@@ -1835,11 +1835,11 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
     storage_chilled_pump_Fw0_total = n_storage_chilled_pump * storage_chilled_pump_Fw0
     storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
                                  storage_chilled_pump_f0, storage_chilled_pump_f0]
-    storage_user_value_data = [1, 1, 1]
-    storage_chiller_value_data = [0, 0, 0]
+    storage_user_valve_data = [1, 1, 1]
+    storage_chiller_valve_data = [0, 0, 0]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_input_data_default() + \
                        air_source_heat_pump_input_data_default() + storage_chilled_pump_data + \
-                       storage_user_value_data + storage_chiller_value_data + \
+                       storage_user_valve_data + storage_chiller_valve_data + \
                        tower_chilled_input_data_default() + user_load_input_data_default()
     try:
         time1 = time.time()
@@ -1871,17 +1871,17 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
     tower_chilled_pump_Fw0_total = n_tower_chilled_pump * tower_chilled_pump_Fw0
     chiller_chilled_pump_data = [0, 0, 0, 0, 0, 0]
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_chilled_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_value_data = [1, 1, 1, 1, 1, 1]
-    chiller_tower_chilled_value_data = [1, 1]
-    chiller_user_value_data = [0, 0]
+    chiller_chilled_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_valve_data = [1, 1, 1, 1, 1, 1]
+    chiller_tower_chilled_valve_data = [1, 1]
+    chiller_user_valve_data = [0, 0]
     tower_chilled_pump_data = [tower_chilled_pump_f0, tower_chilled_pump_f0, tower_chilled_pump_f0, tower_chilled_pump_f0]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                        chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                       chiller_cooling_tower_data + chiller_chilled_value_data + \
-                       chiller_cooling_value_data + chiller_tower_value_data + \
-                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                       chiller_cooling_valve_data + chiller_tower_valve_data + \
+                       chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                        air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
                        tower_chilled_pump_data + user_load_input_data_default()
     try:
@@ -1951,24 +1951,24 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
     chiller_chilled_pump_data = [chiller1_chilled_pump_f0, chiller1_chilled_pump_f0, chiller1_chilled_pump_f0,
                                  chiller1_chilled_pump_f0, chiller2_chilled_pump_f0, chiller2_chilled_pump_f0]
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [1, 1]
+    chiller_chilled_valve_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [1, 1]
     ashp_chilled_pump_data = [ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0]
-    ashp_chilled_value_data = [1, 1, 1, 1]
+    ashp_chilled_valve_data = [1, 1, 1, 1]
     storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
                                  storage_chilled_pump_f0, storage_chilled_pump_f0]
-    storage_user_value_data = [1, 1, 1]
-    storage_chiller_value_data = [0, 0, 0]
+    storage_user_valve_data = [1, 1, 1]
+    storage_chiller_valve_data = [0, 0, 0]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                        chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                       chiller_cooling_tower_data + chiller_chilled_value_data + \
-                       chiller_cooling_value_data + chiller_tower_value_data + \
-                       chiller_tower_chilled_value_data + chiller_user_value_data + \
-                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
-                       storage_chilled_pump_data + storage_user_value_data + storage_chiller_value_data + \
+                       chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                       chiller_cooling_valve_data + chiller_tower_valve_data + \
+                       chiller_tower_chilled_valve_data + chiller_user_valve_data + \
+                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_valve_data + \
+                       storage_chilled_pump_data + storage_user_valve_data + storage_chiller_valve_data + \
                        tower_chilled_input_data_default() + user_load_input_data_default()
     try:
         time1 = time.time()
@@ -2045,19 +2045,19 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
     chiller_chilled_pump_data = [chiller1_chilled_pump_f0, chiller1_chilled_pump_f0, chiller1_chilled_pump_f0,
                                  chiller1_chilled_pump_f0, chiller2_chilled_pump_f0, chiller2_chilled_pump_f0]
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [1, 1]
+    chiller_chilled_valve_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [1, 1]
     ashp_chilled_pump_data = [ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0]
-    ashp_chilled_value_data = [1, 1, 1, 1]
+    ashp_chilled_valve_data = [1, 1, 1, 1]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                        chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                       chiller_cooling_tower_data + chiller_chilled_value_data + \
-                       chiller_cooling_value_data + chiller_tower_value_data + \
-                       chiller_tower_chilled_value_data + chiller_user_value_data + \
-                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
+                       chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                       chiller_cooling_valve_data + chiller_tower_valve_data + \
+                       chiller_tower_chilled_valve_data + chiller_user_valve_data + \
+                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_valve_data + \
                        cold_storage_input_data_default() + tower_chilled_input_data_default() + \
                        user_load_input_data_default()
     try:
@@ -2127,22 +2127,22 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
     chiller_chilled_pump_data = [chiller1_chilled_pump_f0, chiller1_chilled_pump_f0, chiller1_chilled_pump_f0,
                                  chiller1_chilled_pump_f0, chiller2_chilled_pump_f0, chiller2_chilled_pump_f0]
     chiller_cooling_pump_data = [0, 0, 0, 0, 0, 0]
-    chiller_chilled_value_data = [1, 1, 1, 1, 1, 1]
-    chiller_cooling_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_value_data = [0, 0, 0, 0, 0, 0]
-    chiller_tower_chilled_value_data = [0, 0]
-    chiller_user_value_data = [1, 1]
+    chiller_chilled_valve_data = [1, 1, 1, 1, 1, 1]
+    chiller_cooling_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_valve_data = [0, 0, 0, 0, 0, 0]
+    chiller_tower_chilled_valve_data = [0, 0]
+    chiller_user_valve_data = [1, 1]
     storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
                                  storage_chilled_pump_f0, storage_chilled_pump_f0]
-    storage_user_value_data = [1, 1, 1]
-    storage_chiller_value_data = [0, 0, 0]
+    storage_user_valve_data = [1, 1, 1]
+    storage_chiller_valve_data = [0, 0, 0]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_data + \
                        chiller_chilled_pump_data + chiller_cooling_pump_data + \
-                       chiller_cooling_tower_data + chiller_chilled_value_data + \
-                       chiller_cooling_value_data + chiller_tower_value_data + \
-                       chiller_tower_chilled_value_data + chiller_user_value_data + \
+                       chiller_cooling_tower_data + chiller_chilled_valve_data + \
+                       chiller_cooling_valve_data + chiller_tower_valve_data + \
+                       chiller_tower_chilled_valve_data + chiller_user_valve_data + \
                        air_source_heat_pump_input_data_default() + \
-                       storage_chilled_pump_data + storage_user_value_data + storage_chiller_value_data + \
+                       storage_chilled_pump_data + storage_user_valve_data + storage_chiller_valve_data + \
                        tower_chilled_input_data_default() + user_load_input_data_default()
     try:
         time1 = time.time()
@@ -2207,14 +2207,14 @@ def identify_full_open(n_chiller1, n_chiller2, n_chiller_chilled_pump1, n_chille
                                  "蓄冷水罐冷冻水泵实际总电功率" + "\t" + "蓄冷水罐冷冻水泵实际扬程")
     Few0_total = ashp_chilled_pump_Fw0_total + storage_chilled_pump_Fw0_total
     ashp_chilled_pump_data = [ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0, ashp_chilled_pump_f0]
-    ashp_chilled_value_data = [1, 1, 1, 1]
+    ashp_chilled_valve_data = [1, 1, 1, 1]
     storage_chilled_pump_data = [storage_chilled_pump_f0, storage_chilled_pump_f0,
                                  storage_chilled_pump_f0, storage_chilled_pump_f0]
-    storage_user_value_data = [1, 1, 1]
-    storage_chiller_value_data = [0, 0, 0]
+    storage_user_valve_data = [1, 1, 1]
+    storage_chiller_valve_data = [0, 0, 0]
     model_input_data = time_data + environment_input_data_default(load_mode) + chiller_input_data_default() + \
-                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_value_data + \
-                       storage_chilled_pump_data + storage_user_value_data + storage_chiller_value_data + \
+                       air_source_heat_pump_data + ashp_chilled_pump_data + ashp_chilled_valve_data + \
+                       storage_chilled_pump_data + storage_user_valve_data + storage_chiller_valve_data + \
                        tower_chilled_input_data_default() + user_load_input_data_default()
     try:
         time1 = time.time()
