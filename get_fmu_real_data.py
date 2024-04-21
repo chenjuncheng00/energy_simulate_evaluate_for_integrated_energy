@@ -64,11 +64,11 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
     chilled_pump_input_name_list = get_fmu_input_name(chiller_input_type()[3])
     cooling_pump_input_name_list = get_fmu_input_name(chiller_input_type()[4])
     cooling_tower_input_name_list = get_fmu_input_name(chiller_input_type()[5])
-    chilled_value_input_name_list = get_fmu_input_name(chiller_input_type()[6])
-    cooling_value_input_name_list = get_fmu_input_name(chiller_input_type()[7])
-    tower_value_input_name_list = get_fmu_input_name(chiller_input_type()[8])
-    tower_chilled_value_input_name_list = get_fmu_input_name(chiller_input_type()[9])
-    user_value_input_name_list = get_fmu_input_name(chiller_input_type()[10])
+    chilled_valve_input_name_list = get_fmu_input_name(chiller_input_type()[6])
+    cooling_valve_input_name_list = get_fmu_input_name(chiller_input_type()[7])
+    tower_valve_input_name_list = get_fmu_input_name(chiller_input_type()[8])
+    tower_chilled_valve_input_name_list = get_fmu_input_name(chiller_input_type()[9])
+    user_valve_input_name_list = get_fmu_input_name(chiller_input_type()[10])
     # output_name
     chiller_P_output_name_list = chiller_output_name()[13]
     chilled_pump_P_output_name_list = chiller_output_name()[14]
@@ -100,7 +100,7 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
         DO_status["DO"]["故障状态"] = 1
         DO_status["DO"]["远方状态"] = 1
         DO_status["DO"]["维修状态"] = 1
-        input_tmp = int(simulate_result[chilled_value_input_name_list[i]][-1])
+        input_tmp = int(simulate_result[chilled_valve_input_name_list[i]][-1])
         if input_tmp == 1:
             DO_status["DO"]["开关状态"] = 1
         else:
@@ -115,7 +115,7 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
         DO_status["DO"]["故障状态"] = 1
         DO_status["DO"]["远方状态"] = 1
         DO_status["DO"]["维修状态"] = 1
-        input_tmp = int(simulate_result[cooling_value_input_name_list[i]][-1])
+        input_tmp = int(simulate_result[cooling_valve_input_name_list[i]][-1])
         if input_tmp == 1:
             DO_status["DO"]["开关状态"] = 1
         else:
@@ -175,7 +175,7 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
         DO_status["DO"]["故障状态"] = 1
         DO_status["DO"]["远方状态"] = 1
         DO_status["DO"]["维修状态"] = 1
-        input_tmp = int(simulate_result[tower_value_input_name_list[i]][-1])
+        input_tmp = int(simulate_result[tower_valve_input_name_list[i]][-1])
         if input_tmp == 1:
             DO_status["DO"]["开关状态"] = 1
         else:
@@ -183,14 +183,14 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
         tmp_name = "冷却塔阀门_" + str(i)
         real_value_DO_dict["real_value"][tmp_name] = DO_status
     # 向用户侧供冷阀门
-    for i in range(len(user_value_input_name_list)):
+    for i in range(len(user_valve_input_name_list)):
         DO_status = dict()
         DO_status["DO"] = dict()
         DO_status["DO"]["报警状态"] = 1
         DO_status["DO"]["故障状态"] = 1
         DO_status["DO"]["远方状态"] = 1
         DO_status["DO"]["维修状态"] = 1
-        input_tmp = int(simulate_result[user_value_input_name_list[i]][-1])
+        input_tmp = int(simulate_result[user_valve_input_name_list[i]][-1])
         if input_tmp == 1:
             DO_status["DO"]["开关状态"] = 1
         else:
@@ -198,14 +198,14 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
         tmp_name = "向用户侧供冷阀门_" + str(i)
         real_value_DO_dict["real_value"][tmp_name] = DO_status
     # 冷却塔直接供冷阀门
-    for i in range(len(tower_chilled_value_input_name_list)):
+    for i in range(len(tower_chilled_valve_input_name_list)):
         DO_status = dict()
         DO_status["DO"] = dict()
         DO_status["DO"]["报警状态"] = 1
         DO_status["DO"]["故障状态"] = 1
         DO_status["DO"]["远方状态"] = 1
         DO_status["DO"]["维修状态"] = 1
-        input_tmp = int(simulate_result[tower_chilled_value_input_name_list[i]][-1])
+        input_tmp = int(simulate_result[tower_chilled_valve_input_name_list[i]][-1])
         if input_tmp == 1:
             DO_status["DO"]["开关状态"] = 1
         else:
@@ -292,44 +292,44 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
         real_value_AO_dict["real_value"][cooling_tower_frequency_name_tmp]["AO"]["频率"] = cooling_tower_frequency
     # 冷冻阀门
     for i in range(len(chiller_input_name_list)):
-        input_tmp = int(simulate_result[chilled_value_input_name_list[i]][-1])
-        chilled_value_proportion = input_tmp * 100
-        chilled_value_name_tmp = "冷冻阀门_" + str(i)
-        real_value_AO_dict["real_value"][chilled_value_name_tmp] = dict()
-        real_value_AO_dict["real_value"][chilled_value_name_tmp]["AO"] = dict()
-        real_value_AO_dict["real_value"][chilled_value_name_tmp]["AO"]["阀门开度"] = chilled_value_proportion
+        input_tmp = int(simulate_result[chilled_valve_input_name_list[i]][-1])
+        chilled_valve_proportion = input_tmp * 100
+        chilled_valve_name_tmp = "冷冻阀门_" + str(i)
+        real_value_AO_dict["real_value"][chilled_valve_name_tmp] = dict()
+        real_value_AO_dict["real_value"][chilled_valve_name_tmp]["AO"] = dict()
+        real_value_AO_dict["real_value"][chilled_valve_name_tmp]["AO"]["阀门开度"] = chilled_valve_proportion
     # 冷却阀门
     for i in range(len(chiller_input_name_list)):
-        input_tmp = int(simulate_result[cooling_value_input_name_list[i]][-1])
-        cooling_value_proportion = input_tmp * 100
-        cooling_value_name_tmp = "冷却阀门_" + str(i)
-        real_value_AO_dict["real_value"][cooling_value_name_tmp] = dict()
-        real_value_AO_dict["real_value"][cooling_value_name_tmp]["AO"] = dict()
-        real_value_AO_dict["real_value"][cooling_value_name_tmp]["AO"]["阀门开度"] = cooling_value_proportion
+        input_tmp = int(simulate_result[cooling_valve_input_name_list[i]][-1])
+        cooling_valve_proportion = input_tmp * 100
+        cooling_valve_name_tmp = "冷却阀门_" + str(i)
+        real_value_AO_dict["real_value"][cooling_valve_name_tmp] = dict()
+        real_value_AO_dict["real_value"][cooling_valve_name_tmp]["AO"] = dict()
+        real_value_AO_dict["real_value"][cooling_valve_name_tmp]["AO"]["阀门开度"] = cooling_valve_proportion
     # 冷却塔阀门
     for i in range(len(cooling_tower_input_name_list)):
-        input_tmp = int(simulate_result[tower_value_input_name_list[i]][-1])
-        tower_value_proportion = input_tmp * 100
-        tower_value_name_tmp = "冷却塔阀门_" + str(i)
-        real_value_AO_dict["real_value"][tower_value_name_tmp] = dict()
-        real_value_AO_dict["real_value"][tower_value_name_tmp]["AO"] = dict()
-        real_value_AO_dict["real_value"][tower_value_name_tmp]["AO"]["阀门开度"] = tower_value_proportion
+        input_tmp = int(simulate_result[tower_valve_input_name_list[i]][-1])
+        tower_valve_proportion = input_tmp * 100
+        tower_valve_name_tmp = "冷却塔阀门_" + str(i)
+        real_value_AO_dict["real_value"][tower_valve_name_tmp] = dict()
+        real_value_AO_dict["real_value"][tower_valve_name_tmp]["AO"] = dict()
+        real_value_AO_dict["real_value"][tower_valve_name_tmp]["AO"]["阀门开度"] = tower_valve_proportion
     # 向用户侧供冷阀门
-    for i in range(len(user_value_input_name_list)):
-        input_tmp = int(simulate_result[user_value_input_name_list[i]][-1])
-        user_value_proportion = input_tmp * 100
-        user_value_name_tmp = "向用户侧供冷阀门_" + str(i)
-        real_value_AO_dict["real_value"][user_value_name_tmp] = dict()
-        real_value_AO_dict["real_value"][user_value_name_tmp]["AO"] = dict()
-        real_value_AO_dict["real_value"][user_value_name_tmp]["AO"]["阀门开度"] = user_value_proportion
+    for i in range(len(user_valve_input_name_list)):
+        input_tmp = int(simulate_result[user_valve_input_name_list[i]][-1])
+        user_valve_proportion = input_tmp * 100
+        user_valve_name_tmp = "向用户侧供冷阀门_" + str(i)
+        real_value_AO_dict["real_value"][user_valve_name_tmp] = dict()
+        real_value_AO_dict["real_value"][user_valve_name_tmp]["AO"] = dict()
+        real_value_AO_dict["real_value"][user_valve_name_tmp]["AO"]["阀门开度"] = user_valve_proportion
     # 冷却塔直接供冷阀门
-    for i in range(len(tower_chilled_value_input_name_list)):
-        input_tmp = int(simulate_result[tower_chilled_value_input_name_list[i]][-1])
-        tower_chilled_value_proportion = input_tmp * 100
-        tower_chilled_value_name_tmp = "冷却塔直接供冷阀门_" + str(i)
-        real_value_AO_dict["real_value"][tower_chilled_value_name_tmp] = dict()
-        real_value_AO_dict["real_value"][tower_chilled_value_name_tmp]["AO"] = dict()
-        real_value_AO_dict["real_value"][tower_chilled_value_name_tmp]["AO"]["阀门开度"] = tower_chilled_value_proportion
+    for i in range(len(tower_chilled_valve_input_name_list)):
+        input_tmp = int(simulate_result[tower_chilled_valve_input_name_list[i]][-1])
+        tower_chilled_valve_proportion = input_tmp * 100
+        tower_chilled_valve_name_tmp = "冷却塔直接供冷阀门_" + str(i)
+        real_value_AO_dict["real_value"][tower_chilled_valve_name_tmp] = dict()
+        real_value_AO_dict["real_value"][tower_chilled_valve_name_tmp]["AO"] = dict()
+        real_value_AO_dict["real_value"][tower_chilled_valve_name_tmp]["AO"]["阀门开度"] = tower_chilled_valve_proportion
     # 总管数据
     real_value_AO_dict["real_value"]["冷冻出水总管温度传感器_0"] = dict()
     real_value_AO_dict["real_value"]["冷冻回水总管温度传感器_0"] = dict()
@@ -376,7 +376,7 @@ def get_ashp_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
     ashp_input_name_list = get_fmu_input_name(air_source_heat_pump_input_type()[1])
     Teo_set_input_name_list = get_fmu_input_name(air_source_heat_pump_input_type()[2])
     chilled_pump_input_name_list = get_fmu_input_name(air_source_heat_pump_input_type()[3])
-    chilled_value_input_name_list = get_fmu_input_name(air_source_heat_pump_input_type()[4])
+    chilled_valve_input_name_list = get_fmu_input_name(air_source_heat_pump_input_type()[4])
     # output_name
     ashp_P_output_name_list = air_source_heat_pump_output_name()[8]
     chilled_pump_P_output_name_list = air_source_heat_pump_output_name()[9]
@@ -405,7 +405,7 @@ def get_ashp_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         DO_status["DO"]["故障状态"] = 1
         DO_status["DO"]["远方状态"] = 1
         DO_status["DO"]["维修状态"] = 1
-        input_tmp = int(simulate_result[chilled_value_input_name_list[i]][-1])
+        input_tmp = int(simulate_result[chilled_valve_input_name_list[i]][-1])
         if input_tmp == 1:
             DO_status["DO"]["开关状态"] = 1
         else:
@@ -472,12 +472,12 @@ def get_ashp_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         real_value_AO_dict["real_value"][chilled_pump_frequency_name_tmp]["AO"]["频率"] = chilled_pump_frequency
     # 冷冻阀门
     for i in range(len(ashp_input_name_list)):
-        input_tmp = int(simulate_result[chilled_value_input_name_list[i]][-1])
-        chilled_value_proportion = input_tmp * 100
-        chilled_value_name_tmp = "冷冻阀门_" + str(i)
-        real_value_AO_dict["real_value"][chilled_value_name_tmp] = dict()
-        real_value_AO_dict["real_value"][chilled_value_name_tmp]["AO"] = dict()
-        real_value_AO_dict["real_value"][chilled_value_name_tmp]["AO"]["阀门开度"] = chilled_value_proportion
+        input_tmp = int(simulate_result[chilled_valve_input_name_list[i]][-1])
+        chilled_valve_proportion = input_tmp * 100
+        chilled_valve_name_tmp = "冷冻阀门_" + str(i)
+        real_value_AO_dict["real_value"][chilled_valve_name_tmp] = dict()
+        real_value_AO_dict["real_value"][chilled_valve_name_tmp]["AO"] = dict()
+        real_value_AO_dict["real_value"][chilled_valve_name_tmp]["AO"]["阀门开度"] = chilled_valve_proportion
     # 总管数据
     real_value_AO_dict["real_value"]["冷冻出水总管温度传感器_0"] = dict()
     real_value_AO_dict["real_value"]["冷冻回水总管温度传感器_0"] = dict()
@@ -512,21 +512,21 @@ def get_storage_real_data(simulate_result, equipment_type_path, cfg_path_equipme
     real_value_DO_dict["real_value"] = dict()
     # input_name
     chilled_pump_input_name_list = get_fmu_input_name(cold_storage_input_type()[1])
-    chilled_value_in_storage_input_name_list = get_fmu_input_name(cold_storage_input_type()[2])
-    chilled_value_to_user_input_name_list = get_fmu_input_name(cold_storage_input_type()[3])
-    chilled_value_input_name_list = chilled_value_in_storage_input_name_list + chilled_value_to_user_input_name_list
+    chilled_valve_in_storage_input_name_list = get_fmu_input_name(cold_storage_input_type()[2])
+    chilled_valve_to_user_input_name_list = get_fmu_input_name(cold_storage_input_type()[3])
+    chilled_valve_input_name_list = chilled_valve_in_storage_input_name_list + chilled_valve_to_user_input_name_list
     # output_name
     chilled_pump_P_output_name_list = cold_storage_output_name()[6]
     # 开关量，开关量，开关量，开关量，开关量
     # 冷冻阀门
-    for i in range(len(chilled_value_input_name_list)):
+    for i in range(len(chilled_valve_input_name_list)):
         DO_status = dict()
         DO_status["DO"] = dict()
         DO_status["DO"]["报警状态"] = 1
         DO_status["DO"]["故障状态"] = 1
         DO_status["DO"]["远方状态"] = 1
         DO_status["DO"]["维修状态"] = 1
-        input_tmp = int(simulate_result[chilled_value_input_name_list[i]][-1])
+        input_tmp = int(simulate_result[chilled_valve_input_name_list[i]][-1])
         if input_tmp == 1:
             DO_status["DO"]["开关状态"] = 1
         else:
@@ -565,13 +565,13 @@ def get_storage_real_data(simulate_result, equipment_type_path, cfg_path_equipme
         real_value_AO_dict["real_value"][chilled_pump_P_name_tmp]["AO"]["电功率"] = chilled_pump_P
         real_value_AO_dict["real_value"][chilled_pump_frequency_name_tmp]["AO"]["频率"] = chilled_pump_frequency
     # 冷冻阀门
-    for i in range(len(chilled_value_input_name_list)):
-        input_tmp = int(simulate_result[chilled_value_input_name_list[i]][-1])
-        chilled_value_proportion = input_tmp * 100
-        chilled_value_name_tmp = "冷冻阀门_" + str(i)
-        real_value_AO_dict["real_value"][chilled_value_name_tmp] = dict()
-        real_value_AO_dict["real_value"][chilled_value_name_tmp]["AO"] = dict()
-        real_value_AO_dict["real_value"][chilled_value_name_tmp]["AO"]["阀门开度"] = chilled_value_proportion
+    for i in range(len(chilled_valve_input_name_list)):
+        input_tmp = int(simulate_result[chilled_valve_input_name_list[i]][-1])
+        chilled_valve_proportion = input_tmp * 100
+        chilled_valve_name_tmp = "冷冻阀门_" + str(i)
+        real_value_AO_dict["real_value"][chilled_valve_name_tmp] = dict()
+        real_value_AO_dict["real_value"][chilled_valve_name_tmp]["AO"] = dict()
+        real_value_AO_dict["real_value"][chilled_valve_name_tmp]["AO"]["阀门开度"] = chilled_valve_proportion
     # 总管数据
     real_value_AO_dict["real_value"]["冷冻出水总管温度传感器_0"] = dict()
     real_value_AO_dict["real_value"]["冷冻回水总管温度传感器_0"] = dict()

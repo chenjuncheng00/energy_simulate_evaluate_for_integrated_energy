@@ -40,16 +40,16 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     chiller_turn_Teo = [True, True, True, True, True, True, 6]
     chiller_pump = [0, 0, 0, 0, 0, 0, 50, 50, 50, 50, 50, 50]
     chiller_tower = [1, 1, 1, 1, 1, 1]
-    chiller_value = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    chiller_tower_chilled_value = [0, 0]
-    chiller_user_value = [0, 0]
-    chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_value + \
-                         chiller_tower_chilled_value + chiller_user_value
+    chiller_valve = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    chiller_tower_chilled_valve = [0, 0]
+    chiller_user_valve = [0, 0]
+    chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_valve + \
+                         chiller_tower_chilled_valve + chiller_user_valve
     # 蓄冷水罐模型输入数据
     storage_pump = [50, 50, 50, 50]
-    storage_chiller_value = [1, 1, 1]
-    storage_user_value = [0, 0, 0]
-    storage_input_data = storage_pump + storage_chiller_value + storage_user_value
+    storage_chiller_valve = [1, 1, 1]
+    storage_user_valve = [0, 0, 0]
+    storage_input_data = storage_pump + storage_chiller_valve + storage_user_valve
     # FMU输入名称和数据类型
     input_type_list = main_model_input_type(load_mode)
     input_data_list = [start_time] + environment_input_data_default(load_mode) + chiller_input_data + \
@@ -73,16 +73,16 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     chiller_turn_Teo = [True, True, True, True, True, True, 7]
     chiller_pump = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
     chiller_tower = [1, 1, 1, 1, 1, 1]
-    chiller_value = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    chiller_tower_chilled_value = [0, 0]
-    chiller_user_value = [1, 1]
-    chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_value + \
-                         chiller_tower_chilled_value + chiller_user_value
+    chiller_valve = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    chiller_tower_chilled_valve = [0, 0]
+    chiller_user_valve = [1, 1]
+    chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_valve + \
+                         chiller_tower_chilled_valve + chiller_user_valve
     # 空气源热泵模型输入数据
     ashp_turn_Teo = [True, True, True, True, 7]
     ashp_pump = [50, 50, 50, 50]
-    ashp_value = [1, 1, 1, 1]
-    ashp_input_data = ashp_turn_Teo + ashp_pump + ashp_value
+    ashp_valve = [1, 1, 1, 1]
+    ashp_input_data = ashp_turn_Teo + ashp_pump + ashp_valve
     # FMU输入名称和数据类型
     input_type_list = main_model_input_type(load_mode)
     input_data_list = [t1_initialize] + environment_input_data_default(load_mode) + chiller_input_data + \

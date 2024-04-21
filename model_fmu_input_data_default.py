@@ -55,18 +55,18 @@ def chiller_input_data_default():
     # 冷却塔风机
     cooling_tower = [0, 0, 0, 0, 0, 0]
     # 冷冻阀门
-    chilled_value = [0, 0, 0, 0, 0, 0]
+    chilled_valve = [0, 0, 0, 0, 0, 0]
     # 冷却阀门
-    cooling_value = [0, 0, 0, 0, 0, 0]
+    cooling_valve = [0, 0, 0, 0, 0, 0]
     # 冷却塔阀门
-    tower_value = [0, 0, 0, 0, 0, 0]
+    tower_valve = [0, 0, 0, 0, 0, 0]
     # 冷却塔直接供冷阀门
-    tower_chilled_value = [0, 0]
+    tower_chilled_valve = [0, 0]
     # 向用户侧供冷阀门
-    user_value = [0, 0]
+    user_valve = [0, 0]
     # 总输入
     chiller_input = main_equipment + chilled_pump + cooling_pump + cooling_tower + \
-                    chilled_value + cooling_value + tower_value + tower_chilled_value + user_value
+                    chilled_valve + cooling_valve + tower_valve + tower_chilled_valve + user_valve
     # 返回结构
     return chiller_input
 
@@ -83,9 +83,9 @@ def air_source_heat_pump_input_data_default():
     # 冷冻水泵
     chilled_pump = [0, 0, 0, 0]
     # 冷冻阀门
-    chilled_value = [0, 0, 0, 0]
+    chilled_valve = [0, 0, 0, 0]
     # 总输入
-    air_source_heat_pump_input = main_equipment + chilled_pump + chilled_value
+    air_source_heat_pump_input = main_equipment + chilled_pump + chilled_valve
     # 返回结构
     return air_source_heat_pump_input
 
@@ -101,11 +101,11 @@ def cold_storage_input_data_default():
     chilled_pump = [0, 0, 0, 0]
     # 阀门列表：先是蓄冷阀门，然后是放冷阀门
     # 从冷水机蓄冷阀门
-    chiller_value = [0, 0, 0]
+    chiller_valve = [0, 0, 0]
     # 向用户侧供冷阀门
-    user_value = [0, 0, 0]
+    user_valve = [0, 0, 0]
     # 总输入
-    storage_input = chilled_pump + chiller_value + user_value
+    storage_input = chilled_pump + chiller_valve + user_valve
     # 返回结果
     return storage_input
 

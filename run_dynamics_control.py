@@ -77,7 +77,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     n0_chiller_cooling_pump1 = chiller_dict["n_chiller_cooling_pump1"]
     n0_chiller_cooling_pump2 = chiller_dict["n_chiller_cooling_pump2"]
     n0_chiller_cooling_tower = chiller_dict["n_chiller_cooling_tower"]
-    n_chiller_user_value = chiller_dict["n_chiller_user_value"]
+    n_chiller_user_valve = chiller_dict["n_chiller_user_valve"]
     # 读取空气源热泵设备信息
     with open(file_pkl_ashp, "rb") as f_obj:
         ashp_dict = pickle.load(f_obj)
@@ -92,8 +92,8 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     # energy_storage_equipment = storage_dict["energy_storage_equipment"]
     # chilled_pump_to_user = storage_dict["chilled_pump_to_user"]
     # chilled_pump_in_storage = storage_dict["chilled_pump_in_storage"]
-    # n_chilled_value_in_storage = storage_dict["n_chilled_value_in_storage"]
-    # n_chilled_value_to_user = storage_dict["n_chilled_value_to_user"]
+    # n_chilled_valve_in_storage = storage_dict["n_chilled_valve_in_storage"]
+    # n_chilled_valve_to_user = storage_dict["n_chilled_valve_to_user"]
     # 读取公共系统信息
     with open(file_pkl_system, "rb") as f_obj:
         system_dict = pickle.load(f_obj)
@@ -222,7 +222,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
                              chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
                              n0_chiller1, n0_chiller2, n0_chiller_chilled_pump1, n0_chiller_chilled_pump2,
                              0, 0, n0_chiller_cooling_pump1, n0_chiller_cooling_pump2, n0_chiller_cooling_tower,
-                             0, chiller_equipment_type_path, n_calculate_hour, n_chiller_user_value,
+                             0, chiller_equipment_type_path, n_calculate_hour, n_chiller_user_valve,
                              cfg_path_equipment, cfg_path_public)
 
     # 第3步：用向用户侧供冷功率，空气源热泵优化和控制
