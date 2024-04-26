@@ -33,6 +33,10 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     # tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     # 重置所有内容
     run_initialize(txt_path)
+    # Q_total储存文件
+    file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
+    file_Q_value_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
+    # file_Q_value_tower_chilled = txt_path + "/real_value/tower_chilled/Q_value/chilled_main_pipe.txt"
 
     # 室外温湿度文件路径
     ans_environment_value_txt_path = get_environment_equipment_real_value_txt_path(txt_path)
@@ -217,13 +221,13 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     print(input_log_2)
     write_log_data(file_fmu_input_log, [input_log_2], "info")
     write_log_data(file_fmu_input_feedback_log, [input_log_2], "info")
-    algorithm_chiller_double(chiller_Q_user, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
-                             chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
-                             chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
-                             n0_chiller1, n0_chiller2, n0_chiller_chilled_pump1, n0_chiller_chilled_pump2,
-                             0, 0, n0_chiller_cooling_pump1, n0_chiller_cooling_pump2, n0_chiller_cooling_tower,
-                             0, chiller_equipment_type_path, n_calculate_hour, n_chiller_user_valve,
-                             cfg_path_equipment, cfg_path_public)
+    write_txt_data(file_Q_value_chiller, [chiller_Q_user])
+    algorithm_chiller_double(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1, chiller2,
+                             chiller_chilled_pump1, chiller_chilled_pump2, None, None, chiller_cooling_pump1,
+                             chiller_cooling_pump2, chiller_cooling_tower, None, n0_chiller1, n0_chiller2,
+                             n0_chiller_chilled_pump1, n0_chiller_chilled_pump2, 0, 0, n0_chiller_cooling_pump1,
+                             n0_chiller_cooling_pump2, n0_chiller_cooling_tower, 0, chiller_equipment_type_path,
+                             n_calculate_hour, n_chiller_user_valve, cfg_path_equipment, cfg_path_public)
 
     # 第3步：用向用户侧供冷功率，空气源热泵优化和控制
     input_log_3 = "第3步：用向用户侧供冷功率，空气源热泵优化和控制..."
@@ -232,9 +236,9 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     write_log_data(file_fmu_input_feedback_log, [input_log_3], "info")
     ashp_Q_user = min(Q_user - chiller_Q_user, ashp_Q0_max)
     ashp_chilled_pump_H = 0.67 * chiller_user_chilled_pump_H
-    algorithm_air_source_heat_pump(ashp_Q_user, ashp_chilled_pump_H, 0, air_source_heat_pump, ashp_chilled_pump,
-                                   None, ashp_equipment_type_path, n_calculate_hour, 0, cfg_path_equipment,
-                                   cfg_path_public)
+    write_txt_data(file_Q_value_ashp, [ashp_Q_user])
+    algorithm_air_source_heat_pump(ashp_chilled_pump_H, 0, air_source_heat_pump, ashp_chilled_pump, None,
+                                   ashp_equipment_type_path, n_calculate_hour, 0, cfg_path_equipment, cfg_path_public)
 
     # 第4步：持续仿真，使得系统稳定下来
     input_log_4 = "第4步：持续仿真，使得系统稳定下来..."

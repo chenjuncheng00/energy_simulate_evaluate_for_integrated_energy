@@ -30,6 +30,11 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     # 重置所有内容
     run_initialize(txt_path)
 
+    # Q_total储存文件
+    file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
+    file_Q_value_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
+    file_Q_value_tower_chilled = txt_path + "/real_value/tower_chilled/Q_value/chilled_main_pipe.txt"
+
     # cfg文件路径
     cfg_path_equipment = "./config/equipment_config.cfg"
     cfg_path_public = "./config/public_config.cfg"
@@ -39,10 +44,6 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     file_pkl_stroage = "./model_data/file_equipment/storage.pkl"
     # file_pkl_tower_chilled = "./model_data/file_equipment/tower_chilled.pkl"
     file_pkl_system = "./model_data/file_equipment/system.pkl"
-
-    # 储存冷冻水总管数据的文件路径
-    file_Q_value_main_pipe_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
-    file_Q_value_main_pipe_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
 
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:
@@ -214,7 +215,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             write_log_data(file_fmu_input_log, [input_log_2_3], "info")
             write_log_data(file_fmu_input_feedback_log, [input_log_2_3], "info")
             chiller_Q_total = min(Q_total, chiller_Q0_max)
-            write_txt_data(file_Q_value_main_pipe_chiller, [chiller_Q_total])
+            write_txt_data(file_Q_value_chiller, [chiller_Q_total])
             algorithm_chiller_double(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1, chiller2,
                                      chiller_chilled_pump1, chiller_chilled_pump2, None, None, chiller_cooling_pump1,
                                      chiller_cooling_pump2, chiller_cooling_tower, None, n0_chiller1, n0_chiller2,
@@ -254,7 +255,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             write_log_data(file_fmu_input_feedback_log, [input_log_2_6], "info")
             ashp_Q_user = min(Q_user - chiller_Q_user, ashp_Q0_max)
             H_ashp_chilled_pump = 0.65 * chiller_user_chilled_pump_H
-            write_txt_data(file_Q_value_main_pipe_ashp, [ashp_Q_user])
+            write_txt_data(file_Q_value_ashp, [ashp_Q_user])
             algorithm_air_source_heat_pump(H_ashp_chilled_pump, 0, air_source_heat_pump, ashp_chilled_pump, None,
                                            ashp_equipment_type_path, n_calculate_hour, 0, cfg_path_equipment,
                                            cfg_path_public)
@@ -292,7 +293,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             print(input_log_2_3)
             write_log_data(file_fmu_input_log, [input_log_2_3], "info")
             write_log_data(file_fmu_input_feedback_log, [input_log_2_3], "info")
-            write_txt_data(file_Q_value_main_pipe_chiller, [chiller_Q_user])
+            write_txt_data(file_Q_value_chiller, [chiller_Q_user])
             algorithm_chiller_double(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1, chiller2,
                                      chiller_chilled_pump1, chiller_chilled_pump2, None, None, chiller_cooling_pump1,
                                      chiller_cooling_pump2, chiller_cooling_tower, None, n0_chiller1, n0_chiller2,
@@ -307,7 +308,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             write_log_data(file_fmu_input_feedback_log, [input_log_2_4], "info")
             ashp_Q_user = min(Q_total - chiller_Q_user, ashp_Q0_max)
             H_ashp_chilled_pump = 0.65 * chiller_user_chilled_pump_H
-            write_txt_data(file_Q_value_main_pipe_ashp, [ashp_Q_user])
+            write_txt_data(file_Q_value_ashp, [ashp_Q_user])
             algorithm_air_source_heat_pump(H_ashp_chilled_pump, 0, air_source_heat_pump, ashp_chilled_pump, None,
                                            ashp_equipment_type_path, n_calculate_hour, 0, cfg_path_equipment,
                                            cfg_path_public)
@@ -341,7 +342,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             print(input_log_2_3)
             write_log_data(file_fmu_input_log, [input_log_2_3], "info")
             write_log_data(file_fmu_input_feedback_log, [input_log_2_3], "info")
-            write_txt_data(file_Q_value_main_pipe_chiller, [chiller_Q_user])
+            write_txt_data(file_Q_value_chiller, [chiller_Q_user])
             algorithm_chiller_double(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1, chiller2,
                                      chiller_chilled_pump1, chiller_chilled_pump2, None, None, chiller_cooling_pump1,
                                      chiller_cooling_pump2, chiller_cooling_tower, None, n0_chiller1, n0_chiller2,
@@ -356,7 +357,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             write_log_data(file_fmu_input_feedback_log, [input_log_2_4], "info")
             ashp_Q_user = min(Q_total - chiller_Q_user, ashp_Q0_max)
             H_ashp_chilled_pump = 0.65 * chiller_user_chilled_pump_H
-            write_txt_data(file_Q_value_main_pipe_ashp, [ashp_Q_user])
+            write_txt_data(file_Q_value_ashp, [ashp_Q_user])
             algorithm_air_source_heat_pump(H_ashp_chilled_pump, 0, air_source_heat_pump, ashp_chilled_pump, None,
                                            ashp_equipment_type_path, n_calculate_hour, 0, cfg_path_equipment,
                                            cfg_path_public)
