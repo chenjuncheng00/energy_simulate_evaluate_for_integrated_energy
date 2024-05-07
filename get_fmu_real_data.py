@@ -352,8 +352,8 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
     real_value_AO_dict["real_value"]["冷冻水总管流量计_0"]["AO"]["流量"] = chiller_Few_total
     real_value_AO_dict["real_value"]["冷却水总管流量计_0"]["AO"]["流量"] = chiller_Fcw_total
     # 写入txt
-    read_real_value_DO_station(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
-    read_real_value_AO_station(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_station(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_AO_station(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
     # 返回结果
     return real_value_DO_dict, real_value_AO_dict
 
@@ -490,8 +490,8 @@ def get_ashp_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
     ashp_Few_total = np.round(float(simulate_result["ashp_Few_total"][-1]), 4)
     real_value_AO_dict["real_value"]["冷冻水总管流量计_0"]["AO"]["流量"] = ashp_Few_total
     # 写入txt
-    read_real_value_DO_station(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
-    read_real_value_AO_station(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_station(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_AO_station(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
     # 返回结果
     return real_value_DO_dict, real_value_AO_dict
 
@@ -594,8 +594,8 @@ def get_storage_real_data(simulate_result, equipment_type_path, cfg_path_equipme
         real_value_AO_dict["real_value"]["冷冻回水总管温度传感器_0"]["AO"]["温度"] = storage_Tei_to_user
         real_value_AO_dict["real_value"]["冷冻水总管流量计_0"]["AO"]["流量"] = storage_Few_total_to_user
     # 写入txt
-    read_real_value_DO_station(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
-    read_real_value_AO_station(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_station(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_AO_station(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
     # 返回结果
     return real_value_DO_dict, real_value_AO_dict
 
@@ -664,8 +664,8 @@ def get_tower_chilled_real_data(simulate_result, equipment_type_path, cfg_path_e
     real_value_AO_dict["real_value"]["冷冻回水总管温度传感器_0"]["AO"]["温度"] = tower_chilled_Tei_tmp
     real_value_AO_dict["real_value"]["冷冻水总管流量计_0"]["AO"]["流量"] = tower_chilled_Few_tmp
     # 写入txt
-    read_real_value_DO_station(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
-    read_real_value_AO_station(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_station(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_AO_station(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
     # 返回结果
     return real_value_DO_dict, real_value_AO_dict
 
@@ -714,8 +714,8 @@ def get_environment_real_data(simulate_result, equipment_type_path, cfg_path_equ
         real_value_AO_dict["real_value"][Hro_name_tmp]["AO"]["湿度"] = Hro
         real_value_DO_dict["real_value"][Hro_name_tmp]["DO"]["状态"] = 1
     # 写入txt
-    read_real_value_DO_environment(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
-    read_real_value_AO_environment(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_environment(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_AO_environment(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
     # 返回结果
     return real_value_DO_dict, real_value_AO_dict
 
@@ -808,7 +808,7 @@ def get_user_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         real_value_AO_dict["real_value"][mau_name_tmp]["AO"]["冷冻水出水温度"] = 7
         real_value_DO_dict["real_value"][mau_name_tmp]["DO"]["状态"] = 1
     # 写入txt
-    read_real_value_DO_user(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
-    read_real_value_AO_user(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_user(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_AO_user(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
     # 返回结果
     return real_value_DO_dict, real_value_AO_dict
