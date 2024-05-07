@@ -78,17 +78,17 @@ def run_initialize(txt_path):
     # 系统初始化时，会将冷水机系统全开，但是其他系统全关
     ashp_equipment_type_path = ["air_source_heat_pump", txt_path]
     ashp_real_value_dict = air_source_heat_pump_default_status(n_air_source_heat_pump, n_ashp_chilled_pump)
-    read_real_value_DO_station(ashp_real_value_dict, ashp_equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_station(ashp_real_value_dict, ashp_equipment_type_path, cfg_path_equipment)
     chiller_equipment_type_path = ["chiller", txt_path]
     chiller_real_value_dict = chiller_default_status(n_chiller, n_chiller_chilled_pump, n_chiller_cooling_pump,
                                                      n_chiller_cooling_tower)
-    read_real_value_DO_station(chiller_real_value_dict, chiller_equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_station(chiller_real_value_dict, chiller_equipment_type_path, cfg_path_equipment)
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
     storage_real_value_dict = storage_default_status(n_storage_chilled_valve, n_storage_chilled_pump)
-    read_real_value_DO_station(storage_real_value_dict, storage_equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_station(storage_real_value_dict, storage_equipment_type_path, cfg_path_equipment)
     tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     tower_chilled_real_value_dict = tower_chilled_default_status(n_tower_chilled_pump)
-    read_real_value_DO_station(tower_chilled_real_value_dict, tower_chilled_equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_station(tower_chilled_real_value_dict, tower_chilled_equipment_type_path, cfg_path_equipment)
 
 if __name__ == "__main__":
     txt_path = "../optimal_control_algorithm_for_integrated_energy"
