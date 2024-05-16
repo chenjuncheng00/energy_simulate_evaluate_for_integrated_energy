@@ -208,13 +208,13 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     else:
         Q_user = 0
     chiller_Q_user = min(Q_user, chiller_Q0_max)
-    ans_chiller = optimization_system_universal(chiller_Q_user, H_chiller_chilled_pump, 0,
-                                                H_chiller_cooling_pump, chiller_list, chiller_chilled_pump_list,
-                                                [], chiller_cooling_pump_list, chiller_cooling_tower_list,
-                                                n_chiller_list, n_chiller_chilled_pump_list, [],
-                                                n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                chiller_equipment_type_path, cfg_path_public)
-    chiller_user_chilled_pump_H = ans_chiller[4]
+    write_txt_data(file_Q_value_chiller, [chiller_Q_user])
+    ans_chiller = main_optimization_system_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
+                                                     chiller_chilled_pump_list, [], chiller_cooling_pump_list,
+                                                     chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
+                                                     [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                                                     chiller_equipment_type_path, cfg_path_public)
+    chiller_user_chilled_pump_H = ans_chiller[3]
 
     # 第2步：用向用户侧供冷供冷，冷水机优化和控制
     input_log_2 = "第2步：用向用户侧供冷供冷，冷水机优化和控制..."

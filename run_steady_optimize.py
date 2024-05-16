@@ -33,7 +33,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     # Q_total储存文件
     file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
     file_Q_value_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
-    file_Q_value_tower_chilled = txt_path + "/real_value/tower_chilled/Q_value/chilled_main_pipe.txt"
+    # file_Q_value_tower_chilled = txt_path + "/real_value/tower_chilled/Q_value/chilled_main_pipe.txt"
 
     # cfg文件路径
     cfg_path_equipment = "./config/equipment_config.cfg"
@@ -89,6 +89,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     chilled_pump_in_storage = storage_dict["chilled_pump_in_storage"]
     n_chilled_valve_in_storage = storage_dict["n_chilled_valve_in_storage"]
     n_chilled_valve_to_user = storage_dict["n_chilled_valve_to_user"]
+    n_chilled_valve_storage = n_chilled_valve_in_storage + n_chilled_valve_to_user
     # 读取公共系统信息
     with open(file_pkl_system, "rb") as f_obj:
         system_dict = pickle.load(f_obj)
@@ -186,26 +187,26 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             input_log_2_1 = "第2-1步：用蓄冷功率优化一次冷水机计算，不进行控制，用于获取阀门开启比例..."
             print(input_log_2_1)
             chiller_Q_storage = - Q_out_ese  # 冷水机蓄冷负荷
-            ans_chiller1 = optimization_system_universal(chiller_Q_storage, H_chiller_chilled_pump, 0,
-                                                         H_chiller_cooling_pump, chiller_list,
-                                                         chiller_chilled_pump_list, [], chiller_cooling_pump_list,
-                                                         chiller_cooling_tower_list, n_chiller_list,
-                                                         n_chiller_chilled_pump_list, [], n_chiller_cooling_pump_list,
-                                                         n_chiller_cooling_tower_list, chiller_equipment_type_path,
-                                                         cfg_path_public)
+            write_txt_data(file_Q_value_chiller, [chiller_Q_storage])
+            ans_chiller1 = main_optimization_system_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
+                                                              chiller_list, chiller_chilled_pump_list, [],
+                                                              chiller_cooling_pump_list, chiller_cooling_tower_list,
+                                                              n_chiller_list, n_chiller_chilled_pump_list, [],
+                                                              n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                                                              chiller_equipment_type_path, cfg_path_public)
             chiller_storage_chilled_valve_open = ans_chiller1[0]
 
             # 第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取阀门开启比例和冷冻水泵扬程
             input_log_2_2 = "第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取阀门开启比例和冷冻水泵扬程..."
             print(input_log_2_2)
             chiller_Q_user = min(Q_user, chiller_Q0_max)
-            ans_chiller2 = optimization_system_universal(chiller_Q_user, H_chiller_chilled_pump, 0,
-                                                         H_chiller_cooling_pump, chiller_list,
-                                                         chiller_chilled_pump_list, [], chiller_cooling_pump_list,
-                                                         chiller_cooling_tower_list, n_chiller_list,
-                                                         n_chiller_chilled_pump_list, [], n_chiller_cooling_pump_list,
-                                                         n_chiller_cooling_tower_list, chiller_equipment_type_path,
-                                                         cfg_path_public)
+            write_txt_data(file_Q_value_chiller, [chiller_Q_user])
+            ans_chiller2 = main_optimization_system_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
+                                                              chiller_list, chiller_chilled_pump_list, [],
+                                                              chiller_cooling_pump_list, chiller_cooling_tower_list,
+                                                              n_chiller_list, n_chiller_chilled_pump_list, [],
+                                                              n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                                                              chiller_equipment_type_path, cfg_path_public)
             chiller_user_chilled_valve_open = ans_chiller2[0]
             chiller_user_chilled_pump_H = ans_chiller2[4]
 
@@ -244,9 +245,9 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
                                                energy_storage_equipment, chilled_pump_to_user, chilled_pump_in_storage,
                                                None, chiller_storage_chilled_valve_open, H_chilled_pump_to_user,
-                                               H_chilled_pump_in_storage, 0, n_chilled_valve_in_storage,
-                                               n_chilled_valve_to_user, storage_equipment_type_path,
-                                               n_calculate_hour, cfg_path_equipment, cfg_path_public)
+                                               H_chilled_pump_in_storage, 0, n_chilled_valve_storage,
+                                               storage_equipment_type_path, n_calculate_hour, cfg_path_equipment,
+                                               cfg_path_public)
 
             # 第2-6步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_6 = "第2-6步：用向用户侧供冷功率，空气源热泵优化和控制..."
@@ -265,13 +266,13 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             input_log_2_1 = "第2-1步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程..."
             print(input_log_2_1)
             chiller_Q_user = min(Q_user, chiller_Q0_max)
-            ans_chiller2 = optimization_system_universal(chiller_Q_user, H_chiller_chilled_pump, 0,
-                                                         H_chiller_cooling_pump, chiller_list,
-                                                         chiller_chilled_pump_list, [], chiller_cooling_pump_list,
-                                                         chiller_cooling_tower_list, n_chiller_list,
-                                                         n_chiller_chilled_pump_list, [], n_chiller_cooling_pump_list,
-                                                         n_chiller_cooling_tower_list, chiller_equipment_type_path,
-                                                         cfg_path_public)
+            write_txt_data(file_Q_value_chiller, [chiller_Q_user])
+            ans_chiller2 = main_optimization_system_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
+                                                              chiller_list, chiller_chilled_pump_list, [],
+                                                              chiller_cooling_pump_list, chiller_cooling_tower_list,
+                                                              n_chiller_list, n_chiller_chilled_pump_list, [],
+                                                              n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                                                              chiller_equipment_type_path, cfg_path_public)
             chiller_user_chilled_pump_H = ans_chiller2[4]
 
             # 第2-2步：蓄冷水罐和水泵优化+控制，供冷工况
@@ -284,9 +285,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
                                                energy_storage_equipment, chilled_pump_to_user, chilled_pump_in_storage,
                                                None, None, H_chilled_pump_to_user, H_chilled_pump_in_storage, 0,
-                                               n_chilled_valve_in_storage, n_chilled_valve_to_user,
-                                               storage_equipment_type_path, n_calculate_hour, cfg_path_equipment,
-                                               cfg_path_public)
+                                               n_chilled_valve_storage, storage_equipment_type_path, n_calculate_hour,
+                                               cfg_path_equipment, cfg_path_public)
 
             # 第2-3步：用向用户侧供冷供冷，冷水机优化和控制
             input_log_2_3 = "第2-3步：用向用户侧供冷供冷，冷水机优化和控制..."
@@ -320,21 +320,20 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             write_log_data(file_fmu_input_feedback_log, [input_log_2_1], "info")
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
                                                energy_storage_equipment, chilled_pump_to_user, chilled_pump_in_storage,
-                                               None, None, 0, 0, 0, n_chilled_valve_in_storage, n_chilled_valve_to_user,
-                                               storage_equipment_type_path, n_calculate_hour, cfg_path_equipment,
-                                               cfg_path_public)
+                                               None, None, 0, 0, 0, n_chilled_valve_storage, storage_equipment_type_path,
+                                               n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
             # 第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程
             input_log_2_2 = "第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程..."
             print(input_log_2_2)
             chiller_Q_user = min(Q_user, chiller_Q0_max)
-            ans_chiller2 = optimization_system_universal(chiller_Q_user, H_chiller_chilled_pump, 0,
-                                                         H_chiller_cooling_pump, chiller_list,
-                                                         chiller_chilled_pump_list, [], chiller_cooling_pump_list,
-                                                         chiller_cooling_tower_list, n_chiller_list,
-                                                         n_chiller_chilled_pump_list, [], n_chiller_cooling_pump_list,
-                                                         n_chiller_cooling_tower_list, chiller_equipment_type_path,
-                                                         cfg_path_public)
+            write_txt_data(file_Q_value_chiller, [chiller_Q_user])
+            ans_chiller2 = main_optimization_system_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
+                                                              chiller_list, chiller_chilled_pump_list, [],
+                                                              chiller_cooling_pump_list, chiller_cooling_tower_list,
+                                                              n_chiller_list, n_chiller_chilled_pump_list, [],
+                                                              n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                                                              chiller_equipment_type_path, cfg_path_public)
             chiller_user_chilled_pump_H = ans_chiller2[4]
 
             # 第2-3步：用向用户侧供冷供冷，冷水机优化和控制
