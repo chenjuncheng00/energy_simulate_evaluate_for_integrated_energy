@@ -21,7 +21,7 @@ def run_identify_hydraulic_characteristic(fmu_path, load_mode):
     tolerance = 0.0001
     n_cal_f_pump = 5
     pump_f0_cal = True
-    cfg_path_equipment = "./config/equipment_config.cfg"
+    cfg_path_equipment = "./opt_file/config/equipment_config.cfg"
     chiller_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/chiller_chilled.txt"
     chiller_cooling_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/chiller_cooling.txt"
     ashp_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/ashp_chilled.txt"
@@ -58,7 +58,7 @@ def run_equipment_characteristic(fmu_path):
     output_interval = 60
     time_out = 600
     tolerance = 0.0001
-    cfg_path_equipment = "./config/equipment_config.cfg"
+    cfg_path_equipment = "./opt_file/config/equipment_config.cfg"
     chiller_big_cop_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/chiller_big_cop.txt"
     chiller_small_cop_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/chiller_small_cop.txt"
     ashp_cop_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/ashp_cop.txt"
@@ -94,8 +94,8 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
     Ts = 10 * 60  # 采样时间
     time_out = 600
     tolerance = 0.0001
-    cfg_path_equipment = "./config/equipment_config.cfg"
-    cfg_path_public = "./config/public_config.cfg"
+    cfg_path_equipment = "./opt_file/config/equipment_config.cfg"
+    cfg_path_public = "./opt_file/config/public_config.cfg"
     # EER数据获取模型，0：直接读取FMU数据；1：保持Q不变，自行计算
     EER_mode = 0
     # 辨识的冷负荷列表，单位：kW
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     # identify_mode = 1  # 0:仅冷水机；1:冷水机+空气源热泵
     # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
     # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
-    # txt_path = "../optimal_control_algorithm_for_integrated_energy"
+    # txt_path = "./file_opt"
     # run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
     # 用户侧特性辨识
     fmu_path = "./model_data/file_fmu/user_characteristic_Cvode.fmu"

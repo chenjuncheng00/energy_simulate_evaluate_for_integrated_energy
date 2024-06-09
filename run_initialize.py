@@ -12,12 +12,16 @@ def run_initialize(txt_path):
 
     """
     # 从配置文件读取设置的设备参数
-    cfg_path_equipment = "./config/equipment_config.cfg"
+    cfg_path_equipment = txt_path + "/config/equipment_config.cfg"
     # 系统公用二级冷冻水泵数量
     n_chilled_pump_secondary = read_cfg_data(cfg_path_equipment, "二级冷冻水泵", "n_chilled_pump_secondary", 1)
     # 向用户侧供冷阀门和冷却塔直接供冷阀门，默认数量都是2
     n_user_valve = 2
     n_tower_chilled_valve = 2
+    # 阀门倍数
+    times_chilled_valve = 1
+    times_cooling_valve = 1
+    times_tower_valve = 1
     # 冷水机设备数量
     n_chiller1 = read_cfg_data(cfg_path_equipment, "冷水机1", "n_chiller1", 1)
     n_chiller2 = read_cfg_data(cfg_path_equipment, "冷水机2", "n_chiller2", 1)
@@ -30,13 +34,14 @@ def run_initialize(txt_path):
     n_chiller_chilled_pump = n_chiller_chilled_pump1 + n_chiller_chilled_pump2
     n_chiller_cooling_pump = n_chiller_cooling_pump1 + n_chiller_cooling_pump2
     initialize_txt_chiller(txt_path, n_chiller, n_chilled_pump_secondary, n_chiller_chilled_pump,
-                           n_chiller_cooling_pump, n_chiller_cooling_tower, n_user_valve, n_tower_chilled_valve)
+                           n_chiller_cooling_pump, n_chiller_cooling_tower, n_user_valve, n_tower_chilled_valve,
+                           times_chilled_valve, times_cooling_valve, times_tower_valve)
 
     # 空气源热泵数量
     n_air_source_heat_pump = read_cfg_data(cfg_path_equipment, "空气源热泵", "n_air_source_heat_pump", 1)
     n_ashp_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "n_chilled_pump", 1)
     initialize_txt_air_source_heat_pump(txt_path, n_air_source_heat_pump, n_chilled_pump_secondary,
-                                        n_ashp_chilled_pump, n_user_valve)
+                                        n_ashp_chilled_pump, n_user_valve, times_chilled_valve)
 
     # 冷却塔直接供冷设备数量
     n_tower_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷却塔直接供冷", "n_chilled_pump", 1)
@@ -61,7 +66,7 @@ def run_initialize(txt_path):
     n_storage_chilled_valve = n_chilled_valve_in_storage + n_chilled_valve_to_user
     n_storage_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "n_chilled_pump", 1)
     initialize_txt_energy_storage_equipment(txt_path, n_chilled_pump_secondary, n_storage_chilled_pump,
-                                            n_chilled_valve_in_storage, n_chilled_valve_to_user)
+                                            n_storage_chilled_valve)
     file_storage_E = txt_path + "/real_value/energy_storage_equipment/Q_plan_E_plan/energy_storage_equipment_E.txt"
     energy_storage_equipment_E0 = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_E0", 0)
     write_txt_data(file_storage_E, [energy_storage_equipment_E0])
@@ -91,5 +96,5 @@ def run_initialize(txt_path):
     resolve_real_value_DO_station(tower_chilled_real_value_dict, tower_chilled_equipment_type_path, cfg_path_equipment)
 
 if __name__ == "__main__":
-    txt_path = "../optimal_control_algorithm_for_integrated_energy"
+    txt_path = "./file_opt"
     run_initialize(txt_path)
