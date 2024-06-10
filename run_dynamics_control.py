@@ -209,7 +209,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
         Q_user = 0
     chiller_Q_user = min(Q_user, chiller_Q0_max)
     write_txt_data(file_Q_value_chiller, [chiller_Q_user])
-    ans_chiller = main_optimization_system_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
+    ans_chiller = main_optimization_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
                                                      chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                                      chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                                      [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
@@ -222,7 +222,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     write_log_data(file_fmu_input_log, [input_log_2], "info")
     write_log_data(file_fmu_input_feedback_log, [input_log_2], "info")
     write_txt_data(file_Q_value_chiller, [chiller_Q_user])
-    algorithm_system_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
+    algorithm_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
                                chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
@@ -237,7 +237,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     ashp_Q_user = min(Q_user - chiller_Q_user, ashp_Q0_max)
     ashp_chilled_pump_H = 0.67 * chiller_user_chilled_pump_H
     write_txt_data(file_Q_value_ashp, [ashp_Q_user])
-    algorithm_system_universal(ashp_chilled_pump_H, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
+    algorithm_common_universal(ashp_chilled_pump_H, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
                                [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [], [], [],
                                ashp_system_type_path, n_calculate_hour, 0, cfg_path_equipment, cfg_path_public)
 
