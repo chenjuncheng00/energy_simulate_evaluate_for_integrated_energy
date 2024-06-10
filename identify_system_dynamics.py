@@ -250,7 +250,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化冷水机系统，但是不进行控制命令下发，用于获取阀门开启比例！")
                 write_txt_data(file_Q_value_chiller, [Q_input])
-                ans_chiller = main_optimization_system_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
+                ans_chiller = main_optimization_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
                                                                  chiller_list, chiller_chilled_pump_list, [],
                                                                  chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                                  n_chiller_list, n_chiller_chilled_pump_list, [],
@@ -688,7 +688,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                       "，正在优化冷水机系统，但是不进行控制命令下发，用于获取阀门开启比例和冷冻水泵扬程！")
                 chiller_Q_total = min(Q_input, chiller_Q0_max)
                 write_txt_data(file_Q_value_chiller, [chiller_Q_total])
-                ans_chiller = main_optimization_system_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
+                ans_chiller = main_optimization_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
                                                                  chiller_list, chiller_chilled_pump_list, [],
                                                                  chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                                  n_chiller_list, n_chiller_chilled_pump_list, [],
@@ -704,7 +704,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 ashp_Q_total = min(Q_input - chiller_Q_total, ashp_Q0_max)
                 H_ashp_chilled_pump = 0.67 * chiller_chilled_pump_H
                 write_txt_data(file_Q_value_ashp, [ashp_Q_total])
-                ans_ashp = main_optimization_system_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump],
+                ans_ashp = main_optimization_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump],
                                                              [ashp_chilled_pump], [], [], [], [n0_air_source_heat_pump],
                                                              [n0_ashp_chilled_pump], [], [], [], ashp_equipment_type_path,
                                                              cfg_path_public)
