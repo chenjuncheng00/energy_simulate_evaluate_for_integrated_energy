@@ -41,7 +41,7 @@ def get_Teo_set_real_data(txt_path):
     """
     equipment_type_list = ["chiller", "air_source_heat_pump"]
     # 计算Teo_set
-    calculate_Teo_set_synthesize_value(equipment_type_list, txt_path)
+    calculate_Teo_set_value_system_type(equipment_type_list, txt_path)
 
 
 def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
