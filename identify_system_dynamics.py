@@ -152,8 +152,8 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
     # 模型输出模式：EER/Tei
     Y_mode_list = ["EER", "Tei"]
     # 设备类型名称，相对路径，设备名称类型一定要是列表
-    chiller_equipment_type = "chiller"
-    chiller_equipment_type_path = [chiller_equipment_type, txt_path]
+    chiller_system_type = "chiller"
+    chiller_system_type_path = [chiller_system_type, txt_path]
     # FMU模型输出名称，包括所有输入输出名称
     load_mode = 1  # 0：user_load；1：simple_load
     fmu_output_name = main_model_output_name(load_mode)
@@ -255,20 +255,21 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                                                                  chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                                  n_chiller_list, n_chiller_chilled_pump_list, [],
                                                                  n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                                 chiller_equipment_type_path, cfg_path_public)
+                                                                 chiller_system_type_path, cfg_path_public)
                 chilled_valve_open = ans_chiller[0]
                 cooling_valve_open = ans_chiller[1]
                 tower_valve_open = ans_chiller[2]
                 # 第4步：优化冷水机系统并进行控制命令下发
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化冷水机系统并进行控制命令下发!")
-                algorithm_chiller_double(Q_input, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
-                                         chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
-                                         chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
-                                         n0_chiller1, n0_chiller2, n0_chiller_chilled_pump1, n0_chiller_chilled_pump2,
-                                         0, 0, n0_chiller_cooling_pump1, n0_chiller_cooling_pump2,
-                                         n0_chiller_cooling_tower, 0, chiller_equipment_type_path, n_calculate_hour,
-                                         n_chiller_user_valve, cfg_path_equipment, cfg_path_public)
+                write_txt_data(file_Q_value_chiller, [Q_input])
+                algorithm_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, [chiller1, chiller2],
+                                           [chiller_chilled_pump1, chiller_chilled_pump2], [],
+                                           [chiller_cooling_pump1, chiller_cooling_pump2], [chiller_cooling_tower],
+                                           [n0_chiller1, n0_chiller2], [n0_chiller_chilled_pump1, n0_chiller_chilled_pump2], 
+                                           [], [n0_chiller_cooling_pump1, n0_chiller_cooling_pump2],
+                                           [n0_chiller_cooling_tower], chiller_system_type_path, n_calculate_hour,
+                                           n_chiller_user_valve, cfg_path_equipment, cfg_path_public)
                 # 第5步：系统仿真24小时，确保系统稳定，并获取数据
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在持续仿真，确保系统稳定!")
                 # 修改采样时间
@@ -316,14 +317,14 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                     input_data_list = [chiller_Teo0[-1] + step_value]
                 elif tf_obj == "Few":
                     Few_total = 1.2 * chiller_Few0[-1]
-                    ans_Fw_step = calculate_Fw_step_value(chiller_equipment_type, tf_obj, Few_total,
+                    ans_Fw_step = calculate_Fw_step_value(chiller_system_type, tf_obj, Few_total,
                                                           chiller_chilled_pump_list, n_chiller_chilled_pump_list,
                                                           chilled_valve_open, cooling_valve_open, tower_valve_open, 0)
                     input_data_list = ans_Fw_step[0]
                     input_type_list = ans_Fw_step[1]
                 elif tf_obj == "Fcw":
                     Fcw_total = 1.2 * chiller_Fcw0[-1]
-                    ans_Fw_step = calculate_Fw_step_value(chiller_equipment_type, tf_obj, Fcw_total,
+                    ans_Fw_step = calculate_Fw_step_value(chiller_system_type, tf_obj, Fcw_total,
                                                           chiller_cooling_pump_list, n_chiller_cooling_pump_list,
                                                           chilled_valve_open, cooling_valve_open, tower_valve_open, 0)
                     input_data_list = ans_Fw_step[0]
@@ -569,11 +570,11 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
     # 模型输出模式：EER/Tei
     Y_mode_list = ["EER", "Tei"]
     # 设备类型
-    chiller_equipment_type = "chiller"
-    ashp_equipment_type = "air_source_heat_pump"
+    chiller_system_type = "chiller"
+    ashp_system_type = "air_source_heat_pump"
     # 设备类型和相对路径
-    chiller_equipment_type_path = [chiller_equipment_type, txt_path]
-    ashp_equipment_type_path = [ashp_equipment_type, txt_path]
+    chiller_system_type_path = [chiller_system_type, txt_path]
+    ashp_system_type_path = [ashp_system_type, txt_path]
     # FMU模型输出名称，包括所有输入输出名称
     load_mode = 1  # 0：user_load；1：simple_load
     fmu_output_name = main_model_output_name(load_mode)
@@ -693,7 +694,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                                                                  chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                                  n_chiller_list, n_chiller_chilled_pump_list, [],
                                                                  n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                                 chiller_equipment_type_path, cfg_path_public)
+                                                                 chiller_system_type_path, cfg_path_public)
                 chiller_chilled_valve_open = ans_chiller[0]
                 chiller_cooling_valve_open = ans_chiller[1]
                 chiller_tower_valve_open = ans_chiller[2]
@@ -706,25 +707,29 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 write_txt_data(file_Q_value_ashp, [ashp_Q_total])
                 ans_ashp = main_optimization_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump],
                                                              [ashp_chilled_pump], [], [], [], [n0_air_source_heat_pump],
-                                                             [n0_ashp_chilled_pump], [], [], [], ashp_equipment_type_path,
+                                                             [n0_ashp_chilled_pump], [], [], [], ashp_system_type_path,
                                                              cfg_path_public)
                 ashp_chilled_valve_open = ans_ashp[0]
                 # 第3-3步：冷水机优化和控制...
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化冷水机系统并进行控制命令下发!")
-                algorithm_chiller_double(chiller_Q_total, H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller1,
-                                         chiller2, chiller_chilled_pump1, chiller_chilled_pump2, None, None,
-                                         chiller_cooling_pump1, chiller_cooling_pump2, chiller_cooling_tower, None,
-                                         n0_chiller1, n0_chiller2, n0_chiller_chilled_pump1, n0_chiller_chilled_pump2,
-                                         0, 0, n0_chiller_cooling_pump1, n0_chiller_cooling_pump2,
-                                         n0_chiller_cooling_tower, 0, chiller_equipment_type_path, n_calculate_hour,
-                                         n_chiller_user_valve, cfg_path_equipment, cfg_path_public)
+                write_txt_data(file_Q_value_chiller, [chiller_Q_total])
+                algorithm_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, [chiller1, chiller2],
+                                           [chiller_chilled_pump1, chiller_chilled_pump2], [],
+                                           [chiller_cooling_pump1, chiller_cooling_pump2], [chiller_cooling_tower],
+                                           [n0_chiller1, n0_chiller2],
+                                           [n0_chiller_chilled_pump1, n0_chiller_chilled_pump2],
+                                           [], [n0_chiller_cooling_pump1, n0_chiller_cooling_pump2],
+                                           [n0_chiller_cooling_tower], chiller_system_type_path, n_calculate_hour,
+                                           n_chiller_user_valve, cfg_path_equipment, cfg_path_public)
                 # 第3-4步：空气源热泵优化和控制...
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化空气源热泵系统并进行控制命令下发!")
-                algorithm_air_source_heat_pump(ashp_Q_total, H_ashp_chilled_pump, 0, air_source_heat_pump,
-                                               ashp_chilled_pump, None, ashp_equipment_type_path, n_calculate_hour,
-                                               0, cfg_path_equipment, cfg_path_public)
+                write_txt_data(file_Q_value_ashp, [ashp_Q_total])
+                algorithm_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
+                                           [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [],
+                                           [], [], ashp_system_type_path, n_calculate_hour, 0, cfg_path_equipment,
+                                           cfg_path_public)
                 # 第4步：系统仿真24小时，确保系统稳定，并获取数据
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在持续仿真，确保系统稳定!")
                 # 修改采样时间
@@ -785,7 +790,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                     input_data_list = [Teo0_set[-1] + step_value, Teo0_set[-1] + step_value]
                 elif tf_obj == "chiller_Few":
                     chiller_Few_total = 1.2 * chiller_Few0[-1]
-                    ans_chiller_Fw_step = calculate_Fw_step_value(chiller_equipment_type, "Few", chiller_Few_total,
+                    ans_chiller_Fw_step = calculate_Fw_step_value(chiller_system_type, "Few", chiller_Few_total,
                                                                   chiller_chilled_pump_list, n_chiller_chilled_pump_list,
                                                                   chiller_chilled_valve_open, chiller_cooling_valve_open,
                                                                   chiller_tower_valve_open, 0)
@@ -793,14 +798,14 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                     input_type_list = ans_chiller_Fw_step[1]
                 elif tf_obj == "ashp_Few":
                     ashp_Few_total = 1.2 * ashp_Few0[-1]
-                    ans_ashp_Fw_step = calculate_Fw_step_value(ashp_equipment_type, "Few", ashp_Few_total,
+                    ans_ashp_Fw_step = calculate_Fw_step_value(ashp_system_type, "Few", ashp_Few_total,
                                                                [ashp_chilled_pump], [n0_ashp_chilled_pump],
                                                                ashp_chilled_valve_open, 0, 0, 0)
                     input_data_list = ans_ashp_Fw_step[0]
                     input_type_list = ans_ashp_Fw_step[1]
                 elif tf_obj == "Fcw":
                     Fcw_total = 1.3 * chiller_Fcw0[-1]
-                    ans_Fw_step = calculate_Fw_step_value(chiller_equipment_type, tf_obj, Fcw_total,
+                    ans_Fw_step = calculate_Fw_step_value(chiller_system_type, tf_obj, Fcw_total,
                                                           chiller_cooling_pump_list, n_chiller_cooling_pump_list,
                                                           chiller_chilled_valve_open, chiller_cooling_valve_open,
                                                           chiller_tower_valve_open, 0)
@@ -1033,12 +1038,12 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
             pass
 
 
-def calculate_Fw_step_value(equipment_type, tf_obj, Fw_total, pump_list, n_pump_list, chilled_valve_open,
+def calculate_Fw_step_value(system_type, tf_obj, Fw_total, pump_list, n_pump_list, chilled_valve_open,
                             cooling_valve_open, tower_valve_open, H_pump):
     """
     水泵，阶跃响应测试输入数据生成
     Args:
-        equipment_type: [string]，设备类型名称
+        system_type: [string]，设备类型名称
         tf_obj: [string]，需要被辨识的对象
         Fw_total: [float]，水流量总需求，t/h
         pump_list: [list]，水泵模型，列表
@@ -1059,19 +1064,19 @@ def calculate_Fw_step_value(equipment_type, tf_obj, Fw_total, pump_list, n_pump_
         for pump in pump_list:
             pump.value_open = [cooling_valve_open, tower_valve_open]
     # 确定input_type
-    if equipment_type == "chiller":
+    if system_type == "chiller":
         if tf_obj == "Few":
             input_type_list = chiller_input_type()[3]
         elif tf_obj == "Fcw":
             input_type_list = chiller_input_type()[4]
         else:
             input_type_list = None
-    elif equipment_type == "air_source_heat_pump":
+    elif system_type == "air_source_heat_pump":
         if tf_obj == "Few":
             input_type_list = air_source_heat_pump_input_type()[3]
         else:
             input_type_list = None
-    elif equipment_type == "energy_storage_equipment":
+    elif system_type == "energy_storage_equipment":
         if tf_obj == "Few":
             input_type_list = cold_storage_input_type()[1]
         else:
@@ -1079,15 +1084,14 @@ def calculate_Fw_step_value(equipment_type, tf_obj, Fw_total, pump_list, n_pump_
     else:
         input_type_list = None
     # 确定input_data
-    if equipment_type == "chiller":
-        ans = main_optimization_water_pump_double(pump_list[0], n_pump_list[0], 0, pump_list[1], n_pump_list[1],
-                                                  0, 0, 0, Fw_total, 0, 0, 0, H_pump)
-        best_n1 = ans[2]
-        best_f1 = ans[3]
-        best_H1 = ans[5]
-        best_n2 = ans[7]
-        best_f2 = ans[8]
-        best_H2 = ans[10]
+    if system_type == "chiller":
+        ans = main_optimization_water_pump(pump_list, n_pump_list, [0, 0], Fw_total,[0, 0], H_pump, 0)
+        best_n1 = ans[2][0]
+        best_n2 = ans[2][1]
+        best_f1 = ans[3][0]
+        best_f2 = ans[3][1]
+        best_H1 = ans[4][0]
+        best_H2 = ans[4][1]
         best_H = max(best_H1, best_H2)
         input_data_list = []
         for i in range(n_pump_list[0]):
@@ -1100,11 +1104,11 @@ def calculate_Fw_step_value(equipment_type, tf_obj, Fw_total, pump_list, n_pump_
                 input_data_list.append(best_f2)
             else:
                 input_data_list.append(0)
-    elif equipment_type == "energy_storage_equipment" or equipment_type == "air_source_heat_pump":
-        ans = main_optimization_water_pump(pump_list[0], n_pump_list[0], 0, 0, Fw_total, 0, H_pump)
-        best_n = ans[2]
-        best_f = ans[3]
-        best_H = ans[4]
+    elif system_type == "energy_storage_equipment" or system_type == "air_source_heat_pump":
+        ans = main_optimization_water_pump(pump_list, n_pump_list, [0], Fw_total, [0], H_pump, 0)
+        best_n = ans[2][0]
+        best_f = ans[3][0]
+        best_H = ans[4][0]
         input_data_list = []
         for i in range(n_pump_list[0]):
             if i < best_n:
