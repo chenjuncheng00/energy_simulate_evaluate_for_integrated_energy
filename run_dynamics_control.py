@@ -213,7 +213,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
                                                      chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                                      chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                                      [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                     chiller_system_type_path, cfg_path_public)
+                                                     chiller_system_type_path, cfg_path_public, cfg_path_equipment)
     chiller_user_chilled_pump_H = ans_chiller[3]
 
     # 第2步：用向用户侧供冷供冷，冷水机优化和控制
