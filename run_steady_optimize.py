@@ -194,7 +194,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
                                                               chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                               n_chiller_list, n_chiller_chilled_pump_list, [],
                                                               n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                              chiller_system_type_path, cfg_path_public)
+                                                              chiller_system_type_path, cfg_path_public, cfg_path_equipment)
             chiller_storage_chilled_valve_open = ans_chiller1[0]
 
             # 第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取阀门开启比例和冷冻水泵扬程
@@ -207,7 +207,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
                                                               chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                               n_chiller_list, n_chiller_chilled_pump_list, [],
                                                               n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                              chiller_system_type_path, cfg_path_public)
+                                                              chiller_system_type_path, cfg_path_public, cfg_path_equipment)
             chiller_user_chilled_valve_open = ans_chiller2[0]
             chiller_user_chilled_pump_H = ans_chiller2[4]
 
@@ -271,7 +271,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
                                                               chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                               n_chiller_list, n_chiller_chilled_pump_list, [],
                                                               n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                              chiller_system_type_path, cfg_path_public)
+                                                              chiller_system_type_path, cfg_path_public, cfg_path_equipment)
             chiller_user_chilled_pump_H = ans_chiller2[4]
 
             # 第2-2步：蓄冷水罐和水泵优化+控制，供冷工况
@@ -334,7 +334,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
                                                               chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                               n_chiller_list, n_chiller_chilled_pump_list, [],
                                                               n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                              chiller_system_type_path, cfg_path_public)
+                                                              chiller_system_type_path, cfg_path_public, cfg_path_equipment)
             chiller_user_chilled_pump_H = ans_chiller2[4]
 
             # 第2-3步：用向用户侧供冷供冷，冷水机优化和控制
