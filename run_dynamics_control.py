@@ -81,7 +81,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     n0_chiller_cooling_pump1 = chiller_dict["n_chiller_cooling_pump1"]
     n0_chiller_cooling_pump2 = chiller_dict["n_chiller_cooling_pump2"]
     n0_chiller_cooling_tower = chiller_dict["n_chiller_cooling_tower"]
-    n_chiller_user_valve = chiller_dict["n_chiller_user_valve"]
+    # n_chiller_user_valve = chiller_dict["n_chiller_user_valve"]
     # 读取空气源热泵设备信息
     with open(file_pkl_ashp, "rb") as f_obj:
         ashp_dict = pickle.load(f_obj)
@@ -226,8 +226,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
                                chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                               chiller_system_type_path, n_calculate_hour, n_chiller_user_valve,
-                               cfg_path_equipment, cfg_path_public)
+                               chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
     # 第3步：用向用户侧供冷功率，空气源热泵优化和控制
     input_log_3 = "第3步：用向用户侧供冷功率，空气源热泵优化和控制..."
@@ -239,7 +238,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     write_txt_data(file_Q_value_ashp, [ashp_Q_user])
     algorithm_common_universal(ashp_chilled_pump_H, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
                                [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [], [], [],
-                               ashp_system_type_path, n_calculate_hour, 0, cfg_path_equipment, cfg_path_public)
+                               ashp_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
     # 第4步：持续仿真，使得系统稳定下来
     input_log_4 = "第4步：持续仿真，使得系统稳定下来..."

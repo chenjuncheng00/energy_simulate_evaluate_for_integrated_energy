@@ -36,7 +36,7 @@ def run_compare(txt_path, Q_total):
     n_chiller_chilled_pump_list = chiller_dict["n_chiller_chilled_pump_list"]
     n_chiller_cooling_pump_list = chiller_dict["n_chiller_cooling_pump_list"]
     n_chiller_cooling_tower_list = chiller_dict["n_chiller_cooling_tower_list"]
-    n_chiller_user_valve = chiller_dict["n_chiller_user_valve"]
+    # n_chiller_user_valve = chiller_dict["n_chiller_user_valve"]
     # 读取公共系统信息
     with open(file_pkl_system, "rb") as f_obj:
         system_dict = pickle.load(f_obj)
@@ -47,8 +47,7 @@ def run_compare(txt_path, Q_total):
                                chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                               chiller_system_type_path, n_calculate_hour, n_chiller_user_valve,
-                               cfg_path_equipment, cfg_path_public)
+                               chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
 if __name__ == "__main__":
     txt_path = "./file_opt"

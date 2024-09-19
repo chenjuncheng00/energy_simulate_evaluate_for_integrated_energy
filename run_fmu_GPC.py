@@ -3,7 +3,7 @@ from model_fmu_dynamics import model_dynamics_complex_chiller, model_dynamics_ch
 
 if __name__ == "__main__":
     # model_mode: 0:仅冷水机；1:冷水机+空气源热泵
-    model_mode = 1
+    model_mode = 0
     # 仿真类型：smgpc、mmgpc
     simulate_mode = "mmgpc"
     # 控制器目标
