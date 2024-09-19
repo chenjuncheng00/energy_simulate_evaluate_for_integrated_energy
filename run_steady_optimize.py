@@ -72,7 +72,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     # n0_chiller_cooling_pump1 = chiller_dict["n_chiller_cooling_pump1"]
     # n0_chiller_cooling_pump2 = chiller_dict["n_chiller_cooling_pump2"]
     # n0_chiller_cooling_tower = chiller_dict["n_chiller_cooling_tower"]
-    n_chiller_user_valve = chiller_dict["n_chiller_user_valve"]
+    # n_chiller_user_valve = chiller_dict["n_chiller_user_valve"]
     # 读取空气源热泵设备信息
     with open(file_pkl_ashp, "rb") as f_obj:
         ashp_dict = pickle.load(f_obj)
@@ -222,15 +222,15 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
                                        chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                        chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                        [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                       chiller_system_type_path, n_calculate_hour, n_chiller_user_valve,
-                                       cfg_path_equipment, cfg_path_public, chilled_pump_control=False)
+                                       chiller_system_type_path, n_calculate_hour, cfg_path_equipment,
+                                       cfg_path_public, chilled_pump_control=False)
             # 第2-4步：用向用户侧供冷功率，冷水机优化和控制，仅进行冷冻水泵控制
             input_log_2_4 = "第2-4步：用向用户侧供冷功率，冷水机优化和控制，仅进行冷冻水泵控制..."
             print(input_log_2_4)
             write_log_data(file_fmu_input_log, [input_log_2_4], "info")
             write_log_data(file_fmu_input_feedback_log, [input_log_2_4], "info")
             chiller_Few_user = chiller_Q_user * 3.6 / 4.18 / Ted_set
-            algorithm_chilled_pump([chiller_Few_user], H_chiller_chilled_pump, 0, chiller_user_chilled_valve_open,
+            algorithm_chilled_pump([chiller_Few_user], [], H_chiller_chilled_pump, 0, chiller_user_chilled_valve_open,
                                    chiller_chilled_pump_list, [], n_chiller_chilled_pump_list, [],
                                    chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
@@ -258,7 +258,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             write_txt_data(file_Q_value_ashp, [ashp_Q_user])
             algorithm_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
                                        [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [], [], [],
-                                       ashp_system_type_path, n_calculate_hour, 0, cfg_path_equipment, cfg_path_public)
+                                       ashp_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
         elif Q_out_ese > 0:
             # 第2-1步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程
@@ -298,8 +298,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
                                        chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                        chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                        [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                       chiller_system_type_path, n_calculate_hour, n_chiller_user_valve,
-                                       cfg_path_equipment, cfg_path_public)
+                                       chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
             # 第2-4步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_4 = "第2-4步：用向用户侧供冷功率，空气源热泵优化和控制..."
@@ -311,7 +310,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             write_txt_data(file_Q_value_ashp, [ashp_Q_user])
             algorithm_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
                                        [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [], [], [],
-                                       ashp_system_type_path, n_calculate_hour, 0, cfg_path_equipment, cfg_path_public)
+                                       ashp_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
         else:
             # 第2-1步：Q_out_ese=0，蓄冷水罐控制，目的是关闭蓄冷水罐及其系统
             input_log_2_1 = "第2-1步：Q_out_ese=0，蓄冷水罐控制，目的是关闭蓄冷水罐及其系统..."
@@ -347,8 +346,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
                                        chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                        chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                        [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                       chiller_system_type_path, n_calculate_hour, n_chiller_user_valve,
-                                       cfg_path_equipment, cfg_path_public)
+                                       chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
             # 第2-4步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_4 = "第2-4步：用向用户侧供冷功率，空气源热泵优化和控制..."
@@ -360,7 +358,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             write_txt_data(file_Q_value_ashp, [ashp_Q_user])
             algorithm_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
                                        [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [], [], [],
-                                       ashp_system_type_path, n_calculate_hour, 0, cfg_path_equipment, cfg_path_public)
+                                       ashp_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
         # 修改time_list
         time_name_list = generate_time_name_list(time_name_list)
@@ -391,8 +389,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             print(input_log_5)
             write_log_data(file_fmu_input_log, [input_log_5], "info")
             write_log_data(file_fmu_input_feedback_log, [input_log_5], "info")
-            algorithm_Teo_set_user(chiller_system_type_path, n_calculate_hour)
-            algorithm_Teo_set_user(ashp_system_type_path, n_calculate_hour)
+            algorithm_Teo_set_user(chiller_system_type_path, n_calculate_hour, n_chiller_list)
+            algorithm_Teo_set_user(ashp_system_type_path, n_calculate_hour, n0_air_source_heat_pump)
         else:
             input_log_5 = "第5步：修正Teo，PASS..."
             print(input_log_5)

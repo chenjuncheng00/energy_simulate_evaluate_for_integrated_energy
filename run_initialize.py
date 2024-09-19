@@ -1,6 +1,5 @@
 from algorithm_code import *
-from system_default_status import air_source_heat_pump_default_status, chiller_default_status, storage_default_status, \
-                                  tower_chilled_default_status
+from system_default_status import air_source_heat_pump_default_status, chiller_default_status, storage_default_status
 
 def run_initialize(txt_path):
     """
@@ -34,7 +33,7 @@ def run_initialize(txt_path):
     n_chiller_chilled_pump = n_chiller_chilled_pump1 + n_chiller_chilled_pump2
     n_chiller_cooling_pump = n_chiller_cooling_pump1 + n_chiller_cooling_pump2
     initialize_txt_chiller(txt_path, n_chiller, n_chilled_pump_secondary, n_chiller_chilled_pump,
-                           n_chiller_cooling_pump, n_chiller_cooling_tower, n_user_valve, n_tower_chilled_valve,
+                           n_chiller_cooling_pump, n_chiller_cooling_tower, n_user_valve,
                            times_chilled_valve, times_cooling_valve, times_tower_valve)
 
     # 空气源热泵数量
@@ -43,10 +42,10 @@ def run_initialize(txt_path):
     initialize_txt_air_source_heat_pump(txt_path, n_air_source_heat_pump, n_chilled_pump_secondary,
                                         n_ashp_chilled_pump, n_user_valve, times_chilled_valve)
 
-    # 冷却塔直接供冷设备数量
-    n_tower_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷却塔直接供冷", "n_chilled_pump", 1)
-    initialize_txt_tower_chilled(txt_path, n_chilled_pump_secondary, n_tower_chilled_pump, n_chiller_cooling_tower,
-                                 n_tower_chilled_valve)
+    # # 冷却塔直接供冷设备数量
+    # n_tower_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_冷却塔直接供冷", "n_chilled_pump", 1)
+    # initialize_txt_tower_chilled(txt_path, n_chilled_pump_secondary, n_tower_chilled_pump, n_chiller_cooling_tower,
+    #                              n_tower_chilled_valve)
 
     # 温湿度传感器设备数量
     n_Tdo = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Tdo", 1)
@@ -91,9 +90,6 @@ def run_initialize(txt_path):
     storage_equipment_type_path = ["energy_storage_equipment", txt_path]
     storage_real_value_dict = storage_default_status(n_storage_chilled_valve, n_storage_chilled_pump)
     resolve_real_value_DO_station(storage_real_value_dict, storage_equipment_type_path, cfg_path_equipment)
-    tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
-    tower_chilled_real_value_dict = tower_chilled_default_status(n_tower_chilled_pump)
-    resolve_real_value_DO_station(tower_chilled_real_value_dict, tower_chilled_equipment_type_path, cfg_path_equipment)
 
 if __name__ == "__main__":
     txt_path = "./file_opt"
