@@ -55,8 +55,8 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     chiller1_Rew = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Rew", 0)
     chiller1_Rcw = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_Rcw", 0)
     chiller1_f_status = read_cfg_data(cfg_path_equipment, "冷水机1", "chiller1_f_status", 2)
-    chiller1 = Electric_Air_Conditioner(chiller1_cop_coef, chiller1_Q0_coef, chiller1_Q0, chiller1_alpha,
-                                        chiller1_beta, chiller1_Few0, chiller1_Rew, chiller1_f_status)
+    chiller1 = Air_Conditioner(chiller1_cop_coef, chiller1_Q0_coef, chiller1_Q0, chiller1_alpha,
+                               chiller1_beta, chiller1_Few0, chiller1_Rew, chiller1_f_status)
     chiller1.Fcw0 = chiller1_Fcw0
     chiller1.Rcw = chiller1_Rcw
     chiller2_cop_coef = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_cop_coef", 0)
@@ -69,8 +69,8 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     chiller2_Rew = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Rew", 0)
     chiller2_Rcw = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_Rcw", 0)
     chiller2_f_status = read_cfg_data(cfg_path_equipment, "冷水机2", "chiller2_f_status", 2)
-    chiller2 = Electric_Air_Conditioner(chiller2_cop_coef, chiller2_Q0_coef, chiller2_Q0, chiller2_alpha,
-                                        chiller2_beta, chiller2_Few0, chiller2_Rew, chiller2_f_status)
+    chiller2 = Air_Conditioner(chiller2_cop_coef, chiller2_Q0_coef, chiller2_Q0, chiller2_alpha,
+                               chiller2_beta, chiller2_Few0, chiller2_Rew, chiller2_f_status)
     chiller2.Fcw0 = chiller2_Fcw0
     chiller2.Rcw = chiller2_Rcw
     # 实例化冷却塔
@@ -203,10 +203,10 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     air_source_heat_pump_Few0 = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_Few0", 0)
     air_source_heat_pump_Rew = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_Rew", 0)
     air_source_heat_pump_f_status = read_cfg_data(cfg_path_equipment, "空气源热泵", "air_source_heat_pump_f_status", 2)
-    air_source_heat_pump = Electric_Air_Conditioner(air_source_heat_pump_cop_coef, air_source_heat_pump_Q0_coef,
-                                                    air_source_heat_pump_Q0, air_source_heat_pump_alpha,
-                                                    air_source_heat_pump_beta, air_source_heat_pump_Few0,
-                                                    air_source_heat_pump_Rew, air_source_heat_pump_f_status)
+    air_source_heat_pump = Air_Conditioner(air_source_heat_pump_cop_coef, air_source_heat_pump_Q0_coef,
+                                           air_source_heat_pump_Q0, air_source_heat_pump_alpha,
+                                           air_source_heat_pump_beta, air_source_heat_pump_Few0,
+                                           air_source_heat_pump_Rew, air_source_heat_pump_f_status)
     # 实例化一级冷冻水泵
     ashp_chilled_pump_f0 = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_f0", 0)
     ashp_chilled_pump_fmax = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "chilled_pump_fmax", 0)
