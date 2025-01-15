@@ -262,7 +262,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
                                    simulate_time0, Ts, time_out, tolerance, txt_path)
     # 计算U0和y0
     input_data_list = [Q_total * 1000]
-    input_type_list = [("Q_set", np.float_)]
+    input_type_list = [("Q_set", np.float64)]
     result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
     Teo0 = list(result["chiller_Teo_set"])[-1]
     Few0 = list(result["chiller_f_chilled_pump1"])[-1]
@@ -509,8 +509,8 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
         Fcw = uk_list[2]
         Fca = uk_list[3]
         # 写入控制命令
-        input_type_list = [("chiller_Teo_set", np.float_), ("chiller_f_chilled_pump1", np.float_),
-                           ("chiller_f_cooling_pump1", np.float_), ("chiller_f_cooling_tower1", np.float_)]
+        input_type_list = [("chiller_Teo_set", np.float64), ("chiller_f_chilled_pump1", np.float64),
+                           ("chiller_f_cooling_pump1", np.float64), ("chiller_f_cooling_tower1", np.float64)]
         input_data_list = [Teo, Few, Fcw, Fca]
 
         result = main_simulate_pause_single(input_data_list, input_type_list, Ts, txt_path)
@@ -672,7 +672,7 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
 
             # 第2步:给定冷负荷，并使得系统稳定
             input_data_list = [Q_input * 1000]
-            input_type_list = [("Q_set", np.float_)]
+            input_type_list = [("Q_set", np.float64)]
             result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
             Teo0 = list(result["chiller_Teo_set"])
             Few0 = list(result["Few"])
@@ -687,16 +687,16 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
             # 第3步:系统阶跃响应试验
             if tf_obj == "Teo":
                 input_data_list = [9]
-                input_type_list = [("chiller_Teo_set", np.float_)]
+                input_type_list = [("chiller_Teo_set", np.float64)]
             elif tf_obj == "Few":
                 input_data_list = [40]
-                input_type_list = [("chiller_f_chilled_pump1", np.float_)]
+                input_type_list = [("chiller_f_chilled_pump1", np.float64)]
             elif tf_obj == "Fcw":
                 input_data_list = [40]
-                input_type_list = [("chiller_f_cooling_pump1", np.float_)]
+                input_type_list = [("chiller_f_cooling_pump1", np.float64)]
             elif tf_obj == "Fca":
                 input_data_list = [40]
-                input_type_list = [("chiller_f_cooling_tower1", np.float_)]
+                input_type_list = [("chiller_f_cooling_tower1", np.float64)]
             else:
                 input_data_list = []
                 input_type_list = []

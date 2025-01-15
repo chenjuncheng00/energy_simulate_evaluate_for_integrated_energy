@@ -111,12 +111,12 @@ def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_
         approach_set_tower_list.append(approach_set_min + i * approach_step)
 
     # FMU模型输入名称和数据类型
-    model_input_type = [("time", np.float_), ("Teo_set", np.float_), ("Tei", np.float_), ("chiller_Tci", np.float_),
-                        ("turn_chiller_big", np.bool_), ("chiller_big_Few", np.float_), ("chiller_big_Fcw", np.float_),
-                        ("turn_chiller_small", np.bool_), ("chiller_small_Few", np.float_),
-                        ("chiller_small_Fcw", np.float_), ("turn_ashp", np.bool_), ("ashp_Tci", np.float_),
-                        ("ashp_Few", np.float_), ("ashp_Fca", np.float_), ("Two", np.float_), ("tower_Tin", np.float_),
-                        ("tower_Fcw", np.float_), ("approach_set", np.float_)]
+    model_input_type = [("time", np.float64), ("Teo_set", np.float64), ("Tei", np.float64), ("chiller_Tci", np.float64),
+                        ("turn_chiller_big", np.bool_), ("chiller_big_Few", np.float64), ("chiller_big_Fcw", np.float64),
+                        ("turn_chiller_small", np.bool_), ("chiller_small_Few", np.float64),
+                        ("chiller_small_Fcw", np.float64), ("turn_ashp", np.bool_), ("ashp_Tci", np.float64),
+                        ("ashp_Few", np.float64), ("ashp_Fca", np.float64), ("Two", np.float64), ("tower_Tin", np.float64),
+                        ("tower_Fcw", np.float64), ("approach_set", np.float64)]
     model_output_name = ["P_chiller_big", "Teo_chiller_big", "Tco_chiller_big", "P_chiller_small", "Teo_chiller_small",
                          "Tco_chiller_small", "P_ashp", "Teo_ashp", "Tco_ashp", "tower_Tout", "f_tower", "RH_air_in",
                          "RH_air_out"]

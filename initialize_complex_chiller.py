@@ -45,7 +45,7 @@ def initialize_complex_chiller(file_fmu_time, file_fmu_state, start_time, stop_t
     chiller_user_valve = [1, 1]
     chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_valve + chiller_user_valve
     # 模型输入名称和类型
-    input_type_list = [("time", np.float_)] + environment_input_type(load_mode)[0] + chiller_input_type()[0] + \
+    input_type_list = [("time", np.float64)] + environment_input_type(load_mode)[0] + chiller_input_type()[0] + \
                       cold_storage_input_type()[0] + simple_load_input_type()
     # 模型输入数据
     input_data_list = [start_time] + environment_input_data_default(load_mode) + chiller_input_data + \
