@@ -10,7 +10,7 @@ def main_model_input_type(load_mode=0):
 
     """
     # 仿真时间
-    time_input = [("time", np.float_)]
+    time_input = [("time", np.float64)]
     # 环境参数模型
     environment_input = environment_input_type(load_mode)[0]
     # 冷水机模型
@@ -37,8 +37,8 @@ def environment_input_type(load_mode):
     Returns:
 
     """
-    Tdo = [("Tdo", np.float_)]
-    Two = [("Two", np.float_)]
+    Tdo = [("Tdo", np.float64)]
+    Two = [("Two", np.float64)]
     if load_mode == 0:
         environment_input = Tdo + Two
     else:
@@ -58,33 +58,33 @@ def chiller_input_type():
     # 空调主机，开关，True或False
     main_equipment_turn = [("chiller_turn1", np.bool_), ("chiller_turn2", np.bool_), ("chiller_turn3", np.bool_),
                            ("chiller_turn4", np.bool_), ("chiller_turn5", np.bool_), ("chiller_turn6", np.bool_)]
-    main_equipment_Teo_set = [("chiller_Teo_set", np.float_)]
+    main_equipment_Teo_set = [("chiller_Teo_set", np.float64)]
     # 冷冻水泵，转速，0到50
-    chilled_pump = [("chiller_f_chilled_pump1", np.float_), ("chiller_f_chilled_pump2", np.float_),
-                    ("chiller_f_chilled_pump3", np.float_), ("chiller_f_chilled_pump4", np.float_),
-                    ("chiller_f_chilled_pump5", np.float_), ("chiller_f_chilled_pump6", np.float_)]
+    chilled_pump = [("chiller_f_chilled_pump1", np.float64), ("chiller_f_chilled_pump2", np.float64),
+                    ("chiller_f_chilled_pump3", np.float64), ("chiller_f_chilled_pump4", np.float64),
+                    ("chiller_f_chilled_pump5", np.float64), ("chiller_f_chilled_pump6", np.float64)]
     # 冷却水泵，转速，0到50
-    cooling_pump = [("chiller_f_cooling_pump1", np.float_), ("chiller_f_cooling_pump2", np.float_),
-                    ("chiller_f_cooling_pump3", np.float_), ("chiller_f_cooling_pump4", np.float_),
-                    ("chiller_f_cooling_pump5", np.float_), ("chiller_f_cooling_pump6", np.float_)]
+    cooling_pump = [("chiller_f_cooling_pump1", np.float64), ("chiller_f_cooling_pump2", np.float64),
+                    ("chiller_f_cooling_pump3", np.float64), ("chiller_f_cooling_pump4", np.float64),
+                    ("chiller_f_cooling_pump5", np.float64), ("chiller_f_cooling_pump6", np.float64)]
     # 冷却塔风机，转速比，0到1
-    cooling_tower = [("chiller_f_cooling_tower1", np.float_), ("chiller_f_cooling_tower2", np.float_),
-                     ("chiller_f_cooling_tower3", np.float_), ("chiller_f_cooling_tower4", np.float_),
-                     ("chiller_f_cooling_tower5", np.float_), ("chiller_f_cooling_tower6", np.float_)]
+    cooling_tower = [("chiller_f_cooling_tower1", np.float64), ("chiller_f_cooling_tower2", np.float64),
+                     ("chiller_f_cooling_tower3", np.float64), ("chiller_f_cooling_tower4", np.float64),
+                     ("chiller_f_cooling_tower5", np.float64), ("chiller_f_cooling_tower6", np.float64)]
     # 冷冻阀门，开度比，0到1
-    chilled_valve = [("chiller_turn_chilled_valve1", np.float_), ("chiller_turn_chilled_valve2", np.float_),
-                     ("chiller_turn_chilled_valve3", np.float_), ("chiller_turn_chilled_valve4", np.float_),
-                     ("chiller_turn_chilled_valve5", np.float_), ("chiller_turn_chilled_valve6", np.float_)]
+    chilled_valve = [("chiller_turn_chilled_valve1", np.float64), ("chiller_turn_chilled_valve2", np.float64),
+                     ("chiller_turn_chilled_valve3", np.float64), ("chiller_turn_chilled_valve4", np.float64),
+                     ("chiller_turn_chilled_valve5", np.float64), ("chiller_turn_chilled_valve6", np.float64)]
     # 冷却阀门，开度比，0到1
-    cooling_valve = [("chiller_turn_cooling_valve1", np.float_), ("chiller_turn_cooling_valve2", np.float_),
-                     ("chiller_turn_cooling_valve3", np.float_), ("chiller_turn_cooling_valve4", np.float_),
-                     ("chiller_turn_cooling_valve5", np.float_), ("chiller_turn_cooling_valve6", np.float_)]
+    cooling_valve = [("chiller_turn_cooling_valve1", np.float64), ("chiller_turn_cooling_valve2", np.float64),
+                     ("chiller_turn_cooling_valve3", np.float64), ("chiller_turn_cooling_valve4", np.float64),
+                     ("chiller_turn_cooling_valve5", np.float64), ("chiller_turn_cooling_valve6", np.float64)]
     # 冷却塔阀门，开度比，0到1
-    tower_valve = [("chiller_turn_tower_valve1", np.float_), ("chiller_turn_tower_valve2", np.float_),
-                   ("chiller_turn_tower_valve3", np.float_), ("chiller_turn_tower_valve4", np.float_),
-                   ("chiller_turn_tower_valve5", np.float_), ("chiller_turn_tower_valve6", np.float_)]
+    tower_valve = [("chiller_turn_tower_valve1", np.float64), ("chiller_turn_tower_valve2", np.float64),
+                   ("chiller_turn_tower_valve3", np.float64), ("chiller_turn_tower_valve4", np.float64),
+                   ("chiller_turn_tower_valve5", np.float64), ("chiller_turn_tower_valve6", np.float64)]
     # 向用户侧供冷阀门，开度比，0到1
-    user_valve = [("chiller_turn_user_valve1", np.float_), ("chiller_turn_user_valve2", np.float_)]
+    user_valve = [("chiller_turn_user_valve1", np.float64), ("chiller_turn_user_valve2", np.float64)]
     # 总输入
     chiller_input = main_equipment_turn + main_equipment_Teo_set + chilled_pump + cooling_pump + cooling_tower + \
                     chilled_valve + cooling_valve + tower_valve + user_valve
@@ -103,13 +103,13 @@ def air_source_heat_pump_input_type():
     # 空调主机，开关，True或False
     main_equipment_turn = [("ashp_turn1", np.bool_), ("ashp_turn2", np.bool_),
                            ("ashp_turn3", np.bool_), ("ashp_turn4", np.bool_)]
-    main_equipment_Teo_set = [("ashp_Teo_set", np.float_)]
+    main_equipment_Teo_set = [("ashp_Teo_set", np.float64)]
     # 冷冻水泵，转速，0到50
-    chilled_pump = [("ashp_f_chilled_pump1", np.float_), ("ashp_f_chilled_pump2", np.float_),
-                    ("ashp_f_chilled_pump3", np.float_), ("ashp_f_chilled_pump4", np.float_)]
+    chilled_pump = [("ashp_f_chilled_pump1", np.float64), ("ashp_f_chilled_pump2", np.float64),
+                    ("ashp_f_chilled_pump3", np.float64), ("ashp_f_chilled_pump4", np.float64)]
     # 冷冻阀门，开度比，0到1
-    chilled_valve = [("ashp_turn_chilled_valve1", np.float_), ("ashp_turn_chilled_valve2", np.float_),
-                     ("ashp_turn_chilled_valve3", np.float_), ("ashp_turn_chilled_valve4", np.float_)]
+    chilled_valve = [("ashp_turn_chilled_valve1", np.float64), ("ashp_turn_chilled_valve2", np.float64),
+                     ("ashp_turn_chilled_valve3", np.float64), ("ashp_turn_chilled_valve4", np.float64)]
     # 总输入
     air_source_heat_pump_input = main_equipment_turn + main_equipment_Teo_set + chilled_pump + chilled_valve
     # 返回结构
@@ -124,15 +124,15 @@ def cold_storage_input_type():
 
     """
     # 冷冻水泵，转速，0到50
-    chilled_pump = [("storage_f_chilled_pump1", np.float_), ("storage_f_chilled_pump2", np.float_),
-                    ("storage_f_chilled_pump3", np.float_), ("storage_f_chilled_pump4", np.float_)]
+    chilled_pump = [("storage_f_chilled_pump1", np.float64), ("storage_f_chilled_pump2", np.float64),
+                    ("storage_f_chilled_pump3", np.float64), ("storage_f_chilled_pump4", np.float64)]
     # 阀门列表：先是蓄冷阀门，然后是放冷阀门
     # 从冷水机蓄冷阀门，开度比，0到1
-    chiller_valve = [("storage_turn_chilled_valve1", np.float_), ("storage_turn_chilled_valve2", np.float_),
-                     ("storage_turn_chilled_valve3", np.float_)]
+    chiller_valve = [("storage_turn_chilled_valve1", np.float64), ("storage_turn_chilled_valve2", np.float64),
+                     ("storage_turn_chilled_valve3", np.float64)]
     # 向用户侧供冷阀门，开度比，0到1
-    user_valve = [("storage_turn_chilled_valve4", np.float_), ("storage_turn_chilled_valve5", np.float_),
-                  ("storage_turn_chilled_valve6", np.float_)]
+    user_valve = [("storage_turn_chilled_valve4", np.float64), ("storage_turn_chilled_valve5", np.float64),
+                  ("storage_turn_chilled_valve6", np.float64)]
     # 总输入
     storage_input = chilled_pump + chiller_valve + user_valve
     # 返回结果
@@ -164,7 +164,7 @@ def user_load_input_type():
 
     """
     # 冷冻水泵，转速，0到50
-    chilled_pump = [("user_f_chilled_pump1", np.float_), ("user_f_chilled_pump2", np.float_)]
+    chilled_pump = [("user_f_chilled_pump1", np.float64), ("user_f_chilled_pump2", np.float64)]
     # 返回结果
     return chilled_pump
 
@@ -176,6 +176,6 @@ def simple_load_input_type():
 
     """
     # 负荷值(冷负荷：正值；热负荷：负值)，单位：W
-    Q_input = [("Q_input", np.float_)]
+    Q_input = [("Q_input", np.float64)]
     # 返回结果
     return Q_input
