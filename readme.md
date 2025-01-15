@@ -13,6 +13,7 @@
 - 本程序可以在Windows系统运行
 - 系统要求: Windows 10 OR 11 64位
 - Python版本要求: 3.12
+- 依赖的Python库: numpy,scipy,matplotlib,control,fmpy,sympy,pandas,loguru,setuptools,flask,requests
 ## 3. 综合能源系统介绍
 ### 3.1 包括的设备类型
 - 电空调: 冷水机、空气源热泵；
@@ -46,6 +47,7 @@
 - This program can run on Windows system
 - System requirements: Windows 10 OR 11 64-bit
 - Python version: 3.12
+- Required Python library: numpy,scipy,matplotlib,control,fmpy,sympy,pandas,loguru,setuptools,flask,requests
 ## 3. Introduction to Integrated Energy Systems
 ### 3.1 Types of Equipment Included
 - Electric air conditioners: water chillers, air source heat pumps;
