@@ -15,7 +15,7 @@ def main_input_data_default(load_mode=0):
     """
     model_input = environment_input_data_default(load_mode) + chiller_input_data_default() + \
                   air_source_heat_pump_input_data_default() + cold_storage_input_data_default() + \
-                  tower_chilled_input_data_default() + load_input_data_default(load_mode)
+                  load_input_data_default(load_mode)
     return model_input
 
 
@@ -60,13 +60,11 @@ def chiller_input_data_default():
     cooling_valve = [0, 0, 0, 0, 0, 0]
     # 冷却塔阀门
     tower_valve = [0, 0, 0, 0, 0, 0]
-    # 冷却塔直接供冷阀门
-    tower_chilled_valve = [0, 0]
     # 向用户侧供冷阀门
     user_valve = [0, 0]
     # 总输入
     chiller_input = main_equipment + chilled_pump + cooling_pump + cooling_tower + \
-                    chilled_valve + cooling_valve + tower_valve + tower_chilled_valve + user_valve
+                    chilled_valve + cooling_valve + tower_valve + user_valve
     # 返回结构
     return chiller_input
 
@@ -108,19 +106,6 @@ def cold_storage_input_data_default():
     storage_input = chilled_pump + chiller_valve + user_valve
     # 返回结果
     return storage_input
-
-
-def tower_chilled_input_data_default():
-    """
-    冷却塔直接供冷模型输入，数值
-
-    Returns:
-
-    """
-    # 冷冻水泵
-    chilled_pump = [0, 0, 0, 0]
-    # 返回结果
-    return chilled_pump
 
 
 def load_input_data_default(load_mode):

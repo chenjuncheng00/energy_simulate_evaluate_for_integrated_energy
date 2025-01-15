@@ -1,5 +1,5 @@
 import time, traceback, numpy as np
-from algorithm_code import *
+from algorithm_win import read_cfg_data, write_txt_data, simulate_sample
 
 def main_identify_equipment_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval,
                                            time_out, tolerance, cfg_path_equipment, chiller_big_cop_result_txt_path,
@@ -208,7 +208,7 @@ def identify_chiller_big_cop(Teo_set_list, Tci_list, chiller1_Few_list, chiller1
                             time1 = time.time()
                             result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
                                                      model_input_data, model_input_type, model_output_name,
-                                                     output_interval, time_out, tolerance, False, False)
+                                                     output_interval, {}, time_out, tolerance, False, False)
                             # 获取仿真结果
                             P_chiller = result["P_chiller_big"][-1] # W
                             Teo_real = result["Teo_chiller_big"][-1] # K
@@ -315,7 +315,7 @@ def identify_chiller_small_cop(Teo_set_list, Tci_list, chiller2_Few_list, chille
                             time1 = time.time()
                             result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
                                                      model_input_data, model_input_type, model_output_name,
-                                                     output_interval, time_out, tolerance, False, False)
+                                                     output_interval, {}, time_out, tolerance, False, False)
                             # 获取仿真结果
                             P_chiller = result["P_chiller_small"][-1]  # W
                             Teo_real = result["Teo_chiller_small"][-1]  # K
@@ -422,7 +422,7 @@ def identify_ashp_cop(Teo_set_list, Tci_list, ashp_Few_list, ashp_Fca_list, ashp
                             time1 = time.time()
                             result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
                                                      model_input_data, model_input_type, model_output_name,
-                                                     output_interval, time_out, tolerance, False, False)
+                                                     output_interval, {}, time_out, tolerance, False, False)
                             # 获取仿真结果
                             P_ashp = result["P_ashp"][-1]  # W
                             Teo_real = result["Teo_ashp"][-1]  # K
@@ -519,7 +519,7 @@ def identify_cooling_tower_approach(Two_list, cooling_tower_Fcw_list, cooling_to
                         time1 = time.time()
                         result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time,
                                                  model_input_data, model_input_type, model_output_name,
-                                                 output_interval, time_out, tolerance, False, False)
+                                                 output_interval, {}, time_out, tolerance, False, False)
                         # 获取仿真结果
                         tower_Tout = result["tower_Tout"][-1]
                         Tcd = Tin - tower_Tout

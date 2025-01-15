@@ -1,5 +1,5 @@
 import pickle
-from algorithm_code import *
+from algorithm_win import write_txt_data, algorithm_common_universal
 
 def run_compare(txt_path, Q_total):
     """
@@ -50,7 +50,7 @@ def run_compare(txt_path, Q_total):
                                chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
 if __name__ == "__main__":
-    txt_path = "./file_opt"
+    txt_path = "./algorithm_file"
     Q_total = 5495
     for i in range(10):
         run_compare(txt_path, Q_total)

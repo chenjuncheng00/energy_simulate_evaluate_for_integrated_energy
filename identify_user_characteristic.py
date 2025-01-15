@@ -1,5 +1,5 @@
 import numpy as np
-from algorithm_code import *
+from algorithm_win import simulate_sample, write_txt_data
 
 def identify_user_characteristic(fmu_unzipdir, fmu_description, start_time, stop_time, output_interval, time_out,
                                  tolerance, Teo_min, Teo_max, Tdi_target):
@@ -41,7 +41,7 @@ def identify_user_characteristic(fmu_unzipdir, fmu_description, start_time, stop
         print("用户末端模型特性辨识，正在进行辨识的冷冻水出水温度为：" + str(Teo))
         input_data_list = [start_time, Teo, Tdi_target]
         result = simulate_sample(fmu_unzipdir, fmu_description, None, start_time, stop_time, input_data_list,
-                                 input_type_list, output_name_list, output_interval, time_out, tolerance,
+                                 input_type_list, output_name_list, output_interval, {}, time_out, tolerance,
                                  False, False)
         Few_list = list(result["user.Few"])[start_index:]
         Tdi_list = list(result["Tdi"])[start_index:]
