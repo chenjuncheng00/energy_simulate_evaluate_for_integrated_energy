@@ -3,9 +3,10 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 from fmpy import *
-from GPC_universal import *
-from algorithm_code import *
-from air_conditioner_dynamic import *
+from algorithm_win import (get_fmu_input_name, write_log_data, write_txt_data, clear_all_txt_data,
+                           main_simulate_pause_single, calculate_membership, feedback_correction_initialize,
+                           feedback_correction_kc, smgpc, mmgpc, mmgpc_bayes, mmgpc_ms, mmgpc_itae,
+                           estimate_transfer_function)
 from run_tuning_dynamics_model import tuning_mmgpc, tuning_smgpc
 from model_simplified_chiller import (model_input_type, model_dynamics_simplified_chiller,
                                       plant_dynamics_simplified_chiller)
@@ -177,7 +178,7 @@ def run_simplified_chiller(Q_total_list, Q_index, txt_path, file_fmu, run_mode):
     # FMU模型输出名称
     file_fmu_input_output_name = txt_path + "/process_data/fmu_input_output_name.pkl"
     with open(file_fmu_input_output_name, "wb") as f:
-        pickle.dump(fmu_input_output_name, f)
+        pickle.dump(fmu_input_output_name, f)  # type: ignore
     # 仿真结果
     file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
     file_fmu_result_last = "./model_data/simulate_log/fmu_result_last.log"
@@ -968,7 +969,7 @@ def tuning_dynamics_simplified_chiller(tuning_set):
 
 if __name__ == "__main__":
     # 运行 OR 系统辨识
-    txt_path = "./file_opt"
+    txt_path = "./algorithm_file"
     file_fmu = "./model_data/file_fmu/simplified_chiller_model_Cvode.fmu"
     run_mode = "simulate"
     # Q_total_list = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800,
@@ -983,7 +984,7 @@ if __name__ == "__main__":
     # tuning_set = "smgpc"
     # tuning_dynamics_simplified_chiller(tuning_set)
     # # 模型间隙度计算
-    # from gap_metric import *
+    # from algorithm_win import calculate_gap_metric
     # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/gap_metric"
     # model_list = model_dynamics_simplified_chiller()[1]
     # # model_list = plant_dynamics_simplified_chiller()[1]

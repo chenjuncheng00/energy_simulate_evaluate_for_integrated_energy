@@ -19,13 +19,11 @@ def main_model_input_type(load_mode=0):
     air_source_heat_pump_input = air_source_heat_pump_input_type()[0]
     # 蓄冷水罐模型
     storage_input = cold_storage_input_type()[0]
-    # 冷却塔直接供冷模型
-    tower_chilled_input = tower_chilled_input_type()
     # 用户负荷模型
     load_input = load_input_type(load_mode)
     # 模型总输入
     model_input = time_input + environment_input + chiller_input + air_source_heat_pump_input + storage_input + \
-                  tower_chilled_input + load_input
+                  load_input
     # 返回结果
     return model_input
 
@@ -85,17 +83,14 @@ def chiller_input_type():
     tower_valve = [("chiller_turn_tower_valve1", np.float_), ("chiller_turn_tower_valve2", np.float_),
                    ("chiller_turn_tower_valve3", np.float_), ("chiller_turn_tower_valve4", np.float_),
                    ("chiller_turn_tower_valve5", np.float_), ("chiller_turn_tower_valve6", np.float_)]
-    # 冷却塔直接供冷阀门，开度比，0到1
-    tower_chilled_valve = [("chiller_turn_tower_chilled_valve1", np.float_),
-                           ("chiller_turn_tower_chilled_valve2", np.float_)]
     # 向用户侧供冷阀门，开度比，0到1
     user_valve = [("chiller_turn_user_valve1", np.float_), ("chiller_turn_user_valve2", np.float_)]
     # 总输入
     chiller_input = main_equipment_turn + main_equipment_Teo_set + chilled_pump + cooling_pump + cooling_tower + \
-                    chilled_valve + cooling_valve + tower_valve + tower_chilled_valve + user_valve
+                    chilled_valve + cooling_valve + tower_valve + user_valve
     # 返回结构
     return chiller_input, main_equipment_turn, main_equipment_Teo_set, chilled_pump, cooling_pump, cooling_tower, \
-           chilled_valve, cooling_valve, tower_valve, tower_chilled_valve, user_valve
+           chilled_valve, cooling_valve, tower_valve, user_valve
 
 
 def air_source_heat_pump_input_type():
@@ -142,20 +137,6 @@ def cold_storage_input_type():
     storage_input = chilled_pump + chiller_valve + user_valve
     # 返回结果
     return storage_input, chilled_pump, chiller_valve, user_valve
-
-
-def tower_chilled_input_type():
-    """
-    冷却塔直接供冷模型输入，名称和数据类型
-
-    Returns:
-
-    """
-    # 冷冻水泵，转速，0到50
-    chilled_pump = [("tower_chilled_f_chilled_pump1", np.float_), ("tower_chilled_f_chilled_pump2", np.float_),
-                    ("tower_chilled_f_chilled_pump3", np.float_), ("tower_chilled_f_chilled_pump4", np.float_)]
-    # 返回结果
-    return chilled_pump
 
 
 def load_input_type(load_mode):

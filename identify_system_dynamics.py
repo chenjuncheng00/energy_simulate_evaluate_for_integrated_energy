@@ -2,8 +2,9 @@ import traceback
 import pickle
 import matplotlib.pyplot as plt
 from fmpy import *
-from air_conditioner_dynamic import *
-from algorithm_code import *
+from algorithm_win import (algorithm_common_universal, write_txt_data, write_log_data, clear_all_txt_data,
+                           main_simulate_pause_single, main_optimization_common_universal, main_optimization_water_pump,
+                           estimate_transfer_function)
 from run_initialize import run_initialize
 from model_fmu_output_name import main_model_output_name
 from model_fmu_input_name import main_model_input_name
@@ -216,7 +217,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 run_initialize(txt_path)
                 # 生成FMU输出名称文件
                 with open(file_fmu_input_output_name, "wb") as f:
-                    pickle.dump(fmu_input_output_name, f)
+                    pickle.dump(fmu_input_output_name, f)  # type: ignore
                 # 仿真结果
                 txt_str = "start_time" + "\t" + "pause_time"
                 for k in range(len(fmu_input_output_name)):
@@ -255,7 +256,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                                                                  chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                                  n_chiller_list, n_chiller_chilled_pump_list, [],
                                                                  n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                                 chiller_system_type_path, cfg_path_public)
+                                                                 chiller_system_type_path, cfg_path_public, cfg_path_equipment)
                 chilled_valve_open = ans_chiller[0]
                 cooling_valve_open = ans_chiller[1]
                 tower_valve_open = ans_chiller[2]
@@ -269,7 +270,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                                            [n0_chiller1, n0_chiller2], [n0_chiller_chilled_pump1, n0_chiller_chilled_pump2], 
                                            [], [n0_chiller_cooling_pump1, n0_chiller_cooling_pump2],
                                            [n0_chiller_cooling_tower], chiller_system_type_path, n_calculate_hour,
-                                           n_chiller_user_valve, cfg_path_equipment, cfg_path_public)
+                                           cfg_path_equipment, cfg_path_public)
                 # 第5步：系统仿真24小时，确保系统稳定，并获取数据
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在持续仿真，确保系统稳定!")
                 # 修改采样时间
@@ -653,7 +654,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 run_initialize(txt_path)
                 # 生成FMU输出名称文件
                 with open(file_fmu_input_output_name, "wb") as f:
-                    pickle.dump(fmu_input_output_name, f)
+                    pickle.dump(fmu_input_output_name, f)  # type: ignore
                 # 仿真结果
                 txt_str = "start_time" + "\t" + "pause_time"
                 for k in range(len(fmu_input_output_name)):
@@ -694,7 +695,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                                                                  chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                                  n_chiller_list, n_chiller_chilled_pump_list, [],
                                                                  n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                                 chiller_system_type_path, cfg_path_public)
+                                                                 chiller_system_type_path, cfg_path_public, cfg_path_equipment)
                 chiller_chilled_valve_open = ans_chiller[0]
                 chiller_cooling_valve_open = ans_chiller[1]
                 chiller_tower_valve_open = ans_chiller[2]
@@ -708,7 +709,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 ans_ashp = main_optimization_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump],
                                                              [ashp_chilled_pump], [], [], [], [n0_air_source_heat_pump],
                                                              [n0_ashp_chilled_pump], [], [], [], ashp_system_type_path,
-                                                             cfg_path_public)
+                                                             cfg_path_public, cfg_path_equipment)
                 ashp_chilled_valve_open = ans_ashp[0]
                 # 第3-3步：冷水机优化和控制...
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
@@ -721,14 +722,14 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                                            [n0_chiller_chilled_pump1, n0_chiller_chilled_pump2],
                                            [], [n0_chiller_cooling_pump1, n0_chiller_cooling_pump2],
                                            [n0_chiller_cooling_tower], chiller_system_type_path, n_calculate_hour,
-                                           n_chiller_user_valve, cfg_path_equipment, cfg_path_public)
+                                           cfg_path_equipment, cfg_path_public)
                 # 第3-4步：空气源热泵优化和控制...
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化空气源热泵系统并进行控制命令下发!")
                 write_txt_data(file_Q_value_ashp, [ashp_Q_total])
                 algorithm_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
                                            [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [],
-                                           [], [], ashp_system_type_path, n_calculate_hour, 0, cfg_path_equipment,
+                                           [], [], ashp_system_type_path, n_calculate_hour, cfg_path_equipment,
                                            cfg_path_public)
                 # 第4步：系统仿真24小时，确保系统稳定，并获取数据
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在持续仿真，确保系统稳定!")
