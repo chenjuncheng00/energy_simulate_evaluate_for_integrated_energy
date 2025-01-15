@@ -208,16 +208,16 @@ if __name__ == "__main__":
     # 设置优化目标
     fit_target = 2
     # 储存结果的文件路径
-    path_result_root = "./model_data/file_identify/result_system_dynamics"
+    path_result_root = "./model_file/file_identify/result_system_dynamics"
     path_result_smgpc = path_result_root + "/result_tuning_smgpc.txt"
     path_result_mmgpc = path_result_root + "/result_tuning_mmgpc.txt"
     # 情况txt内容
     clear_all_txt_data(path_result_root)
     # 将初始化的控制器参数数据保存下来的路径
     if model_mode == 0:
-        file_path_init = "./model_data/GPC_data/complex_chiller"
+        file_path_init = "./model_file/file_GPC/complex_chiller"
     elif model_mode == 1:
-        file_path_init = "./model_data/GPC_data/chiller_ashp"
+        file_path_init = "./model_file/file_GPC/chiller_ashp"
     else:
         file_path_init = ""
     # smgpc整定
