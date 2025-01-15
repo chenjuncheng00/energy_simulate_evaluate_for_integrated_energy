@@ -16,13 +16,10 @@ def main_model_output_name(load_mode=0):
     air_source_heat_pump_output = air_source_heat_pump_output_name()[0]
     # 蓄冷水罐模型
     storage_output = cold_storage_output_name()[0]
-    # 冷却塔直接供冷模型
-    tower_chilled_output = tower_chilled_output_name()[0]
     # 用户侧模型
     load_output = load_output_name(load_mode)
     # 总输出
-    model_output = environment_output + chiller_output + air_source_heat_pump_output + storage_output + \
-                   tower_chilled_output + load_output
+    model_output = environment_output + chiller_output + air_source_heat_pump_output + storage_output + load_output
     # 返回结果
     return model_output
 
@@ -180,28 +177,6 @@ def cold_storage_output_name():
     return storage_output, Q, P, Few, Te, H_pump, storage_pump_P
 
 
-def tower_chilled_output_name():
-    """
-    冷却塔直接供冷模型输出，名称
-
-    Returns:
-
-    """
-    # 耗电功率，单位：kW
-    P = ["tower_chilled_P_total_chilled_pump"]
-    # 冷冻水流量，单位：t/h
-    Few = ["tower_chilled_Few_total"]
-    # 水泵扬程，单位：m
-    H_pump = ["tower_chilled_H_chilled_pump"]
-    # 单台设备的电功率，单位：W
-    chilled_pump_P = ["tower_chilled_model.tower_chilled_pump1.P", "tower_chilled_model.tower_chilled_pump2.P",
-                      "tower_chilled_model.tower_chilled_pump3.P", "tower_chilled_model.tower_chilled_pump4.P"]
-    # 总输出
-    tower_chilled_output = P + Few + H_pump + chilled_pump_P
-    # 返回结果
-    return tower_chilled_output, P, Few, H_pump, chilled_pump_P
-
-
 def load_output_name(load_mode):
     """
 
@@ -231,7 +206,7 @@ def user_load_output_name():
     # 室内相对湿度，单位：1
     room_H = ["user_Hri_room1", "user_Hri_room2", "user_Hri_room3", "user_Hri_room4"]
     # 制冷功率，单位：kW
-    Q = ["user_Q_total", "user_Q_chiller", "user_Q_ashp", "user_Q_storage", "user_Q_tower_chilled"]
+    Q = ["user_Q_total", "user_Q_chiller", "user_Q_ashp", "user_Q_storage"]
     # 耗电功率，单位：kW
     P = ["user_P_total_chilled_pump"]
     # 冷冻水流量，单位：t/h
@@ -253,7 +228,7 @@ def simple_load_output_name():
 
     """
     # 制冷功率，单位：kW
-    Q = ["user_Q_total", "user_Q_chiller", "user_Q_ashp", "user_Q_storage", "user_Q_tower_chilled"]
+    Q = ["user_Q_total", "user_Q_chiller", "user_Q_ashp", "user_Q_storage"]
     # 冷冻水流量，单位：t/h
     Few = ["user_Few_total"]
     # 冷冻水温度，单位：℃

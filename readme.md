@@ -10,10 +10,9 @@
 - 动态控制算法为广义预测控制算法；
 - 验证和评估算法的优化控制效果；
 ## 2. 代码说明
-- 本程序无法直接运行，因为依赖的私有算法包不包括在内；
-- algorithm_code: 主要的空调系统优化控制算法包，闭源；
-- air_conditioner_dynamic: 空调系统动态特性辨识算法包，闭源；
-- GPC_universal: 广义预测控制(GPC, MPC)算法包，闭源；
+- 本程序可以在Windows系统运行
+- 系统要求: Windows 10 OR 11 64位
+- Python版本要求: 3.12
 ## 3. 综合能源系统介绍
 ### 3.1 包括的设备类型
 - 电空调: 冷水机、空气源热泵；
@@ -29,10 +28,7 @@
 - 冷却塔: 开启、关闭、频率设定值；
 - 阀门: 开启、关闭；
 ## 4. 其它说明
-- 本代码已不再更新或者维护；
 - 本代码对应的研究成果有专门的PPT说明，如有兴趣可与我联系；
-- 本代码用到的3个私有算法包不会开源，但如有兴趣交流技术思路，可与我联系；
-- 我的电子邮箱：chenjuncheng00@qq.com；
 
 
 # Documentation for the Integrated Energy Simulation and Evaluation Program
@@ -47,10 +43,9 @@
 - The dynamic control algorithm is the universal predictive control algorithm;
 - Verifying and evaluating the optimization control effect of the algorithm;
 ## 2. Code Explanation
-- This program cannot be run directly, as the private algorithm packages it depends on are not included;
-- algorithm_code: The main air conditioning system optimization control algorithm package, closed-source;
-- air_conditioner_dynamic: The algorithm package for dynamic characteristic identification of the air conditioning system, closed-source;
-- GPC_universal: The universal predictive control(GPC, MPC) algorithm package, closed-source;
+- This program can run on Windows system
+- System requirements: Windows 10 OR 11 64-bit
+- Python version: 3.12
 ## 3. Introduction to Integrated Energy Systems
 ### 3.1 Types of Equipment Included
 - Electric air conditioners: water chillers, air source heat pumps;
@@ -66,7 +61,4 @@
 - Cooling Tower: Start/Stop, Setpoint for Frequency;
 - Valves: Open/Close;
 ## 4. Other Information
-- This code is no longer updated or maintained;
 - There is a specific PPT to explain the research results corresponding to this code, and you can contact me if you are interested;
-- The three private algorithm packages used in this code will not be open-sourced, but you can contact me if you are interested in exchanging technical ideas.
-- My email address: chenjuncheng00@qq.com;

@@ -1,7 +1,9 @@
 import pickle
 import numpy as np
 from fmpy import *
-from algorithm_code import *
+from algorithm_win import (read_cfg_data, read_txt_data, write_txt_data, write_log_data, main_simulate_pause_single,
+                           algorithm_common_universal, algorithm_chilled_pump, algorithm_energy_storage_equipment,
+                           algorithm_Teo_set_user, main_optimization_common_universal, main_optimization_energy_storage_equipment)
 from model_fmu_output_name import main_model_output_name
 from model_fmu_input_name import main_model_input_name
 from model_fmu_input_type import load_input_type
@@ -13,7 +15,7 @@ from get_fmu_real_data import main_get_fmu_real_data
 def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     """
     测试稳态点优化搜索算法
-    综合系统：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+负荷(简单负荷 OR 复杂负荷)
+    综合系统：冷水机+空气源热泵+蓄冷水罐+负荷(简单负荷 OR 复杂负荷)
     Args:
         txt_path: [string]，相对路径
         file_fmu: [string]，FMU模型文件
@@ -26,14 +28,12 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     chiller_system_type_path = ["chiller", txt_path]
     ashp_system_type_path = ["air_source_heat_pump", txt_path]
     storage_system_type_path = ["energy_storage_equipment", txt_path]
-    # tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     # 重置所有内容
     run_initialize(txt_path)
 
     # Q_total储存文件
     file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
     file_Q_value_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
-    # file_Q_value_tower_chilled = txt_path + "/real_value/tower_chilled/Q_value/chilled_main_pipe.txt"
 
     # cfg文件路径
     cfg_path_equipment = txt_path + "/config/equipment_config.cfg"
@@ -42,7 +42,6 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     file_pkl_chiller = "./model_data/file_equipment/chiller.pkl"
     file_pkl_ashp = "./model_data/file_equipment/ashp.pkl"
     file_pkl_stroage = "./model_data/file_equipment/storage.pkl"
-    # file_pkl_tower_chilled = "./model_data/file_equipment/tower_chilled.pkl"
     file_pkl_system = "./model_data/file_equipment/system.pkl"
 
     # 读取冷水机设备信息
@@ -87,10 +86,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     energy_storage_equipment = storage_dict["energy_storage_equipment"]
     chilled_pump_to_user = storage_dict["chilled_pump_to_user"]
     chilled_pump_in_storage = storage_dict["chilled_pump_in_storage"]
-    n_chilled_valve_in_storage = storage_dict["n_chilled_valve_in_storage"]
-    n_chilled_valve_to_user = storage_dict["n_chilled_valve_to_user"]
     n_storage_chilled_pump = storage_dict["n_storage_chilled_pump"]
-    n_chilled_valve_storage = n_chilled_valve_in_storage + n_chilled_valve_to_user
     # 读取公共系统信息
     with open(file_pkl_system, "rb") as f_obj:
         system_dict = pickle.load(f_obj)
@@ -130,7 +126,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     fmu_input_name = main_model_input_name(load_mode)
     fmu_input_output_name = fmu_output_name + fmu_input_name
     with open(file_fmu_input_output_name, "wb") as f:
-        pickle.dump(fmu_input_output_name, f)
+        pickle.dump(fmu_input_output_name, f)  # type: ignore
     # 各系统制冷功率最大值
     chiller_Q0_max = 14000
     ashp_Q0_max = 3600
@@ -177,7 +173,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
         print(input_log_1)
         Q_user_list = generate_Q_list(file_fmu_time, start_time, Q_time_all_list, Q_user_all_list, n_calculate_hour)
         ans_ese = main_optimization_energy_storage_equipment(storage_system_type_path, Q_user_list, time_name_list,
-                                                             Q0_total_in, Q0_total_out, energy_storage_equipment)
+                                                             Q0_total_in, Q0_total_out, energy_storage_equipment, 0)
         Q_out_ese = ans_ese[0]
         Q_total = Q_user - Q_out_ese  # 计算Q_total
         print("蓄冷水罐冷负荷功率：" + str(Q_out_ese))
@@ -245,9 +241,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
                                                energy_storage_equipment, [chilled_pump_to_user],
                                                [chilled_pump_in_storage], [], chiller_storage_chilled_valve_open,
                                                H_chilled_pump_to_user, H_chilled_pump_in_storage, 0,
-                                               [n_storage_chilled_pump], [], n_chilled_valve_storage,
-                                               storage_system_type_path, n_calculate_hour, cfg_path_equipment,
-                                               cfg_path_public)
+                                               [n_storage_chilled_pump], [], storage_system_type_path,
+                                               n_calculate_hour, cfg_path_equipment, cfg_path_public)
             # 第2-6步：用向用户侧供冷功率，空气源热泵优化和控制
             input_log_2_6 = "第2-6步：用向用户侧供冷功率，空气源热泵优化和控制..."
             print(input_log_2_6)
@@ -285,8 +280,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
                                                energy_storage_equipment, [chilled_pump_to_user],
                                                [chilled_pump_in_storage], [], 1, H_chilled_pump_to_user,
                                                H_chilled_pump_in_storage, 0, [n_storage_chilled_pump], [],
-                                               n_chilled_valve_storage, storage_system_type_path, n_calculate_hour,
-                                               cfg_path_equipment, cfg_path_public)
+                                               storage_system_type_path, n_calculate_hour, cfg_path_equipment,
+                                               cfg_path_public)
 
             # 第2-3步：用向用户侧供冷供冷，冷水机优化和控制
             input_log_2_3 = "第2-3步：用向用户侧供冷供冷，冷水机优化和控制..."
@@ -320,8 +315,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             algorithm_energy_storage_equipment(Q_user_list, time_name_list, Q0_total_in, Q0_total_out,
                                                energy_storage_equipment, [chilled_pump_to_user],
                                                [chilled_pump_in_storage], [], 1, 0, 0, 0, [n_storage_chilled_pump],
-                                               [], n_chilled_valve_storage, storage_system_type_path, n_calculate_hour,
-                                               cfg_path_equipment, cfg_path_public)
+                                               [], storage_system_type_path, n_calculate_hour, cfg_path_equipment,
+                                               cfg_path_public)
 
             # 第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程
             input_log_2_2 = "第2-2步：用向用户侧供冷功率优化一次冷水机计算，不进行控制，用于获取冷冻水泵扬程..."
@@ -389,8 +384,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             print(input_log_5)
             write_log_data(file_fmu_input_log, [input_log_5], "info")
             write_log_data(file_fmu_input_feedback_log, [input_log_5], "info")
-            algorithm_Teo_set_user(chiller_system_type_path, n_calculate_hour, n_chiller_list)
-            algorithm_Teo_set_user(ashp_system_type_path, n_calculate_hour, n0_air_source_heat_pump)
+            algorithm_Teo_set_user(chiller_system_type_path, n_calculate_hour, chiller_list, n_chiller_list, [0, 1])
+            algorithm_Teo_set_user(ashp_system_type_path, n_calculate_hour, [air_source_heat_pump], n0_air_source_heat_pump, [0, 1])
         else:
             input_log_5 = "第5步：修正Teo，PASS..."
             print(input_log_5)
@@ -407,7 +402,7 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
 
 if __name__ == "__main__":
     # 相对路径
-    txt_path = "./file_opt"
+    txt_path = "./algorithm_file"
     # 负荷模型类型选择：0：user_load；1：simple_load
     load_mode = 0
     # 确定FMU模型文件

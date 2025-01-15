@@ -1,15 +1,15 @@
-from algorithm_code import *
+from algorithm_win import write_txt_data, main_simulate_pause_single
 from model_fmu_input_type import main_model_input_type
-from model_fmu_input_data_default import air_source_heat_pump_input_data_default, load_input_data_default, \
-                                         tower_chilled_input_data_default, environment_input_data_default, \
-                                         cold_storage_input_data_default, main_input_data_default
+from model_fmu_input_data_default import (air_source_heat_pump_input_data_default, load_input_data_default,
+                                          environment_input_data_default, cold_storage_input_data_default,
+                                          main_input_data_default)
 
 def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval,
                                  time_out, tolerance, load_mode, txt_path):
     """
     integrated_air_conditioning.fmu"
     integrated_air_conditioning_simple_load.fmu"
-    初始化完整模型：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+负荷(简单负荷 OR 复杂负荷)
+    初始化完整模型：冷水机+空气源热泵+蓄冷水+负荷(简单负荷 OR 复杂负荷)
     Args:
         file_fmu_time: [string]，储存FMU模型仿真时间(start_time)的文件路径
         file_fmu_state: [string]，储存FMU模型状态的文件路径
@@ -41,10 +41,8 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     chiller_pump = [0, 0, 0, 0, 0, 0, 50, 50, 50, 50, 50, 50]
     chiller_tower = [1, 1, 1, 1, 1, 1]
     chiller_valve = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    chiller_tower_chilled_valve = [0, 0]
     chiller_user_valve = [0, 0]
-    chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_valve + \
-                         chiller_tower_chilled_valve + chiller_user_valve
+    chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_valve + chiller_user_valve
     # 蓄冷水罐模型输入数据
     storage_pump = [50, 50, 50, 50]
     storage_chiller_valve = [1, 1, 1]
@@ -54,7 +52,7 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     input_type_list = main_model_input_type(load_mode)
     input_data_list = [start_time] + environment_input_data_default(load_mode) + chiller_input_data + \
                       air_source_heat_pump_input_data_default() + storage_input_data + \
-                      tower_chilled_input_data_default() + load_input_data_default(load_mode)
+                      load_input_data_default(load_mode)
     # FMU仿真
     main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path, add_input=False)
 
@@ -74,10 +72,8 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     chiller_pump = [50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50]
     chiller_tower = [1, 1, 1, 1, 1, 1]
     chiller_valve = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-    chiller_tower_chilled_valve = [0, 0]
     chiller_user_valve = [1, 1]
-    chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_valve + \
-                         chiller_tower_chilled_valve + chiller_user_valve
+    chiller_input_data = chiller_turn_Teo + chiller_pump + chiller_tower + chiller_valve + chiller_user_valve
     # 空气源热泵模型输入数据
     ashp_turn_Teo = [True, True, True, True, 7]
     ashp_pump = [50, 50, 50, 50]
@@ -86,8 +82,7 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     # FMU输入名称和数据类型
     input_type_list = main_model_input_type(load_mode)
     input_data_list = [t1_initialize] + environment_input_data_default(load_mode) + chiller_input_data + \
-                      ashp_input_data + cold_storage_input_data_default() + \
-                      tower_chilled_input_data_default() + load_input_data_default(load_mode)
+                      ashp_input_data + cold_storage_input_data_default() + load_input_data_default(load_mode)
     # FMU仿真
     main_simulate_pause_single(input_data_list, input_type_list, simulate_time2, txt_path, add_input=False)
 

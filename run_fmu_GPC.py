@@ -1,4 +1,4 @@
-from GPC_universal import *
+from algorithm_win import calculate_membership, smgpc, mmgpc
 from model_fmu_dynamics import model_dynamics_complex_chiller, model_dynamics_chiller_ashp
 
 if __name__ == "__main__":

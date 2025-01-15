@@ -1,7 +1,10 @@
 import pickle
-import tensorflow as tf
 from fmpy import *
-from algorithm_code import *
+from keras.api.models import load_model
+from algorithm_win import (read_cfg_data, read_txt_data, write_txt_data, write_log_data, algorithm_common_universal,
+                           algorithm_dynamics, main_optimization_common_universal, main_simulate_pause_single,
+                           get_station_equipment_open_status_txt_path, get_environment_equipment_real_value_txt_path,
+                           initialize_user_Tei)
 from model_fmu_output_name import main_model_output_name
 from model_fmu_input_name import main_model_input_name
 from model_fmu_input_type import load_input_type
@@ -13,7 +16,7 @@ from get_fmu_real_data import main_get_fmu_real_data, get_Teo_set_real_data
 def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     """
     测试GPC控制算法
-    综合系统：冷水机+空气源热泵+蓄冷水罐+冷却塔直接供冷+简单负荷
+    综合系统：冷水机+空气源热泵+蓄冷水罐+简单负荷
     Args:
         Q_total: [float]，冷负荷，列表，单位：kW
         txt_path: [string]，相对路径
@@ -30,13 +33,11 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     chiller_system_type_path = ["chiller", txt_path]
     ashp_system_type_path = ["air_source_heat_pump", txt_path]
     # storage_equipment_type_path = ["energy_storage_equipment", txt_path]
-    # tower_chilled_equipment_type_path = ["tower_chilled", txt_path]
     # 重置所有内容
     run_initialize(txt_path)
     # Q_total储存文件
     file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
     file_Q_value_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
-    # file_Q_value_tower_chilled = txt_path + "/real_value/tower_chilled/Q_value/chilled_main_pipe.txt"
 
     # 室外温湿度文件路径
     ans_environment_value_txt_path = get_environment_equipment_real_value_txt_path(txt_path)
@@ -108,7 +109,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
 
     # 加载user_Tei_model
     path_model = "./model_data/model_user_nn.h5"
-    user_model_nn = tf.keras.models.load_model(path_model)
+    user_model_nn = load_model(path_model)
 
     # 用于MMGPC控制器的列表
     H_chilled_pump_list = [H_chiller_chilled_pump, H_ashp_chilled_pump]
@@ -168,7 +169,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     fmu_input_name = main_model_input_name(load_mode)
     fmu_input_output_name = fmu_output_name + fmu_input_name
     with open(file_fmu_input_output_name, "wb") as f:
-        pickle.dump(fmu_input_output_name, f)
+        pickle.dump(fmu_input_output_name, f)  # type: ignore
 
     # 冷负荷总需求功率
     file_name_Q_list = "./model_data/file_Q/file_name_Q_list.txt"
@@ -370,7 +371,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
 
 
 if __name__ == "__main__":
-    txt_path = "./file_opt"
+    txt_path = "./algorithm_file"
     # simple_load使用的参数
     Q_total = 12000
     # 负荷模型类型选择：0：user_load；1：simple_load

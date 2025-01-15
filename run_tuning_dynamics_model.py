@@ -1,7 +1,6 @@
 import time
 import numpy as np
-from GPC_tuning import *
-from algorithm_code import *
+from algorithm_win import write_txt_data, clear_all_txt_data, single_model_gpc_tuning, multi_model_gpc_tuning
 from model_fmu_dynamics import model_dynamics_complex_chiller, model_dynamics_chiller_ashp
 
 def tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,

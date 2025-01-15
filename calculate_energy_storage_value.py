@@ -1,4 +1,4 @@
-from algorithm_code import *
+from algorithm_win import read_txt_data
 
 def generate_Q_list(file_fmu_time, start_time, Q_time_list, Q_user_list, n_calculate_hour):
     """

@@ -28,8 +28,6 @@ def run_identify_hydraulic_characteristic(fmu_path, load_mode):
     storage_from_chiller_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/storage_from_chiller.txt"
     storage_to_user_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/storage_to_user.txt"
     chiller_user_storage_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/chiller_user_storage.txt"
-    tower_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/tower_chilled.txt"
-    tower_cooling_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/tower_cooling_chilled.txt"
     full_open_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/full_open.txt"
     # 模型初始化
     fmu_unzipdir = extract(fmu_path)
@@ -40,7 +38,6 @@ def run_identify_hydraulic_characteristic(fmu_path, load_mode):
                                            chiller_chilled_result_txt_path, chiller_cooling_result_txt_path,
                                            ashp_chilled_result_txt_path, storage_from_chiller_result_txt_path,
                                            storage_to_user_result_txt_path, chiller_user_storage_result_txt_path,
-                                           tower_chilled_result_txt_path, tower_cooling_chilled_result_txt_path,
                                            full_open_result_txt_path, pump_f0_cal)
 
 
@@ -151,7 +148,7 @@ if __name__ == "__main__":
     # identify_mode = 1  # 0:仅冷水机；1:冷水机+空气源热泵
     # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
     # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
-    # txt_path = "./file_opt"
+    # txt_path = "./algorithm_file"
     # run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
     # 用户侧特性辨识
     fmu_path = "./model_data/file_fmu/user_characteristic_Cvode.fmu"
