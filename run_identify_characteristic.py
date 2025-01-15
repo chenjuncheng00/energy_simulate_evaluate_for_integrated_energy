@@ -22,13 +22,13 @@ def run_identify_hydraulic_characteristic(fmu_path, load_mode):
     n_cal_f_pump = 5
     pump_f0_cal = True
     cfg_path_equipment = "./opt_file/config/equipment_config.cfg"
-    chiller_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/chiller_chilled.txt"
-    chiller_cooling_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/chiller_cooling.txt"
-    ashp_chilled_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/ashp_chilled.txt"
-    storage_from_chiller_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/storage_from_chiller.txt"
-    storage_to_user_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/storage_to_user.txt"
-    chiller_user_storage_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/chiller_user_storage.txt"
-    full_open_result_txt_path = "./model_data/file_identify/result_hydraulic_characteristic/full_open.txt"
+    chiller_chilled_result_txt_path = "./model_file/file_identify/result_hydraulic_characteristic/chiller_chilled.txt"
+    chiller_cooling_result_txt_path = "./model_file/file_identify/result_hydraulic_characteristic/chiller_cooling.txt"
+    ashp_chilled_result_txt_path = "./model_file/file_identify/result_hydraulic_characteristic/ashp_chilled.txt"
+    storage_from_chiller_result_txt_path = "./model_file/file_identify/result_hydraulic_characteristic/storage_from_chiller.txt"
+    storage_to_user_result_txt_path = "./model_file/file_identify/result_hydraulic_characteristic/storage_to_user.txt"
+    chiller_user_storage_result_txt_path = "./model_file/file_identify/result_hydraulic_characteristic/chiller_user_storage.txt"
+    full_open_result_txt_path = "./model_file/file_identify/result_hydraulic_characteristic/full_open.txt"
     # 模型初始化
     fmu_unzipdir = extract(fmu_path)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -56,10 +56,10 @@ def run_equipment_characteristic(fmu_path):
     time_out = 600
     tolerance = 0.0001
     cfg_path_equipment = "./opt_file/config/equipment_config.cfg"
-    chiller_big_cop_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/chiller_big_cop.txt"
-    chiller_small_cop_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/chiller_small_cop.txt"
-    ashp_cop_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/ashp_cop.txt"
-    cooling_tower_approach_result_txt_path = "./model_data/file_identify/result_equipment_characteristic/cooling_tower_approach.txt"
+    chiller_big_cop_result_txt_path = "./model_file/file_identify/result_equipment_characteristic/chiller_big_cop.txt"
+    chiller_small_cop_result_txt_path = "./model_file/file_identify/result_equipment_characteristic/chiller_small_cop.txt"
+    ashp_cop_result_txt_path = "./model_file/file_identify/result_equipment_characteristic/ashp_cop.txt"
+    cooling_tower_approach_result_txt_path = "./model_file/file_identify/result_equipment_characteristic/cooling_tower_approach.txt"
     # 模型初始化
     fmu_unzipdir = extract(fmu_path)
     fmu_description = read_model_description(fmu_unzipdir)
@@ -139,17 +139,17 @@ def run_identify_user_characteristic(fmu_path):
 if __name__ == "__main__":
     # # 水力特性模型辨识
     # load_mode = 0
-    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
+    # fmu_path = "./model_file/file_fmu/integrated_air_conditioning_Cvode.fmu"
     # run_identify_hydraulic_characteristic(fmu_path, load_mode)
     # # 设备性能模型辨识
-    # fmu_path = "./model_data/file_fmu/equipment_characteristic_Cvode.fmu"
+    # fmu_path = "./model_file/file_fmu/equipment_characteristic_Cvode.fmu"
     # run_equipment_characteristic(fmu_path)
     # # 系统动态特性辨识
     # identify_mode = 1  # 0:仅冷水机；1:冷水机+空气源热泵
     # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
-    # fmu_path = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
+    # fmu_path = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
     # txt_path = "./algorithm_file"
     # run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
     # 用户侧特性辨识
-    fmu_path = "./model_data/file_fmu/user_characteristic_Cvode.fmu"
+    fmu_path = "./model_file/file_fmu/user_characteristic_Cvode.fmu"
     run_identify_user_characteristic(fmu_path)

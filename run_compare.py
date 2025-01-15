@@ -20,8 +20,8 @@ def run_compare(txt_path, Q_total):
     cfg_path_equipment = txt_path + "/config/equipment_config.cfg"
     cfg_path_public = txt_path + "/config/public_config.cfg"
     # 设备的pkl文件路径
-    file_pkl_chiller = "./model_data/file_equipment/chiller.pkl"
-    file_pkl_system = "./model_data/file_equipment/system.pkl"
+    file_pkl_chiller = "./model_file/file_equipment/chiller.pkl"
+    file_pkl_system = "./model_file/file_equipment/system.pkl"
 
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:

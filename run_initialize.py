@@ -66,12 +66,12 @@ def run_initialize(txt_path):
     write_txt_data(file_storage_E, [energy_storage_equipment_E0])
 
     # FMU仿真结果
-    path_fmu_result = "./model_data/simulate_log/"
+    path_fmu_result = "./model_file/simulate_log/"
     clear_all_txt_data(path_fmu_result)
     # 删除已有的.log文件
     delete_all_specified_file(path_fmu_result, ".log")
     # 冷负荷总需求功率
-    file_Q_total = "./model_data/file_Q/fmu_Q_user.txt"
+    file_Q_total = "./model_file/file_Q/fmu_Q_user.txt"
     write_txt_data(file_Q_total, [10000])
 
     # 系统初始化时，会将冷水机系统全开，但是其他系统全关

@@ -23,7 +23,7 @@ def identify_user_characteristic(fmu_unzipdir, fmu_description, start_time, stop
     # 储存结果的开始编号，第一天的数据不储存
     start_index = int(24 * 3600 / output_interval)
     # 储存最终结果的文件路径
-    path_result_txt = "./model_data/file_identify/result_user_characteristic/result_user_characteristic.txt"
+    path_result_txt = "./model_file/file_identify/result_user_characteristic/result_user_characteristic.txt"
     txt_str = ("冷冻水出水温度" + "\t" + "冷冻水流量" + "\t" + "室内干球温度" + "\t" + "室内相对湿度" + "\t" +
                "室外干球温度" + "\t" + "室外相对湿度" + "\t" + "制冷负荷" + "\t" + "冷冻水回水温度")
     result_list = [txt_str]

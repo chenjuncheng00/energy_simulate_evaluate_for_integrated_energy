@@ -50,10 +50,10 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     Hri_set = read_cfg_data(cfg_path_public, "计算目标设定值", "Hri_set", 0)
 
     # 设备的pkl文件路径
-    file_pkl_chiller = "./model_data/file_equipment/chiller.pkl"
-    file_pkl_ashp = "./model_data/file_equipment/ashp.pkl"
-    # file_pkl_stroage = "./model_data/file_equipment/storage.pkl"
-    file_pkl_system = "./model_data/file_equipment/system.pkl"
+    file_pkl_chiller = "./model_file/file_equipment/chiller.pkl"
+    file_pkl_ashp = "./model_file/file_equipment/ashp.pkl"
+    # file_pkl_stroage = "./model_file/file_equipment/storage.pkl"
+    file_pkl_system = "./model_file/file_equipment/system.pkl"
 
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:
@@ -104,11 +104,11 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
         system_dict = pickle.load(f_obj)
     n_calculate_hour = system_dict["n_calculate_hour"]
     # 日志文件
-    file_fmu_input_log = "./model_data/simulate_log/fmu_input_log.log"
-    file_fmu_input_feedback_log = "./model_data/simulate_log/fmu_input_feedback_log.log"
+    file_fmu_input_log = "./model_file/simulate_log/fmu_input_log.log"
+    file_fmu_input_feedback_log = "./model_file/simulate_log/fmu_input_feedback_log.log"
 
     # 加载user_Tei_model
-    path_model = "./model_data/model_user_nn.h5"
+    path_model = "./model_file/model_user_nn.h5"
     user_model_nn = load_model(path_model)
 
     # 用于MMGPC控制器的列表
@@ -172,23 +172,23 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
         pickle.dump(fmu_input_output_name, f)  # type: ignore
 
     # 冷负荷总需求功率
-    file_name_Q_list = "./model_data/file_Q/file_name_Q_list.txt"
+    file_name_Q_list = "./model_file/file_Q/file_name_Q_list.txt"
     if load_mode == 0:
-        file_Q_user_list = "./model_data/file_Q/fmu_Q_MixedAir_list.txt"
+        file_Q_user_list = "./model_file/file_Q/fmu_Q_MixedAir_list.txt"
     else:
-        file_Q_user_list = "./model_data/file_Q/fmu_Q_simple_constant.txt"
+        file_Q_user_list = "./model_file/file_Q/fmu_Q_simple_constant.txt"
         tmp_str1 = str(0) + "\t" + str(Q_total)
         tmp_str2 = str(365 * 24 * 3600) + "\t" + str(Q_total)
         write_txt_data(file_Q_user_list, [tmp_str1, tmp_str2])
     write_txt_data(file_name_Q_list, [file_Q_user_list])
     # Q_time_all_list = read_txt_data(file_Q_user_list, column_index=0)
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
-    file_Q_user = "./model_data/file_Q/fmu_Q_user.txt"
+    file_Q_user = "./model_file/file_Q/fmu_Q_user.txt"
     write_txt_data(file_Q_user, [Q_user_all_list[0]])
 
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
-    file_fmu_result_last = "./model_data/simulate_log/fmu_result_last.log"
+    file_fmu_result_all = "./model_file/simulate_log/fmu_result_all.log"
+    file_fmu_result_last = "./model_file/simulate_log/fmu_result_last.log"
     txt_str = "start_time" + "\t" + "pause_time"
     for i in range(len(fmu_input_output_name)):
         txt_str += "\t" + fmu_input_output_name[i]
@@ -289,9 +289,9 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     Nc_list = ans_model[5]
     # 将初始化的控制器参数数据保存下来的路径
     if model_mode == 0:
-        file_path_init = "./model_data/GPC_data/complex_chiller"
+        file_path_init = "./model_file/file_GPC/complex_chiller"
     elif model_mode == 1:
-        file_path_init = "./model_data/GPC_data/chiller_ashp"
+        file_path_init = "./model_file/file_GPC/chiller_ashp"
     else:
         file_path_init = ""
     file_Q_model_list = file_path_init + "/Q_model_list.txt"
@@ -378,7 +378,7 @@ if __name__ == "__main__":
     load_mode = 1
     # 确定FMU模型文件
     if load_mode == 0:
-        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Cvode.fmu"
+        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_Cvode.fmu"
     else:
-        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
+        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
     run_dynamics_control(Q_total, txt_path, file_fmu, load_mode)
