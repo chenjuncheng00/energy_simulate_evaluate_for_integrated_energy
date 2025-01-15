@@ -304,9 +304,9 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
 
 
 if __name__ == "__main__":
-    file_pkl_chiller = "./model_data/file_equipment/chiller.pkl"
-    file_pkl_ashp = "./model_data/file_equipment/ashp.pkl"
-    file_pkl_storage = "./model_data/file_equipment/storage.pkl"
-    file_pkl_system = "./model_data/file_equipment/system.pkl"
+    file_pkl_chiller = "./model_file/file_equipment/chiller.pkl"
+    file_pkl_ashp = "./model_file/file_equipment/ashp.pkl"
+    file_pkl_storage = "./model_file/file_equipment/storage.pkl"
+    file_pkl_system = "./model_file/file_equipment/system.pkl"
     cfg_path_equipment = "./algorithm_file/config/equipment_config.cfg"
     generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, file_pkl_system, cfg_path_equipment)

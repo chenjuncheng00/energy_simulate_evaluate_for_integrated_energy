@@ -39,10 +39,10 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     cfg_path_equipment = txt_path + "/config/equipment_config.cfg"
     cfg_path_public = txt_path + "/config/public_config.cfg"
     # 设备的pkl文件路径
-    file_pkl_chiller = "./model_data/file_equipment/chiller.pkl"
-    file_pkl_ashp = "./model_data/file_equipment/ashp.pkl"
-    file_pkl_stroage = "./model_data/file_equipment/storage.pkl"
-    file_pkl_system = "./model_data/file_equipment/system.pkl"
+    file_pkl_chiller = "./model_file/file_equipment/chiller.pkl"
+    file_pkl_ashp = "./model_file/file_equipment/ashp.pkl"
+    file_pkl_stroage = "./model_file/file_equipment/storage.pkl"
+    file_pkl_system = "./model_file/file_equipment/system.pkl"
 
     # 读取冷水机设备信息
     with open(file_pkl_chiller, "rb") as f_obj:
@@ -93,8 +93,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     n_calculate_hour = system_dict["n_calculate_hour"]
 
     # 日志文件
-    file_fmu_input_log = "./model_data/simulate_log/fmu_input_log.log"
-    file_fmu_input_feedback_log = "./model_data/simulate_log/fmu_input_feedback_log.log"
+    file_fmu_input_log = "./model_file/simulate_log/fmu_input_log.log"
+    file_fmu_input_feedback_log = "./model_file/simulate_log/fmu_input_feedback_log.log"
     # FMU仿真参数
     if load_mode == 0:
         start_time = (31 + 28 + 31 + 30 + 31 + 30) * 24 * 3600
@@ -133,19 +133,19 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     Q0_total_in = chiller_Q0_max
     Q0_total_out = chiller_Q0_max + ashp_Q0_max
     # 冷负荷总需求功率
-    file_name_Q_list = "./model_data/file_Q/file_name_Q_list.txt"
+    file_name_Q_list = "./model_file/file_Q/file_name_Q_list.txt"
     if load_mode == 0:
-        file_Q_user_list = "./model_data/file_Q/fmu_Q_MixedAir_list.txt"
+        file_Q_user_list = "./model_file/file_Q/fmu_Q_MixedAir_list.txt"
     else:
-        file_Q_user_list = "./model_data/file_Q/fmu_Q_simple_list.txt"
+        file_Q_user_list = "./model_file/file_Q/fmu_Q_simple_list.txt"
     write_txt_data(file_name_Q_list, [file_Q_user_list])
     Q_time_all_list = read_txt_data(file_Q_user_list, column_index=0)
     Q_user_all_list = read_txt_data(file_Q_user_list, column_index=1)
-    file_Q_user = "./model_data/file_Q/fmu_Q_user.txt"
+    file_Q_user = "./model_file/file_Q/fmu_Q_user.txt"
     write_txt_data(file_Q_user, [Q_user_all_list[0]])
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
-    file_fmu_result_last = "./model_data/simulate_log/fmu_result_last.log"
+    file_fmu_result_all = "./model_file/simulate_log/fmu_result_all.log"
+    file_fmu_result_last = "./model_file/simulate_log/fmu_result_last.log"
     txt_str = "start_time" + "\t" + "pause_time"
     for i in range(len(fmu_input_output_name)):
         txt_str += "\t" + fmu_input_output_name[i]
@@ -407,8 +407,8 @@ if __name__ == "__main__":
     load_mode = 0
     # 确定FMU模型文件
     if load_mode == 0:
-        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
+        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
     else:
-        file_fmu = "./model_data/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
+        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
     # 执行程序
     run_run_steady_optimize(txt_path, file_fmu, load_mode)

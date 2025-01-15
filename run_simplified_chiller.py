@@ -124,7 +124,7 @@ def run_GPC_simplified_chiller():
 
     # mmgpc仿真参数设置
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = "./model_data/GPC_data/simplified_chiller"
+    file_path_init = "./model_file/file_GPC/simplified_chiller"
     # 多模型权值系数的递推计算收敛系数
     if "EER" in y_gpc_list and "Tei" in y_gpc_list:
         s_list = [s_EER, s_Tei]
@@ -180,8 +180,8 @@ def run_simplified_chiller(Q_total_list, Q_index, txt_path, file_fmu, run_mode):
     with open(file_fmu_input_output_name, "wb") as f:
         pickle.dump(fmu_input_output_name, f)  # type: ignore
     # 仿真结果
-    file_fmu_result_all = "./model_data/simulate_log/fmu_result_all.log"
-    file_fmu_result_last = "./model_data/simulate_log/fmu_result_last.log"
+    file_fmu_result_all = "./model_file/simulate_log/fmu_result_all.log"
+    file_fmu_result_last = "./model_file/simulate_log/fmu_result_last.log"
     txt_str = "start_time" + "\t" + "pause_time"
     for i in range(len(fmu_input_output_name)):
         txt_str += "\t" + fmu_input_output_name[i]
@@ -239,7 +239,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     u_limit_list = [[5, 15], [30, 50], [30, 50], [15, 50]]
 
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = "./model_data/GPC_data/simplified_chiller"
+    file_path_init = "./model_file/file_GPC/simplified_chiller"
     # FMU模型状态：依次为：fmu_initialize, fmu_terminate, stop_time, output_interval, time_out
     file_fmu_state = txt_path + "/process_data/fmu_state.txt"
     # FMU模型仿真时间：仿真开始的时间(start_time)
@@ -624,22 +624,22 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
     path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
 
     # 用来拟合传递函数的数据储存路径：EER
-    path_Few_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Few_EER.txt"  # 冷冻水流量
-    path_Fcw_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fcw_EER.txt"  # 冷却水流量
-    path_Fca_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fca_EER.txt"  # 冷却塔风量
-    path_Teo_EER_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Teo_EER.txt"  # 冷冻水出水温度
+    path_Few_EER_tfdata = "./model_file/file_identify/result_system_dynamics/tf_Few_EER.txt"  # 冷冻水流量
+    path_Fcw_EER_tfdata = "./model_file/file_identify/result_system_dynamics/tf_Fcw_EER.txt"  # 冷却水流量
+    path_Fca_EER_tfdata = "./model_file/file_identify/result_system_dynamics/tf_Fca_EER.txt"  # 冷却塔风量
+    path_Teo_EER_tfdata = "./model_file/file_identify/result_system_dynamics/tf_Teo_EER.txt"  # 冷冻水出水温度
     # 用来拟合传递函数的数据储存路径：Tei
-    path_Few_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Few_Tei.txt"  # 冷冻水流量
-    path_Fcw_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fcw_Tei.txt"  # 冷却水流量
-    path_Fca_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Fca_Tei.txt"  # 冷却塔风量
-    path_Teo_Tei_tfdata = "./model_data/file_identify/result_system_dynamics/tf_Teo_Tei.txt"  # 冷冻水出水温度
+    path_Few_Tei_tfdata = "./model_file/file_identify/result_system_dynamics/tf_Few_Tei.txt"  # 冷冻水流量
+    path_Fcw_Tei_tfdata = "./model_file/file_identify/result_system_dynamics/tf_Fcw_Tei.txt"  # 冷却水流量
+    path_Fca_Tei_tfdata = "./model_file/file_identify/result_system_dynamics/tf_Fca_Tei.txt"  # 冷却塔风量
+    path_Teo_Tei_tfdata = "./model_file/file_identify/result_system_dynamics/tf_Teo_Tei.txt"  # 冷冻水出水温度
     # 储存最终结果文本的文件路径
-    path_result_EER = "./model_data/file_identify/result_system_dynamics/result_transfer_function_EER.txt"
-    path_result_Tei = "./model_data/file_identify/result_system_dynamics/result_transfer_function_Tei.txt"
+    path_result_EER = "./model_file/file_identify/result_system_dynamics/result_transfer_function_EER.txt"
+    path_result_Tei = "./model_file/file_identify/result_system_dynamics/result_transfer_function_Tei.txt"
     # 传递函数数据的.txt文件文件所在的文件夹路径
-    path_tf = "./model_data/file_identify/result_system_dynamics"
+    path_tf = "./model_file/file_identify/result_system_dynamics"
     # 清空txt文件
-    root_path1 = "./model_data/file_identify/result_system_dynamics"
+    root_path1 = "./model_file/file_identify/result_system_dynamics"
     clear_all_txt_data(root_path1)
 
     # 仿真各个阶段的时间，单位：秒
@@ -950,13 +950,13 @@ def tuning_dynamics_simplified_chiller(tuning_set):
     # 设置优化目标
     fit_target = 2
     # 储存结果的文件路径
-    path_result_root = "./model_data/file_identify/result_system_dynamics"
+    path_result_root = "./model_file/file_identify/result_system_dynamics"
     path_result_smgpc = path_result_root + "/result_tuning_smgpc.txt"
     path_result_mmgpc = path_result_root + "/result_tuning_mmgpc.txt"
     # 情况txt内容
     clear_all_txt_data(path_result_root)
     # 将初始化的控制器参数数据保存下来的路径
-    file_path_init = "./model_data/GPC_data/simplified_chiller"
+    file_path_init = "./model_file/file_GPC/simplified_chiller"
     # smgpc整定
     if tuning_set == "smgpc":
         tuning_smgpc(path_result_smgpc, model_info, L, Ts, yr_list, yr_0_list, u_0_list, du_limit_list, u_limit_list,
@@ -970,7 +970,7 @@ def tuning_dynamics_simplified_chiller(tuning_set):
 if __name__ == "__main__":
     # 运行 OR 系统辨识
     txt_path = "./algorithm_file"
-    file_fmu = "./model_data/file_fmu/simplified_chiller_model_Cvode.fmu"
+    file_fmu = "./model_file/file_fmu/simplified_chiller_model_Cvode.fmu"
     run_mode = "simulate"
     # Q_total_list = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700, 1800,
     #                 1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000, 3100, 3200, 3300, 3400]
