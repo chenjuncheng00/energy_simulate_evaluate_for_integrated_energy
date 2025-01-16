@@ -3,8 +3,8 @@ import pickle
 import matplotlib.pyplot as plt
 from fmpy import *
 from algorithm_win import (algorithm_common_universal, write_txt_data, write_log_data, clear_all_txt_data,
-                           main_simulate_pause_single, main_optimization_common_universal, main_optimization_water_pump,
-                           estimate_transfer_function)
+                           main_simulate_pause_single, main_optimization_common_universal, main_optimization_water_pump)
+from air_conditioner_dynamic import estimate_transfer_function
 from run_initialize import run_initialize
 from model_fmu_output_name import main_model_output_name
 from model_fmu_input_name import main_model_input_name
