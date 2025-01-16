@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 from fmpy import *
 from algorithm_win import (get_fmu_input_name, write_log_data, write_txt_data, clear_all_txt_data,
                            main_simulate_pause_single, calculate_membership, feedback_correction_initialize,
-                           feedback_correction_kc, smgpc, mmgpc, mmgpc_bayes, mmgpc_ms, mmgpc_itae,
-                           estimate_transfer_function)
+                           feedback_correction_kc, smgpc, mmgpc, mmgpc_bayes, mmgpc_ms, mmgpc_itae)
+from air_conditioner_dynamic import estimate_transfer_function
 from run_tuning_dynamics_model import tuning_mmgpc, tuning_smgpc
 from model_simplified_chiller import (model_input_type, model_dynamics_simplified_chiller,
                                       plant_dynamics_simplified_chiller)
@@ -984,7 +984,7 @@ if __name__ == "__main__":
     # tuning_set = "smgpc"
     # tuning_dynamics_simplified_chiller(tuning_set)
     # # 模型间隙度计算
-    # from algorithm_win import calculate_gap_metric
+    # from gap_metric import calculate_gap_metric
     # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/gap_metric"
     # model_list = model_dynamics_simplified_chiller()[1]
     # # model_list = plant_dynamics_simplified_chiller()[1]

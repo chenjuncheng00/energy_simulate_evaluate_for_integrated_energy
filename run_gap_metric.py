@@ -1,4 +1,4 @@
-from algorithm_win import calculate_gap_metric
+from gap_metric import calculate_gap_metric
 from model_fmu_dynamics import model_dynamics_complex_chiller, model_dynamics_chiller_ashp
 
 if __name__ == "__main__":
