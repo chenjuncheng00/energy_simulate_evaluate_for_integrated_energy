@@ -65,7 +65,7 @@
 - Thermal energy storage devices: water thermal energy storage;
 - Cooling towers;
 - Heat exchangers (used to replace electric air conditioners in natural cooling mode for calculation);
-3.2 Types of Achievable Control Commands
+### 3.2 Types of Achievable Control Commands
 - Electric Air Conditioner: Start/Stop, Setpoint for Chilled Water Outlet Temperature;
 - Water Pump: Start/Stop, Setpoint for Frequency;
 - Cooling Tower: Start/Stop, Setpoint for Frequency;

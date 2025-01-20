@@ -609,7 +609,7 @@ def get_environment_real_data(simulate_result, equipment_type_path, cfg_path_equ
         real_value_DO_dict["real_value"][Tdo_name_tmp] = dict()
         real_value_DO_dict["real_value"][Tdo_name_tmp]["DO"] = dict()
         real_value_AO_dict["real_value"][Tdo_name_tmp]["AO"]["温度"] = Tdo
-        real_value_DO_dict["real_value"][Tdo_name_tmp]["DO"]["状态"] = 1
+        real_value_DO_dict["real_value"][Tdo_name_tmp]["DO"]["远方状态"] = 1
     for i in range(n_Hro):
         Hro_name_tmp = "室外湿度传感器_" + str(i)
         real_value_AO_dict["real_value"][Hro_name_tmp] = dict()
@@ -617,7 +617,7 @@ def get_environment_real_data(simulate_result, equipment_type_path, cfg_path_equ
         real_value_DO_dict["real_value"][Hro_name_tmp] = dict()
         real_value_DO_dict["real_value"][Hro_name_tmp]["DO"] = dict()
         real_value_AO_dict["real_value"][Hro_name_tmp]["AO"]["湿度"] = Hro
-        real_value_DO_dict["real_value"][Hro_name_tmp]["DO"]["状态"] = 1
+        real_value_DO_dict["real_value"][Hro_name_tmp]["DO"]["远方状态"] = 1
     # 写入txt
     resolve_real_value_DO_environment(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
     resolve_real_value_AO_environment(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
@@ -675,7 +675,7 @@ def get_user_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         real_value_DO_dict["real_value"][Teo_name_tmp]["DO"] = dict()
         Teo_tmp = round(list(simulate_result["user_Teo"])[-1], 4)
         real_value_AO_dict["real_value"][Teo_name_tmp]["AO"]["温度"] = Teo_tmp
-        real_value_DO_dict["real_value"][Teo_name_tmp]["DO"]["状态"] = 1
+        real_value_DO_dict["real_value"][Teo_name_tmp]["DO"]["远方状态"] = 1
         Tei_name_tmp = "末端冷冻水回水温度传感器_" + str(i)
         real_value_AO_dict["real_value"][Tei_name_tmp] = dict()
         real_value_AO_dict["real_value"][Tei_name_tmp]["AO"] = dict()
@@ -683,7 +683,7 @@ def get_user_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         real_value_DO_dict["real_value"][Tei_name_tmp]["DO"] = dict()
         Tei_tmp = round(list(simulate_result["user_Tei"])[-1], 4)
         real_value_AO_dict["real_value"][Tei_name_tmp]["AO"]["温度"] = Tei_tmp
-        real_value_DO_dict["real_value"][Tei_name_tmp]["DO"]["状态"] = 1
+        real_value_DO_dict["real_value"][Tei_name_tmp]["DO"]["远方状态"] = 1
     # Tdi、Hri
     for i in range(n_Tdi):
         Tdi_name_tmp = "室内温度传感器_" + str(i)
@@ -692,7 +692,7 @@ def get_user_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         real_value_DO_dict["real_value"][Tdi_name_tmp] = dict()
         real_value_DO_dict["real_value"][Tdi_name_tmp]["DO"] = dict()
         real_value_AO_dict["real_value"][Tdi_name_tmp]["AO"]["温度"] = Tdi_list[i]
-        real_value_DO_dict["real_value"][Tdi_name_tmp]["DO"]["状态"] = 1
+        real_value_DO_dict["real_value"][Tdi_name_tmp]["DO"]["远方状态"] = 1
     for i in range(n_Hri):
         Hri_name_tmp = "室内湿度传感器_" + str(i)
         real_value_AO_dict["real_value"][Hri_name_tmp] = dict()
@@ -700,7 +700,7 @@ def get_user_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         real_value_DO_dict["real_value"][Hri_name_tmp] = dict()
         real_value_DO_dict["real_value"][Hri_name_tmp]["DO"] = dict()
         real_value_AO_dict["real_value"][Hri_name_tmp]["AO"]["湿度"] = Hri_list[i]
-        real_value_DO_dict["real_value"][Hri_name_tmp]["DO"]["状态"] = 1
+        real_value_DO_dict["real_value"][Hri_name_tmp]["DO"]["远方状态"] = 1
     # mau
     for i in range(n_mau):
         mau_name_tmp = "室内新风机组_" + str(i)
@@ -711,7 +711,7 @@ def get_user_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         real_value_AO_dict["real_value"][mau_name_tmp]["AO"]["新风流量"] = 580
         real_value_AO_dict["real_value"][mau_name_tmp]["AO"]["冷冻水流量"] = 1220
         real_value_AO_dict["real_value"][mau_name_tmp]["AO"]["冷冻水出水温度"] = 7
-        real_value_DO_dict["real_value"][mau_name_tmp]["DO"]["状态"] = 1
+        real_value_DO_dict["real_value"][mau_name_tmp]["DO"]["远方状态"] = 1
     # 写入txt
     resolve_real_value_DO_user(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
     resolve_real_value_AO_user(real_value_AO_dict, equipment_type_path, cfg_path_equipment)

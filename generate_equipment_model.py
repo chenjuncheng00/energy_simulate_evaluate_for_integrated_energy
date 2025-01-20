@@ -146,11 +146,11 @@ def generate_equipment_model(file_pkl_chiller, file_pkl_ashp, file_pkl_storage, 
     n_chiller_user_valve = 2
     # 设备分组编号
     chiller1.index_group = 0
-    chiller2.index_group = 1
+    chiller2.index_group = 0
     chiller_chilled_pump1.index_group = 0
-    chiller_chilled_pump2.index_group = 1
+    chiller_chilled_pump2.index_group = 0
     chiller_cooling_pump1.index_group = 0
-    chiller_cooling_pump2.index_group = 1
+    chiller_cooling_pump2.index_group = 0
     chiller_cooling_tower.index_group = 0
     # 保存冷水机模型文件
     chiller_dict = dict()
