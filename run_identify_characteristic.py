@@ -139,7 +139,7 @@ def run_identify_user_characteristic(fmu_path):
 if __name__ == "__main__":
     # # 水力特性模型辨识
     # load_mode = 0
-    # fmu_path = "./model_file/file_fmu/integrated_air_conditioning_Cvode.fmu"
+    # fmu_path = "./model_file/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
     # run_identify_hydraulic_characteristic(fmu_path, load_mode)
     # # 设备性能模型辨识
     # fmu_path = "./model_file/file_fmu/equipment_characteristic_Cvode.fmu"
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     # # 系统动态特性辨识
     # identify_mode = 1  # 0:仅冷水机；1:冷水机+空气源热泵
     # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
-    # fmu_path = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
+    # fmu_path = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
     # txt_path = "./algorithm_file"
     # run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
     # 用户侧特性辨识

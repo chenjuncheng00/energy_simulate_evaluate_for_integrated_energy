@@ -378,7 +378,7 @@ if __name__ == "__main__":
     load_mode = 1
     # 确定FMU模型文件
     if load_mode == 0:
-        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_Cvode.fmu"
+        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
     else:
-        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Cvode.fmu"
+        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
     run_dynamics_control(Q_total, txt_path, file_fmu, load_mode)
