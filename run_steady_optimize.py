@@ -384,8 +384,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
             print(input_log_5)
             write_log_data(file_fmu_input_log, [input_log_5], "info")
             write_log_data(file_fmu_input_feedback_log, [input_log_5], "info")
-            algorithm_Teo_set_user(chiller_system_type_path, n_calculate_hour, chiller_list, n_chiller_list, [0, 1])
-            algorithm_Teo_set_user(ashp_system_type_path, n_calculate_hour, [air_source_heat_pump], n0_air_source_heat_pump, [0, 1])
+            algorithm_Teo_set_user(chiller_system_type_path, n_calculate_hour, chiller_list, n_chiller_list, [0])
+            algorithm_Teo_set_user(ashp_system_type_path, n_calculate_hour, [air_source_heat_pump], n0_air_source_heat_pump, [0])
         else:
             input_log_5 = "第5步：修正Teo，PASS..."
             print(input_log_5)
