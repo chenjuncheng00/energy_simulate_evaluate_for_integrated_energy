@@ -1,9 +1,9 @@
 import pickle
 from fmpy import *
 from keras.api.models import load_model
-from algorithm_win import (read_cfg_data, read_txt_data, write_txt_data, write_log_data, algorithm_common_universal,
-                           algorithm_dynamics, main_optimization_common_universal, main_simulate_pause_single,
-                           get_station_equipment_open_status_txt_path, get_environment_equipment_real_value_txt_path,
+from algorithm_win import (read_cfg_data, read_txt_data, write_txt_data, write_log_data, algorithm_common_station,
+                           algorithm_station_dynamics, main_optimization_common_station, main_simulate_station_fmu,
+                           get_station_open_status_txt_path, get_sensor_outside_real_value_txt_path,
                            initialize_user_Tei)
 from model_fmu_output_name import main_model_output_name
 from model_fmu_input_name import main_model_input_name
@@ -40,7 +40,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     file_Q_value_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
 
     # 室外温湿度文件路径
-    ans_environment_value_txt_path = get_environment_equipment_real_value_txt_path(txt_path)
+    ans_environment_value_txt_path = get_sensor_outside_real_value_txt_path(txt_path)
     file_Tdo_value = ans_environment_value_txt_path[0]
     file_Hro_value = ans_environment_value_txt_path[1]
     # 总冷负荷
@@ -210,7 +210,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
         Q_user = 0
     chiller_Q_user = min(Q_user, chiller_Q0_max)
     write_txt_data(file_Q_value_chiller, [chiller_Q_user])
-    ans_chiller = main_optimization_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
+    ans_chiller = main_optimization_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
                                                      chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                                      chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                                      [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
@@ -223,7 +223,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     write_log_data(file_fmu_input_log, [input_log_2], "info")
     write_log_data(file_fmu_input_feedback_log, [input_log_2], "info")
     write_txt_data(file_Q_value_chiller, [chiller_Q_user])
-    algorithm_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
+    algorithm_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
                                chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
@@ -237,7 +237,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     ashp_Q_user = min(Q_user - chiller_Q_user, ashp_Q0_max)
     ashp_chilled_pump_H = 0.67 * chiller_user_chilled_pump_H
     write_txt_data(file_Q_value_ashp, [ashp_Q_user])
-    algorithm_common_universal(ashp_chilled_pump_H, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
+    algorithm_common_station(ashp_chilled_pump_H, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
                                [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [], [], [],
                                ashp_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
@@ -253,13 +253,13 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
         input_data_list = [Q_user * 1000]
     else:
         input_data_list = []
-    result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
+    result = main_simulate_station_fmu(input_data_list, input_type_list, simulate_time1, txt_path)
 
     # 第5步：获取FMU模型的实际数据并写入txt文件
     input_log_5 = "第5步：获取FMU模型的实际数据并写入txt文件..."
     print(input_log_5)
     main_get_fmu_real_data(result, cfg_path_equipment, txt_path)
-    get_Teo_set_real_data(txt_path)
+    get_Teo_set_real_data(txt_path, n_air_conditioner_list)
 
     # 第6步：MMGPC对EER和Tei进行控制
     input_log_6 = "第6步：MMGPC对EER和Tei进行控制..."
@@ -312,8 +312,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     yr_0_list = [EER0, Tei0]
     yrk_list = [EER0 + 0.3, Tei0 + 0.5]
     # 获取冷却塔开启数量
-    ans_chiller_open_status_txt_path = get_station_equipment_open_status_txt_path(chiller_system_type_path[0],
-                                                                                  txt_path)
+    ans_chiller_open_status_txt_path = get_station_open_status_txt_path(chiller_system_type_path[0], txt_path)
     file_chiller_cooling_tower_open_status = ans_chiller_open_status_txt_path[4]
     chiller_cooling_tower_open_status_list = read_txt_data(file_chiller_cooling_tower_open_status, return_status=1)
     n_open_chiller_cooling_tower = int(sum(chiller_cooling_tower_open_status_list))
@@ -346,19 +345,19 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     initialize_user_Tei(user_model_nn, user_input_data_list, cfg_path_public)
 
     # MMGPC
-    results = algorithm_dynamics(user_model_nn, Np_list, Nc_list, model_list, yrk_list, yr_0_list, u_0_list,
-                                 du_limit_list, u_limit_list, file_path_init, 0, H_chilled_pump_list,
-                                 H_cooling_pump_list, [], chilled_pump_list, cooling_pump_list,
-                                 n_air_conditioner_list, [], n_chilled_pump_list, n_cooling_pump_list,
-                                 n_cooling_tower_list, equipment_type_list, txt_path, cfg_path_equipment,
-                                 cfg_path_public, mmgpc_plot_set, model_plot_set)
+    results = algorithm_station_dynamics(user_model_nn, Np_list, Nc_list, model_list, yrk_list, yr_0_list, u_0_list,
+                                         du_limit_list, u_limit_list, file_path_init, 0, H_chilled_pump_list,
+                                         H_cooling_pump_list, [], chilled_pump_list, cooling_pump_list,
+                                         n_air_conditioner_list, [], n_chilled_pump_list, n_cooling_pump_list,
+                                         n_cooling_tower_list, equipment_type_list, txt_path, cfg_path_equipment,
+                                         cfg_path_public, mmgpc_plot_set, model_plot_set)
 
     # 第7步：获取FMU模型的实际数据并写入txt文件
     input_log_7 = "第7步：动态控制，获取FMU模型的实际数据并写入txt文件..."
     for result in results:
         print(input_log_7)
         main_get_fmu_real_data(result, cfg_path_equipment, txt_path)
-        get_Teo_set_real_data(txt_path)
+        get_Teo_set_real_data(txt_path, n_air_conditioner_list)
 
     # 第8步：终止FMU模型，最后仿真一次
     input_log_8 = "第8步：终止FMU模型，最后仿真一次..."
@@ -367,7 +366,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     fmu_state_list = [0, 1, stop_time, output_interval, time_out, tolerance]
     write_txt_data(file_fmu_state, fmu_state_list)
     # 最后仿真一次
-    main_simulate_pause_single([], [], simulate_time2, txt_path)
+    main_simulate_station_fmu([], [], simulate_time2, txt_path)
 
 
 if __name__ == "__main__":

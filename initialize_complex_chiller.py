@@ -1,9 +1,9 @@
 import numpy as np
-from algorithm_win import write_txt_data, main_simulate_pause_single
-from model_fmu_input_type import chiller_input_type, cold_storage_input_type, \
-                                 simple_load_input_type, environment_input_type
-from model_fmu_input_data_default import chiller_input_data_default, cold_storage_input_data_default, \
-                                         simple_load_input_data_default, environment_input_data_default
+from algorithm_win import write_txt_data, main_simulate_station_fmu
+from model_fmu_input_type import (chiller_input_type, cold_storage_input_type,
+                                  simple_load_input_type, environment_input_type)
+from model_fmu_input_data_default import (chiller_input_data_default, cold_storage_input_data_default,
+                                          simple_load_input_data_default, environment_input_data_default)
 
 def initialize_complex_chiller(file_fmu_time, file_fmu_state, start_time, stop_time, simulate_initialize,
                                output_interval, time_out, tolerance, txt_path):
@@ -51,7 +51,7 @@ def initialize_complex_chiller(file_fmu_time, file_fmu_state, start_time, stop_t
     input_data_list = [start_time] + environment_input_data_default(load_mode) + chiller_input_data + \
                       cold_storage_input_data_default() + simple_load_input_data_default()
     # FMU仿真
-    main_simulate_pause_single(input_data_list, input_type_list, simulate_initialize, txt_path, add_input=False)
+    main_simulate_station_fmu(input_data_list, input_type_list, simulate_initialize, txt_path, add_input=False)
 
     # 第3步：更新初始化设置
     # 修改FMU状态
@@ -68,7 +68,7 @@ def initialize_complex_chiller(file_fmu_time, file_fmu_state, start_time, stop_t
     input_data_list = [t1_initialize] + environment_input_data_default(load_mode) + chiller_input_data_default() + \
                       cold_storage_input_data_default() + simple_load_input_data_default()
     # FMU仿真
-    main_simulate_pause_single(input_data_list, input_type_list, simulate_time2, txt_path, add_input=False)
+    main_simulate_station_fmu(input_data_list, input_type_list, simulate_time2, txt_path, add_input=False)
     # 修改时间
     write_txt_data(file_fmu_time, [t2_initialize])
     print("\n")
