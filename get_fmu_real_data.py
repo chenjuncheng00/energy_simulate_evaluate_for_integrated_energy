@@ -1,8 +1,7 @@
 import numpy as np
-from algorithm_win import (calculate_Teo_set_value_system_type, get_fmu_input_name, read_cfg_data,
+from algorithm_win import (calculate_station_Teo_set_system_type, get_equipment_fmu_input_name, read_cfg_data,
                            resolve_real_value_AO_station, resolve_real_value_DO_station,
-                           resolve_real_value_AO_environment, resolve_real_value_DO_environment,
-                           resolve_real_value_AO_user, resolve_real_value_DO_user)
+                           resolve_real_value_AO_sensor, resolve_real_value_DO_sensor)
 from model_fmu_input_type import chiller_input_type, air_source_heat_pump_input_type, cold_storage_input_type
 from model_fmu_output_name import chiller_output_name, air_source_heat_pump_output_name, cold_storage_output_name
 
@@ -10,7 +9,7 @@ def main_get_fmu_real_data(simulate_result, cfg_path_equipment, txt_path):
     """
 
     Args:
-        simulate_result: [object]，FMU模型仿真结果
+        simulate_result: [object]，FMU模型仿真结果1
         cfg_path_equipment: [string]，设备信息参数cfg文件路径
         txt_path: [string]，相对路径
 
@@ -29,7 +28,7 @@ def main_get_fmu_real_data(simulate_result, cfg_path_equipment, txt_path):
     get_environment_real_data(simulate_result, txt_path, cfg_path_equipment)
 
 
-def get_Teo_set_real_data(txt_path):
+def get_Teo_set_real_data(txt_path, air_conditioner_list):
     """
     需要先执行main_get_fmu_real_data()，将各个设备的Teo_set值记录，再计算综合值
     Args:
@@ -40,7 +39,7 @@ def get_Teo_set_real_data(txt_path):
     """
     equipment_type_list = ["chiller", "air_source_heat_pump"]
     # 计算Teo_set
-    calculate_Teo_set_value_system_type(equipment_type_list, txt_path)
+    calculate_station_Teo_set_system_type(equipment_type_list, txt_path, air_conditioner_list)
 
 
 def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
@@ -58,15 +57,15 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
     real_value_DO_dict = dict()
     real_value_DO_dict["real_value"] = dict()
     # input_name
-    chiller_input_name_list = get_fmu_input_name(chiller_input_type()[1])
-    Teo_set_input_name_list = get_fmu_input_name(chiller_input_type()[2])
-    chilled_pump_input_name_list = get_fmu_input_name(chiller_input_type()[3])
-    cooling_pump_input_name_list = get_fmu_input_name(chiller_input_type()[4])
-    cooling_tower_input_name_list = get_fmu_input_name(chiller_input_type()[5])
-    chilled_valve_input_name_list = get_fmu_input_name(chiller_input_type()[6])
-    cooling_valve_input_name_list = get_fmu_input_name(chiller_input_type()[7])
-    tower_valve_input_name_list = get_fmu_input_name(chiller_input_type()[8])
-    user_valve_input_name_list = get_fmu_input_name(chiller_input_type()[9])
+    chiller_input_name_list = get_equipment_fmu_input_name(chiller_input_type()[1])
+    Teo_set_input_name_list = get_equipment_fmu_input_name(chiller_input_type()[2])
+    chilled_pump_input_name_list = get_equipment_fmu_input_name(chiller_input_type()[3])
+    cooling_pump_input_name_list = get_equipment_fmu_input_name(chiller_input_type()[4])
+    cooling_tower_input_name_list = get_equipment_fmu_input_name(chiller_input_type()[5])
+    chilled_valve_input_name_list = get_equipment_fmu_input_name(chiller_input_type()[6])
+    cooling_valve_input_name_list = get_equipment_fmu_input_name(chiller_input_type()[7])
+    tower_valve_input_name_list = get_equipment_fmu_input_name(chiller_input_type()[8])
+    user_valve_input_name_list = get_equipment_fmu_input_name(chiller_input_type()[9])
     # output_name
     chiller_P_output_name_list = chiller_output_name()[13]
     chilled_pump_P_output_name_list = chiller_output_name()[14]
@@ -348,10 +347,10 @@ def get_ashp_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
     real_value_DO_dict = dict()
     real_value_DO_dict["real_value"] = dict()
     # input_name
-    ashp_input_name_list = get_fmu_input_name(air_source_heat_pump_input_type()[1])
-    Teo_set_input_name_list = get_fmu_input_name(air_source_heat_pump_input_type()[2])
-    chilled_pump_input_name_list = get_fmu_input_name(air_source_heat_pump_input_type()[3])
-    chilled_valve_input_name_list = get_fmu_input_name(air_source_heat_pump_input_type()[4])
+    ashp_input_name_list = get_equipment_fmu_input_name(air_source_heat_pump_input_type()[1])
+    Teo_set_input_name_list = get_equipment_fmu_input_name(air_source_heat_pump_input_type()[2])
+    chilled_pump_input_name_list = get_equipment_fmu_input_name(air_source_heat_pump_input_type()[3])
+    chilled_valve_input_name_list = get_equipment_fmu_input_name(air_source_heat_pump_input_type()[4])
     # output_name
     ashp_P_output_name_list = air_source_heat_pump_output_name()[8]
     chilled_pump_P_output_name_list = air_source_heat_pump_output_name()[9]
@@ -486,9 +485,9 @@ def get_storage_real_data(simulate_result, equipment_type_path, cfg_path_equipme
     real_value_DO_dict = dict()
     real_value_DO_dict["real_value"] = dict()
     # input_name
-    chilled_pump_input_name_list = get_fmu_input_name(cold_storage_input_type()[1])
-    chilled_valve_in_storage_input_name_list = get_fmu_input_name(cold_storage_input_type()[2])
-    chilled_valve_to_user_input_name_list = get_fmu_input_name(cold_storage_input_type()[3])
+    chilled_pump_input_name_list = get_equipment_fmu_input_name(cold_storage_input_type()[1])
+    chilled_valve_in_storage_input_name_list = get_equipment_fmu_input_name(cold_storage_input_type()[2])
+    chilled_valve_to_user_input_name_list = get_equipment_fmu_input_name(cold_storage_input_type()[3])
     chilled_valve_input_name_list = chilled_valve_in_storage_input_name_list + chilled_valve_to_user_input_name_list
     # output_name
     chilled_pump_P_output_name_list = cold_storage_output_name()[6]
@@ -575,12 +574,12 @@ def get_storage_real_data(simulate_result, equipment_type_path, cfg_path_equipme
     return real_value_DO_dict, real_value_AO_dict
 
 
-def get_environment_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
+def get_environment_real_data(simulate_result, txt_path, cfg_path_equipment):
     """
     读取室外温湿度的实际值，并写入txt文件
     Args:
         simulate_result: [object]，FMU模型仿真结果
-        equipment_type_path:[string]，[list]，设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
+        txt_path:[string]，相对路径
         cfg_path_equipment:[string]，设备信息参数cfg文件路径
 
     Returns:
@@ -619,18 +618,18 @@ def get_environment_real_data(simulate_result, equipment_type_path, cfg_path_equ
         real_value_AO_dict["real_value"][Hro_name_tmp]["AO"]["湿度"] = Hro
         real_value_DO_dict["real_value"][Hro_name_tmp]["DO"]["远方状态"] = 1
     # 写入txt
-    resolve_real_value_DO_environment(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
-    resolve_real_value_AO_environment(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_sensor(real_value_DO_dict, ["environment"], txt_path, cfg_path_equipment)
+    resolve_real_value_AO_sensor(real_value_AO_dict, ["environment"], txt_path, cfg_path_equipment)
     # 返回结果
     return real_value_DO_dict, real_value_AO_dict
 
 
-def get_user_real_data(simulate_result, equipment_type_path, cfg_path_equipment):
+def get_user_real_data(simulate_result, txt_path, cfg_path_equipment):
     """
     读取室内温湿度的实际值，并写入txt文件
     Args:
         simulate_result: [object]，FMU模型仿真结果
-        equipment_type_path:[string]，[list]，设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
+        txt_path:[string]，相对路径
         cfg_path_equipment:[string]，设备信息参数cfg文件路径
 
     Returns:
@@ -713,7 +712,7 @@ def get_user_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         real_value_AO_dict["real_value"][mau_name_tmp]["AO"]["冷冻水出水温度"] = 7
         real_value_DO_dict["real_value"][mau_name_tmp]["DO"]["远方状态"] = 1
     # 写入txt
-    resolve_real_value_DO_user(real_value_DO_dict, equipment_type_path, cfg_path_equipment)
-    resolve_real_value_AO_user(real_value_AO_dict, equipment_type_path, cfg_path_equipment)
+    resolve_real_value_DO_sensor(real_value_DO_dict, ["user"], txt_path, cfg_path_equipment)
+    resolve_real_value_AO_sensor(real_value_AO_dict, ["user"], txt_path, cfg_path_equipment)
     # 返回结果
     return real_value_DO_dict, real_value_AO_dict

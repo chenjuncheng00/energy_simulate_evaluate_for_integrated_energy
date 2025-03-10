@@ -2,8 +2,8 @@ import traceback
 import pickle
 import matplotlib.pyplot as plt
 from fmpy import *
-from algorithm_win import (algorithm_common_universal, write_txt_data, write_log_data, clear_all_txt_data,
-                           main_simulate_pause_single, main_optimization_common_universal, main_optimization_water_pump)
+from algorithm_win import (algorithm_common_station, write_txt_data, write_log_data, clear_all_txt_data,
+                           main_simulate_station_fmu, main_optimization_common_station, main_optimization_water_pump)
 from air_conditioner_dynamic import estimate_transfer_function
 from run_initialize import run_initialize
 from model_fmu_output_name import main_model_output_name
@@ -242,7 +242,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 # 模型输入数据
                 input_data_list = [start_time] + main_input_data_default(load_mode)
                 # FMU仿真
-                main_simulate_pause_single(input_data_list, input_type_list, simulate_time0, txt_path, add_input=False)
+                main_simulate_station_fmu(input_data_list, input_type_list, simulate_time0, txt_path, add_input=False)
                 # 第2步：更新初始化设置
                 # 修改FMU状态
                 fmu_state_list = [0, 0, stop_time, output_interval, time_out, tolerance]
@@ -251,7 +251,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化冷水机系统，但是不进行控制命令下发，用于获取阀门开启比例！")
                 write_txt_data(file_Q_value_chiller, [Q_input])
-                ans_chiller = main_optimization_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
+                ans_chiller = main_optimization_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
                                                                  chiller_list, chiller_chilled_pump_list, [],
                                                                  chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                                  n_chiller_list, n_chiller_chilled_pump_list, [],
@@ -264,7 +264,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化冷水机系统并进行控制命令下发!")
                 write_txt_data(file_Q_value_chiller, [Q_input])
-                algorithm_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, [chiller1, chiller2],
+                algorithm_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, [chiller1, chiller2],
                                            [chiller_chilled_pump1, chiller_chilled_pump2], [],
                                            [chiller_cooling_pump1, chiller_cooling_pump2], [chiller_cooling_tower],
                                            [n0_chiller1, n0_chiller2], [n0_chiller_chilled_pump1, n0_chiller_chilled_pump2], 
@@ -280,7 +280,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 input_type_list = load_input_type(load_mode)
                 # 模型输入数据
                 input_data_list = [Q_input * 1000]
-                result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
+                result = main_simulate_station_fmu(input_data_list, input_type_list, simulate_time1, txt_path)
                 # 获取系统稳定后的数据，用于系统辨识初始值
                 chiller_f_cooling_tower_list = [list(result["chiller_f_cooling_tower1"]),
                                                 list(result["chiller_f_cooling_tower2"]),
@@ -337,7 +337,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                     input_type_list = None
                 # 第7步：系统阶跃响应实验
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在进行系统阶跃响应实验！")
-                result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time2, txt_path)
+                result = main_simulate_station_fmu(input_data_list, input_type_list, simulate_time2, txt_path)
                 chiller_f_cooling_tower_list = [list(result["chiller_f_cooling_tower1"])[1:],
                                                 list(result["chiller_f_cooling_tower2"])[1:],
                                                 list(result["chiller_f_cooling_tower3"])[1:],
@@ -477,7 +477,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                 fmu_state_list = [0, 1, stop_time, output_interval, time_out, tolerance]
                 write_txt_data(file_fmu_state, fmu_state_list)
                 # 最后仿真一次
-                main_simulate_pause_single([], [], simulate_time3, txt_path)
+                main_simulate_station_fmu([], [], simulate_time3, txt_path)
 
             # 第10步：辨识传递函数
             print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，所有的传递函数辨识数据生成完成！")
@@ -679,7 +679,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 # 模型输入数据
                 input_data_list = [start_time] + main_input_data_default(load_mode)
                 # FMU仿真
-                main_simulate_pause_single(input_data_list, input_type_list, simulate_time0, txt_path, add_input=False)
+                main_simulate_station_fmu(input_data_list, input_type_list, simulate_time0, txt_path, add_input=False)
                 # 第2步：更新初始化设置
                 # 修改FMU状态
                 fmu_state_list = [0, 0, stop_time, output_interval, time_out, tolerance]
@@ -690,7 +690,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                       "，正在优化冷水机系统，但是不进行控制命令下发，用于获取阀门开启比例和冷冻水泵扬程！")
                 chiller_Q_total = min(Q_input, chiller_Q0_max)
                 write_txt_data(file_Q_value_chiller, [chiller_Q_total])
-                ans_chiller = main_optimization_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
+                ans_chiller = main_optimization_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
                                                                  chiller_list, chiller_chilled_pump_list, [],
                                                                  chiller_cooling_pump_list, chiller_cooling_tower_list,
                                                                  n_chiller_list, n_chiller_chilled_pump_list, [],
@@ -706,7 +706,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 ashp_Q_total = min(Q_input - chiller_Q_total, ashp_Q0_max)
                 H_ashp_chilled_pump = 0.67 * chiller_chilled_pump_H
                 write_txt_data(file_Q_value_ashp, [ashp_Q_total])
-                ans_ashp = main_optimization_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump],
+                ans_ashp = main_optimization_common_station(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump],
                                                              [ashp_chilled_pump], [], [], [], [n0_air_source_heat_pump],
                                                              [n0_ashp_chilled_pump], [], [], [], ashp_system_type_path,
                                                              cfg_path_public, cfg_path_equipment)
@@ -715,7 +715,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化冷水机系统并进行控制命令下发!")
                 write_txt_data(file_Q_value_chiller, [chiller_Q_total])
-                algorithm_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, [chiller1, chiller2],
+                algorithm_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, [chiller1, chiller2],
                                            [chiller_chilled_pump1, chiller_chilled_pump2], [],
                                            [chiller_cooling_pump1, chiller_cooling_pump2], [chiller_cooling_tower],
                                            [n0_chiller1, n0_chiller2],
@@ -727,7 +727,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化空气源热泵系统并进行控制命令下发!")
                 write_txt_data(file_Q_value_ashp, [ashp_Q_total])
-                algorithm_common_universal(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
+                algorithm_common_station(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
                                            [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [],
                                            [], [], ashp_system_type_path, n_calculate_hour, cfg_path_equipment,
                                            cfg_path_public)
@@ -740,7 +740,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 input_type_list = load_input_type(load_mode)
                 # 模型输入数据
                 input_data_list = [Q_input * 1000]
-                result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
+                result = main_simulate_station_fmu(input_data_list, input_type_list, simulate_time1, txt_path)
                 # 获取系统稳定后的数据，用于系统辨识初始值
                 chiller_f_cooling_tower_list = [list(result["chiller_f_cooling_tower1"]),
                                                 list(result["chiller_f_cooling_tower2"]),
@@ -819,7 +819,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                     input_type_list = None
                 # 第6步：系统阶跃响应实验
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在进行系统阶跃响应实验！")
-                result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time2, txt_path)
+                result = main_simulate_station_fmu(input_data_list, input_type_list, simulate_time2, txt_path)
                 chiller_f_cooling_tower_list = [list(result["chiller_f_cooling_tower1"])[1:],
                                                 list(result["chiller_f_cooling_tower2"])[1:],
                                                 list(result["chiller_f_cooling_tower3"])[1:],
@@ -1006,7 +1006,7 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 fmu_state_list = [0, 1, stop_time, output_interval, time_out, tolerance]
                 write_txt_data(file_fmu_state, fmu_state_list)
                 # 最后仿真一次
-                main_simulate_pause_single([], [], simulate_time3, txt_path)
+                main_simulate_station_fmu([], [], simulate_time3, txt_path)
 
             # 第10步：辨识传递函数
             print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，所有的传递函数辨识数据生成完成！")
