@@ -14,7 +14,7 @@ def run_compare(txt_path, Q_total):
     # 设备类型名称(air_conditioner,air_source_heat_pump等)，相对路径
     chiller_system_type_path = ["chiller", txt_path]
     # Q_total储存文件
-    file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
+    file_Q_value_chiller = txt_path + "/real_value/energy_station/chiller/Q_value/chilled_main_pipe.txt"
 
     # cfg文件路径
     cfg_path_equipment = txt_path + "/config/equipment_config.cfg"

@@ -36,8 +36,8 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     # 重置所有内容
     run_initialize(txt_path)
     # Q_total储存文件
-    file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
-    file_Q_value_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
+    file_Q_value_chiller = txt_path + "/real_value/energy_station/chiller/Q_value/chilled_main_pipe.txt"
+    file_Q_value_ashp = txt_path + "/real_value/energy_station/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
 
     # 室外温湿度文件路径
     ans_environment_value_txt_path = get_sensor_outside_real_value_txt_path(txt_path)

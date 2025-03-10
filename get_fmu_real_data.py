@@ -225,13 +225,13 @@ def get_chiller_real_data(simulate_result, equipment_type_path, cfg_path_equipme
         real_value_AO_dict["real_value"][chiller_Few_name_tmp]["AO"]["流量"] = chiller_Few
         real_value_AO_dict["real_value"][chiller_Fcw_name_tmp]["AO"]["流量"] = chiller_Fcw
         if input_tmp == True:
-            real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷冻水出水温度设定值"] = Teo_set
+            real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷冻水出水温度设定"] = Teo_set
             real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷冻水出水温度"] = chiller_Teo
             real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷冻水回水温度"] = chiller_Tei
             real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷却水出水温度"] = chiller_Tco
             real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷却水回水温度"] = chiller_Tci
         else:
-            real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷冻水出水温度设定值"] = 0
+            real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷冻水出水温度设定"] = 0
             real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷冻水出水温度"] = 0
             real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷冻水回水温度"] = 0
             real_value_AO_dict["real_value"][chiller_name_tmp]["AO"]["冷却水出水温度"] = 0
@@ -425,11 +425,11 @@ def get_ashp_real_data(simulate_result, equipment_type_path, cfg_path_equipment)
         real_value_AO_dict["real_value"][ashp_consume_name_tmp]["AO"]["电功率"] = ashp_P
         real_value_AO_dict["real_value"][ashp_Few_name_tmp]["AO"]["流量"] = ashp_Few
         if input_tmp == True:
-            real_value_AO_dict["real_value"][ashp_name_tmp]["AO"]["冷冻水出水温度设定值"] = Teo_set
+            real_value_AO_dict["real_value"][ashp_name_tmp]["AO"]["冷冻水出水温度设定"] = Teo_set
             real_value_AO_dict["real_value"][ashp_name_tmp]["AO"]["冷冻水出水温度"] = ashp_Teo
             real_value_AO_dict["real_value"][ashp_name_tmp]["AO"]["冷冻水回水温度"] = ashp_Tei
         else:
-            real_value_AO_dict["real_value"][ashp_name_tmp]["AO"]["冷冻水出水温度设定值"] = 0
+            real_value_AO_dict["real_value"][ashp_name_tmp]["AO"]["冷冻水出水温度设定"] = 0
             real_value_AO_dict["real_value"][ashp_name_tmp]["AO"]["冷冻水出水温度"] = 0
             real_value_AO_dict["real_value"][ashp_name_tmp]["AO"]["冷冻水回水温度"] = 0
     # 一级冷冻水泵
@@ -586,8 +586,8 @@ def get_environment_real_data(simulate_result, txt_path, cfg_path_equipment):
 
     """
     # 设备数量
-    n_Tdo = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Tdo", 1)
-    n_Hro = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Hro", 1)
+    n_Tdo = read_cfg_data(cfg_path_equipment, "室外温湿度传感器", "n_Tdo", 1)
+    n_Hro = read_cfg_data(cfg_path_equipment, "室外温湿度传感器", "n_Hro", 1)
     # 设备实时值
     real_value_AO_dict = dict()
     real_value_AO_dict["real_value"] = dict()
@@ -636,10 +636,9 @@ def get_user_real_data(simulate_result, txt_path, cfg_path_equipment):
 
     """
     # 设备数量
-    n_Tdi = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Tdi", 1)
-    n_Hri = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Hri", 1)
-    n_Te = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Te", 1)
-    n_mau = read_cfg_data(cfg_path_equipment, "室内新风机组", "n_mau", 1)
+    n_Tdi = read_cfg_data(cfg_path_equipment, "室内温湿度传感器", "n_Tdi", 1)
+    n_Hri = read_cfg_data(cfg_path_equipment, "室内温湿度传感器", "n_Hri", 1)
+    n_Te = read_cfg_data(cfg_path_equipment, "室内温湿度传感器", "n_Te", 1)
     # 设备实时值
     real_value_AO_dict = dict()
     real_value_AO_dict["real_value"] = dict()
@@ -700,17 +699,6 @@ def get_user_real_data(simulate_result, txt_path, cfg_path_equipment):
         real_value_DO_dict["real_value"][Hri_name_tmp]["DO"] = dict()
         real_value_AO_dict["real_value"][Hri_name_tmp]["AO"]["湿度"] = Hri_list[i]
         real_value_DO_dict["real_value"][Hri_name_tmp]["DO"]["远方状态"] = 1
-    # mau
-    for i in range(n_mau):
-        mau_name_tmp = "室内新风机组_" + str(i)
-        real_value_AO_dict["real_value"][mau_name_tmp] = dict()
-        real_value_AO_dict["real_value"][mau_name_tmp]["AO"] = dict()
-        real_value_DO_dict["real_value"][mau_name_tmp] = dict()
-        real_value_DO_dict["real_value"][mau_name_tmp]["DO"] = dict()
-        real_value_AO_dict["real_value"][mau_name_tmp]["AO"]["新风流量"] = 580
-        real_value_AO_dict["real_value"][mau_name_tmp]["AO"]["冷冻水流量"] = 1220
-        real_value_AO_dict["real_value"][mau_name_tmp]["AO"]["冷冻水出水温度"] = 7
-        real_value_DO_dict["real_value"][mau_name_tmp]["DO"]["远方状态"] = 1
     # 写入txt
     resolve_real_value_DO_sensor(real_value_DO_dict, ["user"], txt_path, cfg_path_equipment)
     resolve_real_value_AO_sensor(real_value_AO_dict, ["user"], txt_path, cfg_path_equipment)
