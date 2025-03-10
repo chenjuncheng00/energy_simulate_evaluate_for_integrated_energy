@@ -146,7 +146,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     tolerance = 0.0001
 
     # 各系统制冷功率最大值
-    chiller_Q0_max = 13000
+    chiller_Q0_max = 14500
     ashp_Q0_max = 3600
     # 模型初始化和实例化
     fmu_unzipdir = extract(file_fmu)
@@ -372,7 +372,7 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
 if __name__ == "__main__":
     txt_path = "./algorithm_file"
     # simple_load使用的参数
-    Q_total = 12000
+    Q_total = 16000
     # 负荷模型类型选择：0：user_load；1：simple_load
     load_mode = 1
     # 确定FMU模型文件
