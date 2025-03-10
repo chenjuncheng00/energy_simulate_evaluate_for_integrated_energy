@@ -46,13 +46,13 @@ def run_initialize(txt_path):
                                       n_ashp_chilled_pump, n_user_valve, times_chilled_valve)
 
     # 温湿度传感器设备数量
-    n_Tdo = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Tdo", 1)
-    n_Hro = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Hro", 1)
+    n_Tdo = read_cfg_data(cfg_path_equipment, "室外温湿度传感器", "n_Tdo", 1)
+    n_Hro = read_cfg_data(cfg_path_equipment, "室外温湿度传感器", "n_Hro", 1)
     restore_basic_data(txt_path)
     # 室内数量
-    n_Te = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Te", 1)
-    n_Tdi = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Tdi", 1)
-    n_Hri = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Hri", 1)
+    n_Te = read_cfg_data(cfg_path_equipment, "室内温湿度传感器", "n_Te", 1)
+    n_Tdi = read_cfg_data(cfg_path_equipment, "室内温湿度传感器", "n_Tdi", 1)
+    n_Hri = read_cfg_data(cfg_path_equipment, "室内温湿度传感器", "n_Hri", 1)
     restore_sensor_inside_data(txt_path, n_Te, n_Tdi, n_Hri, 0)
     restore_sensor_outside_data(txt_path, n_Tdo, 0, n_Hro)
 

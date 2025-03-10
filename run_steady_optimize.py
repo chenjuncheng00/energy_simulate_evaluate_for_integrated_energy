@@ -32,8 +32,8 @@ def run_run_steady_optimize(txt_path, file_fmu, load_mode):
     run_initialize(txt_path)
 
     # Q_total储存文件
-    file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
-    file_Q_value_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
+    file_Q_value_chiller = txt_path + "/real_value/energy_station/chiller/Q_value/chilled_main_pipe.txt"
+    file_Q_value_ashp = txt_path + "/real_value/energy_station/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
 
     # cfg文件路径
     cfg_path_equipment = txt_path + "/config/equipment_config.cfg"
