@@ -1,5 +1,5 @@
 import pickle
-from algorithm_win import write_txt_data, algorithm_common_universal
+from algorithm_win import write_txt_data, algorithm_common_station
 
 def run_compare(txt_path, Q_total):
     """
@@ -43,7 +43,7 @@ def run_compare(txt_path, Q_total):
     n_calculate_hour = system_dict["n_calculate_hour"]
 
     write_txt_data(file_Q_value_chiller, [Q_total])
-    algorithm_common_universal(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
+    algorithm_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
                                chiller_chilled_pump_list, [], chiller_cooling_pump_list,
                                chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
                                [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,

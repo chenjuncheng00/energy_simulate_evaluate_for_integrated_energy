@@ -1,7 +1,7 @@
 from algorithm_win import (read_cfg_data, write_txt_data, clear_all_txt_data, delete_all_specified_file,
-                           initialize_txt_chiller, initialize_txt_other, initialize_txt_user_terminal,
-                           initialize_txt_air_source_heat_pump, initialize_txt_energy_storage_equipment,
-                           resolve_real_value_DO_station)
+                           restore_chiller_data, restore_basic_data, restore_air_source_heat_pump_data,
+                           restore_energy_storage_equipment_data, restore_sensor_inside_data,
+                           restore_sensor_outside_data, resolve_real_value_DO_station)
 from system_default_status import air_source_heat_pump_default_status, chiller_default_status, storage_default_status
 
 def run_initialize(txt_path):
@@ -35,33 +35,33 @@ def run_initialize(txt_path):
     n_chiller = n_chiller1 + n_chiller2
     n_chiller_chilled_pump = n_chiller_chilled_pump1 + n_chiller_chilled_pump2
     n_chiller_cooling_pump = n_chiller_cooling_pump1 + n_chiller_cooling_pump2
-    initialize_txt_chiller(txt_path, n_chiller, n_chilled_pump_secondary, n_chiller_chilled_pump,
-                           n_chiller_cooling_pump, n_chiller_cooling_tower, n_user_valve, times_chilled_valve,
-                           times_cooling_valve, times_tower_valve, times_cooling_tower)
+    restore_chiller_data(txt_path, n_chiller, n_chilled_pump_secondary, n_chiller_chilled_pump,
+                         n_chiller_cooling_pump, n_chiller_cooling_tower, n_user_valve, times_chilled_valve,
+                         times_cooling_valve, times_tower_valve, times_cooling_tower)
 
     # 空气源热泵数量
     n_air_source_heat_pump = read_cfg_data(cfg_path_equipment, "空气源热泵", "n_air_source_heat_pump", 1)
     n_ashp_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_空气源热泵", "n_chilled_pump", 1)
-    initialize_txt_air_source_heat_pump(txt_path, n_air_source_heat_pump, n_chilled_pump_secondary,
-                                        n_ashp_chilled_pump, n_user_valve, times_chilled_valve)
+    restore_air_source_heat_pump_data(txt_path, n_air_source_heat_pump, n_chilled_pump_secondary,
+                                      n_ashp_chilled_pump, n_user_valve, times_chilled_valve)
 
     # 温湿度传感器设备数量
     n_Tdo = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Tdo", 1)
     n_Hro = read_cfg_data(cfg_path_equipment, "室外环境温湿度传感器", "n_Hro", 1)
-    initialize_txt_other(txt_path, n_Tdo, 0, n_Hro)
+    restore_basic_data(txt_path)
     # 室内数量
     n_Te = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Te", 1)
     n_Tdi = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Tdi", 1)
     n_Hri = read_cfg_data(cfg_path_equipment, "用户末端温湿度传感器", "n_Hri", 1)
-    n_mau = read_cfg_data(cfg_path_equipment, "室内新风机组", "n_mau", 1)
-    initialize_txt_user_terminal(txt_path, n_Te, n_Tdi, n_Hri, n_mau, 0, 0, 0)
+    restore_sensor_inside_data(txt_path, n_Te, n_Tdi, n_Hri, 0)
+    restore_sensor_outside_data(txt_path, n_Tdo, 0, n_Hro)
 
     # 蓄冷水罐
     n_storage_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "n_chilled_pump", 1)
     n_storage_chilled_valve = read_cfg_data(cfg_path_equipment, "阀门_蓄能装置", "n_chilled_valve", 1)
-    initialize_txt_energy_storage_equipment(txt_path, n_chilled_pump_secondary, n_storage_chilled_pump,
+    restore_energy_storage_equipment_data(txt_path, n_chilled_pump_secondary, n_storage_chilled_pump,
                                             n_storage_chilled_valve)
-    file_storage_E = txt_path + "/real_value/energy_storage_equipment/Q_plan_E_plan/energy_storage_equipment_E.txt"
+    file_storage_E = txt_path + "/real_value/energy_station/energy_storage_equipment/Q_plan_E_plan/energy_storage_equipment_E.txt"
     energy_storage_equipment_E0 = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_E0", 0)
     write_txt_data(file_storage_E, [energy_storage_equipment_E0])
 

@@ -1,4 +1,4 @@
-from algorithm_win import write_txt_data, main_simulate_pause_single
+from algorithm_win import write_txt_data, main_simulate_station_fmu
 from model_fmu_input_type import main_model_input_type
 from model_fmu_input_data_default import (air_source_heat_pump_input_data_default, load_input_data_default,
                                           environment_input_data_default, cold_storage_input_data_default,
@@ -50,11 +50,11 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     storage_input_data = storage_pump + storage_chiller_valve + storage_user_valve
     # FMU输入名称和数据类型
     input_type_list = main_model_input_type(load_mode)
-    input_data_list = [start_time] + environment_input_data_default(load_mode) + chiller_input_data + \
-                      air_source_heat_pump_input_data_default() + storage_input_data + \
-                      load_input_data_default(load_mode)
+    input_data_list = ([start_time] + environment_input_data_default(load_mode) + chiller_input_data +
+                       air_source_heat_pump_input_data_default() + storage_input_data +
+                       load_input_data_default(load_mode))
     # FMU仿真
-    main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path, add_input=False)
+    main_simulate_station_fmu(input_data_list, input_type_list, simulate_time1, txt_path, add_input=False)
 
     # 第3步：更新初始化设置
     # 修改FMU状态
@@ -84,7 +84,7 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     input_data_list = [t1_initialize] + environment_input_data_default(load_mode) + chiller_input_data + \
                       ashp_input_data + cold_storage_input_data_default() + load_input_data_default(load_mode)
     # FMU仿真
-    main_simulate_pause_single(input_data_list, input_type_list, simulate_time2, txt_path, add_input=False)
+    main_simulate_station_fmu(input_data_list, input_type_list, simulate_time2, txt_path, add_input=False)
 
     # 第5步：更新初始化设置
     # 修改时间
@@ -98,7 +98,7 @@ def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop
     input_type_list = main_model_input_type(load_mode)
     input_data_list = [t2_initialize] + main_input_data_default(load_mode)
     # FMU仿真
-    main_simulate_pause_single(input_data_list, input_type_list, simulate_time3, txt_path, add_input=False)
+    main_simulate_station_fmu(input_data_list, input_type_list, simulate_time3, txt_path, add_input=False)
     # 修改时间
     write_txt_data(file_fmu_time, [t3_initialize])
     print("\n")

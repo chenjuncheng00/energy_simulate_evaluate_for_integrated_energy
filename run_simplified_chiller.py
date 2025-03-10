@@ -3,8 +3,8 @@ import numpy as np
 import pickle
 import matplotlib.pyplot as plt
 from fmpy import *
-from algorithm_win import (get_fmu_input_name, write_log_data, write_txt_data, clear_all_txt_data,
-                           main_simulate_pause_single, calculate_membership, feedback_correction_initialize,
+from algorithm_win import (get_equipment_fmu_input_name, write_log_data, write_txt_data, clear_all_txt_data,
+                           main_simulate_station_fmu, calculate_membership, feedback_correction_initialize,
                            feedback_correction_kc, smgpc, mmgpc, mmgpc_bayes, mmgpc_ms, mmgpc_itae)
 from air_conditioner_dynamic import estimate_transfer_function
 from run_tuning_dynamics_model import tuning_mmgpc, tuning_smgpc
@@ -168,7 +168,7 @@ def run_simplified_chiller(Q_total_list, Q_index, txt_path, file_fmu, run_mode):
     fmu_input_type = model_input_type()
     # 模型输出
     fmu_output_name = ["Q_total", "P_total", "Teo", "Tei", "Tco", "Tci", "Few", "Fcw"]
-    fmu_input_name = get_fmu_input_name(fmu_input_type)
+    fmu_input_name = get_equipment_fmu_input_name(fmu_input_type)
     fmu_input_output_name = fmu_input_name + fmu_output_name
 
     # # FMU模型仿真时间：仿真开始的时间(start_time)
@@ -263,7 +263,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
     # 计算U0和y0
     input_data_list = [Q_total * 1000]
     input_type_list = [("Q_set", np.float64)]
-    result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
+    result = main_simulate_station_fmu(input_data_list, input_type_list, simulate_time1, txt_path)
     Teo0 = list(result["chiller_Teo_set"])[-1]
     Few0 = list(result["chiller_f_chilled_pump1"])[-1]
     Fcw0 = list(result["chiller_f_cooling_pump1"])[-1]
@@ -513,7 +513,7 @@ def simulate_dynamics_control(Q_total, txt_path, file_fmu):
                            ("chiller_f_cooling_pump1", np.float64), ("chiller_f_cooling_tower1", np.float64)]
         input_data_list = [Teo, Few, Fcw, Fca]
 
-        result = main_simulate_pause_single(input_data_list, input_type_list, Ts, txt_path)
+        result = main_simulate_station_fmu(input_data_list, input_type_list, Ts, txt_path)
         # 获取输出的yk
         Tei = list(result["Tei"])[-1]
         Q = list(result["Q_total"])[-1]
@@ -673,7 +673,7 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
             # 第2步:给定冷负荷，并使得系统稳定
             input_data_list = [Q_input * 1000]
             input_type_list = [("Q_set", np.float64)]
-            result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time1, txt_path)
+            result = main_simulate_station_fmu(input_data_list, input_type_list, simulate_time1, txt_path)
             Teo0 = list(result["chiller_Teo_set"])
             Few0 = list(result["Few"])
             Fcw0 = list(result["Fcw"])
@@ -700,7 +700,7 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
             else:
                 input_data_list = []
                 input_type_list = []
-            result = main_simulate_pause_single(input_data_list, input_type_list, simulate_time2, txt_path)
+            result = main_simulate_station_fmu(input_data_list, input_type_list, simulate_time2, txt_path)
             Teo1 = list(result["chiller_Teo_set"])
             Few1 = list(result["Few"])
             Fcw1 = list(result["Fcw"])
@@ -822,7 +822,7 @@ def identify_dynamics_simplified_chiller(Q_total_list, txt_path, file_fmu):
             fmu_state_list = [0, 1, stop_time, Ts, time_out, tolerance]
             write_txt_data(file_fmu_state, fmu_state_list)
             # 最后仿真一次
-            main_simulate_pause_single([], [], simulate_time3, txt_path)
+            main_simulate_station_fmu([], [], simulate_time3, txt_path)
 
         # 第6步：辨识传递函数
         print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，所有的传递函数辨识数据生成完成！")
@@ -879,8 +879,7 @@ def initialize_simplified_chiller(file_fmu_time, file_fmu_state, input_data_init
     write_txt_data(file_fmu_state, fmu_state_list)
     write_txt_data(file_fmu_time, [start_time])
     # FMU仿真
-    result = main_simulate_pause_single(input_data_initialize, fmu_input_type, time_initialize, txt_path,
-                                        add_input=False)
+    result = main_simulate_station_fmu(input_data_initialize, fmu_input_type, time_initialize, txt_path, add_input=False)
     # 修改FMU状态
     fmu_state_list = [0, 0, stop_time, output_interval, time_out, tolerance]
     write_txt_data(file_fmu_state, fmu_state_list)
