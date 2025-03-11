@@ -44,10 +44,10 @@ def run_compare(txt_path, Q_total):
 
     write_txt_data(file_Q_value_chiller, [Q_total])
     algorithm_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
-                               chiller_chilled_pump_list, [], chiller_cooling_pump_list,
-                               chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
-                               [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                               chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
+                             chiller_chilled_pump_list, [], chiller_cooling_pump_list,
+                             chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
+                             [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                             chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
 if __name__ == "__main__":
     txt_path = "./algorithm_file"

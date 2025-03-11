@@ -146,7 +146,7 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
 
     """
     # Q_total储存文件
-    file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
+    file_Q_value_chiller = txt_path + "/real_value/energy_station/chiller/Q_value/chilled_main_pipe.txt"
     # 需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
     object_list = ["Teo", "Few", "Fcw", "Fca"]
     n_object_list = [1, 1, 1, 1]
@@ -252,11 +252,11 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                       "，正在优化冷水机系统，但是不进行控制命令下发，用于获取阀门开启比例！")
                 write_txt_data(file_Q_value_chiller, [Q_input])
                 ans_chiller = main_optimization_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
-                                                                 chiller_list, chiller_chilled_pump_list, [],
-                                                                 chiller_cooling_pump_list, chiller_cooling_tower_list,
-                                                                 n_chiller_list, n_chiller_chilled_pump_list, [],
-                                                                 n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                                 chiller_system_type_path, cfg_path_public, cfg_path_equipment)
+                                                               chiller_list, chiller_chilled_pump_list, [],
+                                                               chiller_cooling_pump_list, chiller_cooling_tower_list,
+                                                               n_chiller_list, n_chiller_chilled_pump_list, [],
+                                                               n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                                                               chiller_system_type_path, cfg_path_public, cfg_path_equipment)
                 chilled_valve_open = ans_chiller[0]
                 cooling_valve_open = ans_chiller[1]
                 tower_valve_open = ans_chiller[2]
@@ -265,12 +265,12 @@ def identify_chiller_dynamics(fmu_unzipdir, fmu_description, file_fmu_address, f
                       "，正在优化冷水机系统并进行控制命令下发!")
                 write_txt_data(file_Q_value_chiller, [Q_input])
                 algorithm_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, [chiller1, chiller2],
-                                           [chiller_chilled_pump1, chiller_chilled_pump2], [],
-                                           [chiller_cooling_pump1, chiller_cooling_pump2], [chiller_cooling_tower],
-                                           [n0_chiller1, n0_chiller2], [n0_chiller_chilled_pump1, n0_chiller_chilled_pump2], 
-                                           [], [n0_chiller_cooling_pump1, n0_chiller_cooling_pump2],
-                                           [n0_chiller_cooling_tower], chiller_system_type_path, n_calculate_hour,
-                                           cfg_path_equipment, cfg_path_public)
+                                         [chiller_chilled_pump1, chiller_chilled_pump2], [],
+                                         [chiller_cooling_pump1, chiller_cooling_pump2], [chiller_cooling_tower],
+                                         [n0_chiller1, n0_chiller2], [n0_chiller_chilled_pump1, n0_chiller_chilled_pump2],
+                                         [], [n0_chiller_cooling_pump1, n0_chiller_cooling_pump2],
+                                         [n0_chiller_cooling_tower], chiller_system_type_path, n_calculate_hour,
+                                         cfg_path_equipment, cfg_path_public)
                 # 第5步：系统仿真24小时，确保系统稳定，并获取数据
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在持续仿真，确保系统稳定!")
                 # 修改采样时间
@@ -562,8 +562,8 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
 
     """
     # Q_total储存文件
-    file_Q_value_chiller = txt_path + "/real_value/chiller/Q_value/chilled_main_pipe.txt"
-    file_Q_value_ashp = txt_path + "/real_value/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
+    file_Q_value_chiller = txt_path + "/real_value/energy_station/chiller/Q_value/chilled_main_pipe.txt"
+    file_Q_value_ashp = txt_path + "/real_value/energy_station/air_source_heat_pump/Q_value/chilled_main_pipe.txt"
     # 需要被辨识的对象列表：Fcw、Few、Fca、Teo、Tci等
     object_list = ["Teo", "chiller_Few", "Fcw", "Fca", "ashp_Few"]
     estf_object_list = ["Teo", "Few", "Fcw", "Fca"]
@@ -691,11 +691,11 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 chiller_Q_total = min(Q_input, chiller_Q0_max)
                 write_txt_data(file_Q_value_chiller, [chiller_Q_total])
                 ans_chiller = main_optimization_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump,
-                                                                 chiller_list, chiller_chilled_pump_list, [],
-                                                                 chiller_cooling_pump_list, chiller_cooling_tower_list,
-                                                                 n_chiller_list, n_chiller_chilled_pump_list, [],
-                                                                 n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                                 chiller_system_type_path, cfg_path_public, cfg_path_equipment)
+                                                               chiller_list, chiller_chilled_pump_list, [],
+                                                               chiller_cooling_pump_list, chiller_cooling_tower_list,
+                                                               n_chiller_list, n_chiller_chilled_pump_list, [],
+                                                               n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                                                               chiller_system_type_path, cfg_path_public, cfg_path_equipment)
                 chiller_chilled_valve_open = ans_chiller[0]
                 chiller_cooling_valve_open = ans_chiller[1]
                 chiller_tower_valve_open = ans_chiller[2]
@@ -707,30 +707,29 @@ def identify_chiller_ashp_dynamics(fmu_unzipdir, fmu_description, file_fmu_addre
                 H_ashp_chilled_pump = 0.67 * chiller_chilled_pump_H
                 write_txt_data(file_Q_value_ashp, [ashp_Q_total])
                 ans_ashp = main_optimization_common_station(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump],
-                                                             [ashp_chilled_pump], [], [], [], [n0_air_source_heat_pump],
-                                                             [n0_ashp_chilled_pump], [], [], [], ashp_system_type_path,
-                                                             cfg_path_public, cfg_path_equipment)
+                                                            [ashp_chilled_pump], [], [], [], [n0_air_source_heat_pump],
+                                                            [n0_ashp_chilled_pump], [], [], [], ashp_system_type_path,
+                                                            cfg_path_public, cfg_path_equipment)
                 ashp_chilled_valve_open = ans_ashp[0]
                 # 第3-3步：冷水机优化和控制...
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化冷水机系统并进行控制命令下发!")
                 write_txt_data(file_Q_value_chiller, [chiller_Q_total])
                 algorithm_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, [chiller1, chiller2],
-                                           [chiller_chilled_pump1, chiller_chilled_pump2], [],
-                                           [chiller_cooling_pump1, chiller_cooling_pump2], [chiller_cooling_tower],
-                                           [n0_chiller1, n0_chiller2],
-                                           [n0_chiller_chilled_pump1, n0_chiller_chilled_pump2],
-                                           [], [n0_chiller_cooling_pump1, n0_chiller_cooling_pump2],
-                                           [n0_chiller_cooling_tower], chiller_system_type_path, n_calculate_hour,
-                                           cfg_path_equipment, cfg_path_public)
+                                         [chiller_chilled_pump1, chiller_chilled_pump2], [],
+                                         [chiller_cooling_pump1, chiller_cooling_pump2], [chiller_cooling_tower],
+                                         [n0_chiller1, n0_chiller2], [n0_chiller_chilled_pump1, n0_chiller_chilled_pump2],
+                                         [], [n0_chiller_cooling_pump1, n0_chiller_cooling_pump2],
+                                         [n0_chiller_cooling_tower], chiller_system_type_path, n_calculate_hour,
+                                         cfg_path_equipment, cfg_path_public)
                 # 第3-4步：空气源热泵优化和控制...
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj +
                       "，正在优化空气源热泵系统并进行控制命令下发!")
                 write_txt_data(file_Q_value_ashp, [ashp_Q_total])
                 algorithm_common_station(H_ashp_chilled_pump, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
-                                           [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [],
-                                           [], [], ashp_system_type_path, n_calculate_hour, cfg_path_equipment,
-                                           cfg_path_public)
+                                         [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [],
+                                         [], [], ashp_system_type_path, n_calculate_hour, cfg_path_equipment,
+                                         cfg_path_public)
                 # 第4步：系统仿真24小时，确保系统稳定，并获取数据
                 print("制冷功率(kW)：" + str(round(Q_input, 2)) + "，辨识输入：" + tf_obj + "，正在持续仿真，确保系统稳定!")
                 # 修改采样时间
