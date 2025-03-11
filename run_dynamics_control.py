@@ -211,10 +211,10 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     chiller_Q_user = min(Q_user, chiller_Q0_max)
     write_txt_data(file_Q_value_chiller, [chiller_Q_user])
     ans_chiller = main_optimization_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
-                                                     chiller_chilled_pump_list, [], chiller_cooling_pump_list,
-                                                     chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
-                                                     [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                                                     chiller_system_type_path, cfg_path_public, cfg_path_equipment)
+                                                   chiller_chilled_pump_list, [], chiller_cooling_pump_list,
+                                                   chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
+                                                   [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                                                   chiller_system_type_path, cfg_path_public, cfg_path_equipment)
     chiller_user_chilled_pump_H = ans_chiller[3]
 
     # 第2步：用向用户侧供冷供冷，冷水机优化和控制
@@ -224,10 +224,10 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     write_log_data(file_fmu_input_feedback_log, [input_log_2], "info")
     write_txt_data(file_Q_value_chiller, [chiller_Q_user])
     algorithm_common_station(H_chiller_chilled_pump, 0, H_chiller_cooling_pump, chiller_list,
-                               chiller_chilled_pump_list, [], chiller_cooling_pump_list,
-                               chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
-                               [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
-                               chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
+                             chiller_chilled_pump_list, [], chiller_cooling_pump_list,
+                             chiller_cooling_tower_list, n_chiller_list, n_chiller_chilled_pump_list,
+                             [], n_chiller_cooling_pump_list, n_chiller_cooling_tower_list,
+                             chiller_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
     # 第3步：用向用户侧供冷功率，空气源热泵优化和控制
     input_log_3 = "第3步：用向用户侧供冷功率，空气源热泵优化和控制..."
@@ -238,8 +238,8 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
     ashp_chilled_pump_H = 0.67 * chiller_user_chilled_pump_H
     write_txt_data(file_Q_value_ashp, [ashp_Q_user])
     algorithm_common_station(ashp_chilled_pump_H, 0, 0, [air_source_heat_pump], [ashp_chilled_pump],
-                               [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [], [], [],
-                               ashp_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
+                             [], [], [], [n0_air_source_heat_pump], [n0_ashp_chilled_pump], [], [], [],
+                             ashp_system_type_path, n_calculate_hour, cfg_path_equipment, cfg_path_public)
 
     # 第4步：持续仿真，使得系统稳定下来
     input_log_4 = "第4步：持续仿真，使得系统稳定下来..."
@@ -371,13 +371,13 @@ def run_dynamics_control(Q_total, txt_path, file_fmu, load_mode):
 
 if __name__ == "__main__":
     txt_path = "./algorithm_file"
-    # simple_load使用的参数
-    Q_total = 16000
+    # simple_load使用的参数: 19780*0.9, 19780*0.6, 19780*0.3
+    Q_total = 19780*0.9
     # 负荷模型类型选择：0：user_load；1：simple_load
     load_mode = 1
     # 确定FMU模型文件
     if load_mode == 0:
-        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
+        file_fmu = "model_file/file_fmu/integrated_air_conditioner_user_load_Sdirk34hw.fmu"
     else:
-        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
+        file_fmu = "model_file/file_fmu/integrated_air_conditioner_simple_load_Sdirk34hw.fmu"
     run_dynamics_control(Q_total, txt_path, file_fmu, load_mode)

@@ -7,8 +7,8 @@ from model_fmu_input_data_default import (air_source_heat_pump_input_data_defaul
 def initialize_integrated_system(file_fmu_time, file_fmu_state, start_time, stop_time, output_interval,
                                  time_out, tolerance, load_mode, txt_path):
     """
-    integrated_air_conditioning.fmu"
-    integrated_air_conditioning_simple_load.fmu"
+    integrated_conditioner_user_load.fmu"
+    integrated_conditioner_simple_load.fmu"
     初始化完整模型：冷水机+空气源热泵+蓄冷水+负荷(简单负荷 OR 复杂负荷)
     Args:
         file_fmu_time: [string]，储存FMU模型仿真时间(start_time)的文件路径

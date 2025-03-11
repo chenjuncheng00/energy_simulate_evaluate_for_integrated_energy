@@ -70,7 +70,7 @@ def run_equipment_characteristic(fmu_path):
                                            cooling_tower_approach_result_txt_path)
 
 
-def run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode):
+def run_identify_station_dynamics(fmu_path, path_matlab, txt_path, identify_mode):
     """
 
     Args:
@@ -101,7 +101,6 @@ def run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
                   7500, 7000, 6500, 6000, 5500, 5000, 4500, 4000, 3500, 3000, 2500, 2000]
     elif identify_mode == 1:
         Q_list = [14600, 15200, 15800, 16400, 17000, 17600]
-        # Q_list = [16400]
     else:
         Q_list = []
     # 传递函数极点的最大数
@@ -139,17 +138,17 @@ def run_identify_user_characteristic(fmu_path):
 if __name__ == "__main__":
     # # 水力特性模型辨识
     # load_mode = 0
-    # fmu_path = "./model_file/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
+    # fmu_path = "./model_file/file_fmu/integrated_air_conditioner_Sdirk34hw.fmu"
     # run_identify_hydraulic_characteristic(fmu_path, load_mode)
     # # 设备性能模型辨识
     # fmu_path = "./model_file/file_fmu/equipment_characteristic_Cvode.fmu"
     # run_equipment_characteristic(fmu_path)
     # # 系统动态特性辨识
-    # identify_mode = 1  # 0:仅冷水机；1:冷水机+空气源热泵
-    # path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
-    # fmu_path = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
-    # txt_path = "./algorithm_file"
-    # run_identify_system_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
-    # 用户侧特性辨识
-    fmu_path = "./model_file/file_fmu/user_characteristic_Cvode.fmu"
-    run_identify_user_characteristic(fmu_path)
+    identify_mode = 0  # 0:仅冷水机；1:冷水机+空气源热泵
+    path_matlab = "/Users/chenjuncheng/Documents/Machine_Learning_Development/system_identification/air_conditioner_dynamic"
+    fmu_path = "./model_file/file_fmu/integrated_air_conditioner_simple_load_Sdirk34hw.fmu"
+    txt_path = "./algorithm_file"
+    run_identify_station_dynamics(fmu_path, path_matlab, txt_path, identify_mode)
+    # # 用户侧特性辨识
+    # fmu_path = "./model_file/file_fmu/user_characteristic_Cvode.fmu"
+    # run_identify_user_characteristic(fmu_path)
