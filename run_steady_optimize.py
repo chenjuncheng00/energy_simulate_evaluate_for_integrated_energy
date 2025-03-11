@@ -407,8 +407,8 @@ if __name__ == "__main__":
     load_mode = 0
     # 确定FMU模型文件
     if load_mode == 0:
-        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_Sdirk34hw.fmu"
+        file_fmu = "model_file/file_fmu/integrated_air_conditioner_user_load_Sdirk34hw.fmu"
     else:
-        file_fmu = "./model_file/file_fmu/integrated_air_conditioning_simple_load_Sdirk34hw.fmu"
+        file_fmu = "model_file/file_fmu/integrated_air_conditioner_simple_load_Sdirk34hw.fmu"
     # 执行程序
     run_run_steady_optimize(txt_path, file_fmu, load_mode)

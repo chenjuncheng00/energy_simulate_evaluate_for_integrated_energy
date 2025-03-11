@@ -48,13 +48,14 @@ def run_initialize(txt_path):
     # 温湿度传感器设备数量
     n_Tdo = read_cfg_data(cfg_path_equipment, "室外温湿度传感器", "n_Tdo", 1)
     n_Hro = read_cfg_data(cfg_path_equipment, "室外温湿度传感器", "n_Hro", 1)
-    restore_basic_data(txt_path)
+    n_Tsw = read_cfg_data(cfg_path_equipment, "室外温湿度传感器", "n_Tsw", 1)
+    restore_sensor_outside_data(txt_path, n_Tdo, n_Tsw, n_Hro)
     # 室内数量
     n_Te = read_cfg_data(cfg_path_equipment, "室内温湿度传感器", "n_Te", 1)
     n_Tdi = read_cfg_data(cfg_path_equipment, "室内温湿度传感器", "n_Tdi", 1)
     n_Hri = read_cfg_data(cfg_path_equipment, "室内温湿度传感器", "n_Hri", 1)
-    restore_sensor_inside_data(txt_path, n_Te, n_Tdi, n_Hri, 0)
-    restore_sensor_outside_data(txt_path, n_Tdo, 0, n_Hro)
+    n_pdc = read_cfg_data(cfg_path_equipment, "室内IT电表", "n_pdc", 1)
+    restore_sensor_inside_data(txt_path, n_Te, n_Tdi, n_Hri, n_pdc)
 
     # 蓄冷水罐
     n_storage_chilled_pump = read_cfg_data(cfg_path_equipment, "一级冷冻水泵_蓄能装置", "n_chilled_pump", 1)
@@ -64,6 +65,9 @@ def run_initialize(txt_path):
     file_storage_E = txt_path + "/real_value/energy_station/energy_storage_equipment/Q_plan_E_plan/energy_storage_equipment_E.txt"
     energy_storage_equipment_E0 = read_cfg_data(cfg_path_equipment, "蓄能装置", "energy_storage_equipment_E0", 0)
     write_txt_data(file_storage_E, [energy_storage_equipment_E0])
+
+    # 基础数据
+    restore_basic_data(txt_path)
 
     # FMU仿真结果
     path_fmu_result = "./model_file/simulate_log/"
